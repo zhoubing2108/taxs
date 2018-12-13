@@ -46,7 +46,7 @@ const config = {
       {
         test: /\.js[x]?$/,
         exclude: /node_modules/,
-        loader:'babel-loader'
+        loader: 'babel-loader'
       }
     ]
   },
@@ -70,9 +70,10 @@ if (isDEV) {
       hot: true,
       port: 8000,
       contentBase: path.join(__dirname, "/"),
+      historyApiFallback: true,
       proxy: {
-        '/v1/*': {
-          target: 'http://file.mengant.cn/api',
+        '/api': {
+          target: 'http://maintain.mengant.cn',
           changeOrigin: true
         }
       }
