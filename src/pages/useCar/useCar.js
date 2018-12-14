@@ -4,7 +4,7 @@ import request from '../../helpers/request';
 import store from './store';
 import {observer} from 'mobx-react';
 import { withRouter } from "react-router-dom";
-
+import exportFile from '../../helpers/export-file'
 
 const { RangePicker } = DatePicker;
 const Option = Select.Option;
@@ -73,7 +73,7 @@ class UseCar extends Component {
             </Select>
             <span>申请人：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList} >查询</Button>
-            <Button type='primary' >导出</Button>
+            <Button type='primary' onClick={this.export} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }} onChange={(v) => { store.status = v }} ><Option value={3}>全部</Option></Select>
@@ -85,6 +85,9 @@ class UseCar extends Component {
         </Card>
       </Fragment>
     )
+  }
+  componentDidMount() {
+    this.fetchList();
   }
   fetchList = (e, page = 1, size = 10) => {
     let { time_begin, time_end, reason, status, department, username } = store;
@@ -106,6 +109,20 @@ class UseCar extends Component {
       },
       success: (res) => {
         store.dataSource = res.data;
+      }
+    })
+  }
+  export = () => {
+    let { department, time_begin, time_end, status, username, reason } = store;
+    exportFile({
+      url: '/api/v1/car/export',
+      data: {
+        department,
+        username,
+        status,
+        reason,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
       }
     })
   }

@@ -2,8 +2,9 @@ import React, { Component, Fragment } from 'react';
 import { Table, Button, DatePicker, Select, Input, Card } from 'antd';
 import store from './store';
 import { observer } from 'mobx-react';
-import request from '../../helpers/request'
-
+import request from '../../helpers/request';
+import exportFile from '../../helpers/export-file';
+import {withRouter} from 'react-router-dom';
 const { RangePicker } = DatePicker;
 
 @observer
@@ -52,7 +53,7 @@ class CheckIn extends Component {
             <span>部门：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='全部' onChange={(e) => { store.deparment = e.target.value }} placeholder='全部' />
             <span>姓名：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList}>查询</Button>
-            <Button type='primary' >导出</Button>
+            <Button type='primary' onClick={()=>{this.export()}} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <span>签到地点：</span><Select defaultValue={check_address} style={{ width: 100, marginRight: 10 }}>
@@ -66,6 +67,9 @@ class CheckIn extends Component {
         </Card>
       </Fragment>
     )
+  }
+  componentDidMount() {
+    this.fetchList();
   }
   fetchList = (e, page = 1, size = 10) => {
     let { check_address, check_theme, check_time_begin, check_time_end, department, username } = store;
@@ -90,6 +94,20 @@ class CheckIn extends Component {
       }
     })
   }
+  export = () => {
+    let { check_address, check_theme, check_time_begin, check_time_end, department, username } = store;
+    exportFile({
+      url: '/api/v1/meeting/sign/in/export',
+      data: {
+        address: check_address,
+        theme: check_theme,
+        username,
+        department,
+        time_begin: check_time_begin.format('YYYY-MM-DD'),
+        time_end: check_time_end.format('YYYY-MM-DD'),
+      }
+    })
+  }
 }
 
-export default CheckIn
+export default withRouter(CheckIn)

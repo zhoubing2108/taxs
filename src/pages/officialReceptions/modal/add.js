@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Form, Button, Input, TimePicker, DatePicker, Select, Radio, Checkbox } from 'antd';
+import { Modal, Form, Button, Input, TimePicker, DatePicker, Select, Radio, Checkbox,InputNumber } from 'antd';
 import moment from 'moment';
 import store from '../store';
 import { observer } from 'mobx-react';
@@ -65,13 +65,13 @@ class Add extends Component {
           <FormItem {...commonFormProps} label='餐饮人数'>
             {
               getFieldDecorator('member')(
-                <Input placeholder='请输入人数' style={{ width: 130 }} />
+                <InputNumber placeholder='请输入人数' style={{ width: 130 }} />
               )
             }
             <span style={{ marginLeft: 50 }}>桌数：</span>
             {
               getFieldDecorator('table_number')(
-                <Input placeholder='请输入桌数' style={{ width: 190 }} />
+                <InputNumber placeholder='请输入桌数' style={{ width: 190 }} />
               )
             }
           </FormItem>

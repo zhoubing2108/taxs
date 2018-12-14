@@ -1,51 +1,80 @@
 import React, { Component, Fragment } from 'react';
-import { Modal, Radio, Input } from 'antd';
+import { Modal, Radio, Input, Form } from 'antd';
 import { observer } from 'mobx-react';
-import store from '../../store';
-
+import store from '../store';
+import request from '../../../../../helpers/request'
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
 
 @observer
 class FnModal extends Component {
-  state = {
-    value: 1
-  }
 
   render() {
-    let { params } = this.props;
-    let { visible, loading } = params
+    let { params, form } = this.props;
+    let { visible, loading } = params;
+    let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
     return (
       <Fragment>
         <Modal title='审批' visible={visible} onCancel={this.handleCancel} onOk={this.handleOk} okText='确定' cancelText='取消'>
-          <div style={{ textAlign: 'center' }}>
-            <RadioGroup onChange={this.onChange} value={this.state.value}>
-              <Radio value={0} style={{ marginRight: 15 }}>不通过</Radio>
-              <Radio value={1}>通过</Radio>
-            </RadioGroup>
-          </div>
-          <div style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-            <span style={{ lineHeight: 7 }} >审批意见：</span>
-            <TextArea rows={4} style={{ width: '60%', marginTop: 15 }} ></TextArea>
-          </div>
+          <Form>
+            <div style={{ textAlign: 'center' }}>
+              {
+                getFieldDecorator('submit_to_save')(
+                  <RadioGroup name='radiogroup'>
+                    <Radio value='ok' style={{ marginRight: 15 }}>不通过</Radio>
+                    <Radio value='back'>通过</Radio>
+                  </RadioGroup>
+                )
+              }
+
+            </div>
+            <div style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+              <span style={{ lineHeight: 7 }} >审批意见：</span>
+              {
+                getFieldDecorator('check_con')(<TextArea rows={4} style={{ width: '60%', marginTop: 15 }} ></TextArea>)
+              }
+
+            </div>
+          </Form>
         </Modal>
       </Fragment>
     )
   }
-
-  onChange = (e) => {
-    this.setState({
-      value: e.target.value,
-    });
-  };
-
   handleCancel = () => {
     store.params.visible = false
   }
 
   handleOk = () => {
-    store.params.visible = false
+    let { props, wf_fid } = this.props;
+    let { info } = props;
+    let { flow_id, run_id, flow_process, run_process, nexprocess, submit_to_save } = info;
+    let values = this.props.form.getFieldsValue();
+    let { check_con } = values;
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POST',
+      data: {
+        check_con,
+        flow_id,
+        run_id,
+        flow_process,
+        run_process,
+        npid: nexprocess.id,
+        submit_to_save,
+        wf_fid,
+        wf_type: 'space_multi_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: () => {
+        store.params.visible = false
+      },
+      complete: (res) => {
+        console.log(res);
+      }
+    })
   }
 }
 
-export default FnModal
+export default Form.create()(FnModal)

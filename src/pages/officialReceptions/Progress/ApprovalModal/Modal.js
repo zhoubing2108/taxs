@@ -22,8 +22,8 @@ class Approval extends Component {
               {
                 getFieldDecorator('submit_to_save')(
                   <RadioGroup name='radiogroup'>
-                    <Radio value='ok' style={{ marginRight: 15 }}>不通过</Radio>
-                    <Radio value='back'>通过</Radio>
+                    <Radio value='back' style={{ marginRight: 15 }}>不通过</Radio>
+                    <Radio value='ok'>通过</Radio>
                   </RadioGroup>
                 )
               }
@@ -51,9 +51,9 @@ class Approval extends Component {
   handleOk = () => {
     let { props, wf_fid } = this.props;
     let {info} = props;
-    let { flow_id, run_id, flow_process, run_process, nexprocess, submit_to_save } = info;
+    let { flow_id, run_id, flow_process, run_process, nexprocess } = info;
     let values = this.props.form.getFieldsValue();
-    let {check_con} = values;
+    let { check_con, submit_to_save} = values;
     request({
       url:'/api/v1/flow/check/pass',
       method:'POST',

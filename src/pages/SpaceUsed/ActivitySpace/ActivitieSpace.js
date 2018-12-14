@@ -6,6 +6,7 @@ import request from '../../../helpers/request';
 import Add from './modal/add';
 import { withRouter } from 'react-router-dom';
 import nextStore from './ActProgress/store';
+import exportFile from '../../../helpers/export-file';
 
 const { RangePicker } = DatePicker;
 const _status = {
@@ -65,7 +66,7 @@ class ActivitySpace extends Component {
             </Select>
             <span>申请人：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList} >查询</Button>
-            <Button type='primary' >导出</Button>
+            <Button type='primary' onClick={this.export} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }}><Option value={3}>全部</Option></Select>
@@ -79,6 +80,9 @@ class ActivitySpace extends Component {
         <Add props={addParams} />
       </Fragment>
     )
+  }
+  componentDidMount() {
+    this.fetchList();
   }
   fetchList = (e, page = 1, size = 10) => {
     let { department, time_begin, time_end, status, username, space } = store;
@@ -110,6 +114,20 @@ class ActivitySpace extends Component {
     let {history} = this.props;
     let id = record.id;
     history.push(`/space/actProgress/${id}`);
+  }
+  export = () => {
+    let { department, time_begin, time_end, status, username, space } = store;
+    exportFile({
+      url: '/api/v1/recreational/export',
+      data: {
+        department,
+        username,
+        status,
+        space,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+      }
+    })
   }
 }
 

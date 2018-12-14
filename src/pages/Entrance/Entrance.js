@@ -5,7 +5,8 @@ import store from './store';
 import request from '../../helpers/request';
 import Append from './modal/append';
 import { withRouter } from "react-router-dom";
-import nextStore from './Progress/store'
+import nextStore from './Progress/store';
+import exportFile from '../../helpers/export-file';
 
 
 
@@ -71,7 +72,7 @@ class Authority extends Component {
               <Option value={'全部'}>全部</Option></Select>
             <span>申请人：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList}>查询</Button>
-            <Button type='primary'>导出</Button>
+            <Button type='primary'onClick={()=>{this.export()}} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }}><Option value={3}>全部</Option></Select>
@@ -85,6 +86,9 @@ class Authority extends Component {
         <Append props={addParams} />
       </Fragment>
     )
+  }
+  componentDidMount() {
+    this.fetchList();
   }
   fetchList = (e, page = 1, size = 10) => {
     let { department, time_begin, time_end, status, username, access } = store;
@@ -115,6 +119,20 @@ class Authority extends Component {
     let { history } = this.props;
     let id = record.id;
     history.push(`/entrance/progress/${id}`);
+  }
+  export = () => {
+    let { department, time_begin, time_end, status, username, access } = store;
+    exportFile({
+      url: '/api/v1/access/export',
+      data: {
+        department,
+        username,
+        access,
+        status,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+      }
+    })
   }
 }
 

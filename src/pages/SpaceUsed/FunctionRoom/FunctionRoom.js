@@ -2,8 +2,11 @@ import React, { Component, Fragment } from 'react';
 import { Input, Table, Select, Button, DatePicker, Card } from 'antd';
 import { observer } from 'mobx-react';
 import request from '../../../helpers/request';
-import store from './store'
-import Add from './modal/add'
+import store from './store';
+import nextStore from './fnRoomPg/store';
+import Add from './modal/add';
+import {withRouter} from 'react-router-dom';
+import exportFile from '../../../helpers/export-file';
 
 const { RangePicker } = DatePicker;
 const _status = {
@@ -12,44 +15,44 @@ const _status = {
   '1': '流程中',
   '2': '通过'
 }
-const columns = [
-  {
-    title: '日期',
-    dataIndex: 'create_time'
-  },
-  {
-    title: '申请人',
-    dataIndex: 'username'
-  },
-  {
-    title: '使用单位',
-    dataIndex: 'unit'
-  },
-  {
-    title: '使用时间',
-    dataIndex: 'time_begin'
-  },
-  {
-    title: '申请使用事由',
-    dataIndex: 'reason'
-  },
-  {
-    title: '场地名称',
-    dataIndex: 'space'
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    render: (text) => (<span>{_status[text]}</span>)
-  },
-  {
-    title: '操作',
-    render: (text, render, columns) => <a onClick={() => { return false }}>查看进度</a>
-  }
-]
 
 @observer
 class FunctionRoom extends Component {
+  columns = [
+    {
+      title: '日期',
+      dataIndex: 'create_time'
+    },
+    {
+      title: '申请人',
+      dataIndex: 'username'
+    },
+    {
+      title: '使用单位',
+      dataIndex: 'unit'
+    },
+    {
+      title: '使用时间',
+      dataIndex: 'time_begin'
+    },
+    {
+      title: '申请使用事由',
+      dataIndex: 'reason'
+    },
+    {
+      title: '场地名称',
+      dataIndex: 'space'
+    },
+    {
+      title: '状态',
+      dataIndex: 'status',
+      render: (text) => (<span>{_status[text]}</span>)
+    },
+    {
+      title: '操作',
+      render: (text, record, columns) => <a onClick={() => { this.goDetail(record) }}>查看进度</a>
+    }
+  ]
   render() {
     let { department, dataSource, time_begin, time_end, status, space, addParams } = store;
     return (
@@ -62,7 +65,7 @@ class FunctionRoom extends Component {
               <Option value={'全部'}>全部</Option></Select>
             <span>申请人：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList} >查询</Button>
-            <Button type='primary' >导出</Button>
+            <Button type='primary' onClick={this.export} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }}><Option value={3}>全部</Option></Select>
@@ -70,12 +73,15 @@ class FunctionRoom extends Component {
             <Button type='primary' onClick={()=>{store.addParams.AddVisible = true}} >新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <Table columns={columns} dataSource={dataSource} rowKey='id' bordered > </Table>
+            <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered > </Table>
           </div>
         </Card>
         <Add props={addParams} />
       </Fragment>
     )
+  }
+  componentDidMount() {
+    this.fetchList();
   }
   fetchList = (e, page = 1, size = 10) => {
     let { department, time_begin, time_end, status, username, space } = store;
@@ -100,6 +106,27 @@ class FunctionRoom extends Component {
       }
     })
   }
+  goDetail = (record) => {
+    nextStore.dataSource.clear();
+    nextStore.dataSource.push(record);
+    let {history} = this.props;
+    let id = record.id;
+    history.push(`/space/actProgress/${id}`);
+  }
+  export = () => {
+    let { department, time_begin, time_end, status, username, space } = store;
+    exportFile({
+      url: '/api/v1/multi/export',
+      data: {
+        department,
+        username,
+        status,
+        space,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+      }
+    })
+  }
 }
 
-export default FunctionRoom
+export default withRouter(FunctionRoom)

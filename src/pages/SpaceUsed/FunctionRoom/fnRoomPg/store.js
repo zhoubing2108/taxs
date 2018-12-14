@@ -9,8 +9,7 @@ class Store {
   @observable info = {
     preprocess: {},
     log: [],
-    proDataSource: [],
-    meals: []
+    proDataSource: []
   };
   @observable dataSource = [];
 }

@@ -4,11 +4,21 @@ import store from './store';
 import Append from './append/append';
 import Modify from './modify/modify';
 import { observer } from 'mobx-react';
-import request from '../../helpers/request'
+import request from '../../helpers/request';
+import exportFile from '../../helpers/export-file';
 
 const Option = Select.Option;
 const RangePicker = DatePicker.RangePicker;
 
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  },
+  getCheckboxProps: record => ({
+    disabled: record.name === 'Disabled User', // Column configuration not to be checked
+    name: record.name,
+  }),
+};
 
 
 @observer
@@ -74,7 +84,7 @@ class Meeting extends Component {
             会议主题: <Input style={{ width: 120, marginLeft: 5 }} placeholder='全部' onChange={(e) => { store.theme = e.target.value }} />
           </span>
           <Button type='primary' style={{ marginLeft: 10 }} onClick={this.fetchList}>查询</Button>
-          <Button type='primary' style={{ float: 'right',marginLeft: 5 }}>导出</Button>
+          <Button type='primary' style={{ float: 'right', marginLeft: 5 }}onClick={()=>{this.export()}} >导出</Button>
           <Button type='primary' style={{ float: 'right', marginLeft: 5 }} onClick={() => { store.addParams.AddVisible = true }} > 新增</Button>
           <div style={{ marginTop: 15 }}>
             <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered ></Table>
@@ -84,6 +94,9 @@ class Meeting extends Component {
         <Modify props={modifyParams} editItem={editItem} />
       </Fragment>
     )
+  }
+  componentDidMount() {
+    this.fetchList();
   }
   fetchList = (e, page = 1, size = 10) => {
     let { address, theme, time_begin, time_end } = store;
@@ -110,7 +123,7 @@ class Meeting extends Component {
     store.modifyParams.ModifyVisible = true;
     store.editItem = item;
   }
-  deleteItem = (record)=>{
+  deleteItem = (record) => {
     let { id } = record;
     request({
       url: '/api/v1/meeting/delete',
@@ -122,7 +135,20 @@ class Meeting extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        
+
+      }
+    })
+  }
+  export = () => {
+    let { address, theme, time_begin, time_end } = store;
+    console.log(address, theme, time_begin, time_end );
+    exportFile({
+      url: '/api/v1/meeting/export',
+      data: {
+        address, 
+        theme,
+         time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
       }
     })
   }

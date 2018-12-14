@@ -4,6 +4,8 @@ import { observer } from 'mobx-react';
 import store from './store';
 import Activity from './ActivityModal/ActivityModal';
 import {withRouter} from 'react-router-dom';
+import request from '../../../../helpers/request';
+import moment from 'moment';
 
 const _status = {
   '-1': '不通过',
@@ -15,11 +17,11 @@ const _status = {
 const proColumns = [
   {
     title: '序号',
-    dataIndex: 'num'
+    dataIndex: 'id',
   },
   {
     title: '处理人',
-    dataIndex: 'handler'
+    dataIndex: 'user'
   },
   {
     title: '处理步骤',
@@ -27,7 +29,8 @@ const proColumns = [
   },
   {
     title: '送达时间',
-    dataIndex: 'arriveTime'
+    dataIndex: 'dateline',
+    render: (text) => (<span>{moment(text * 1000).format('YYYY-MM-DD HH:mm:ss')}</span>)
   },
   {
     title: '处理时间',
@@ -39,7 +42,7 @@ const proColumns = [
   },
   {
     title: '处理意见',
-    dataIndex: 'advices'
+    dataIndex: 'content'
   }
 ]
 
@@ -77,27 +80,32 @@ class ActProgress extends Component {
     },
   ]
   render() {
-    let { params, dataSource } = store;
+    let { params, dataSource, info,data } = store;
+    let {proDataSource} = info;
     let { history } = this.props;
+    let { id } = this.props.match.params;
+    let disabled = data.check === 1;
     return (
       <Fragment>
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
             <Button style={{ marginRight: 15 }} onClick={()=>{history.goBack()}} >返回</Button>
-            <Button type='primary' onClick={() => store.params.visible = true}>审批</Button>
+            <Button type='primary' onClick={() => store.params.visible = true} disabled={!disabled} >审批</Button>
           </div>
           <div style={{ marginBottom: 60 }}>
             <Table title={() => <div style={{ textAlign: 'center' }}>基本信息</div>} dataSource={dataSource} columns={this.columns} bordered ></Table>
           </div>
           <div>
-            <Table title={() => <div style={{ textAlign: 'center' }}>申请进度</div>} columns={proColumns} bordered ></Table>
+            <Table title={() => <div style={{ textAlign: 'center' }}>申请进度</div>} dataSource={proDataSource} columns={proColumns} bordered ></Table>
           </div>
         </Card>
-        <Activity params={params} />
+        <Activity params={params} wf_fid={id} props={data} />
       </Fragment>
     )
   }
-
+  componentDidMount(){
+    this.fetchList();
+  }
   fetchList = () => {
     let { id } = this.props.match.params;
     var pro = [];
@@ -105,7 +113,7 @@ class ActProgress extends Component {
       url: '/api/v1/flow/info',
       method: 'GET',
       data: {
-        wf_type: 'official_recept_t',
+        wf_type: 'space_recreational_t',
         wf_fid: id
       },
       beforeSend: (xml) => {

@@ -2,17 +2,18 @@ import React, { Component, Fragment } from 'react';
 import { Modal, Radio, Input, Form } from 'antd';
 import { observer } from 'mobx-react';
 import store from '../store';
-import request from '../../../../../helpers/request'
+import request from '../../../../helpers/request'
+
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
 
 @observer
-class Activity extends Component {
+class Approval extends Component {
 
   render() {
     let { params, form } = this.props;
-    let { visible, loading } = params;
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
+    let { visible, loading } = params
     return (
       <Fragment>
         <Modal title='审批' visible={visible} onCancel={this.handleCancel} onOk={this.handleOk} okText='确定' cancelText='取消'>
@@ -20,9 +21,9 @@ class Activity extends Component {
             <div style={{ textAlign: 'center' }}>
               {
                 getFieldDecorator('submit_to_save')(
-                  <RadioGroup name='radiogroup'>
-                    <Radio value='ok' style={{ marginRight: 15 }}>不通过</Radio>
-                    <Radio value='back'>通过</Radio>
+                  <RadioGroup name='submit_to_save'>
+                    <Radio value='back' style={{ marginRight: 15 }}>不通过</Radio>
+                    <Radio value='ok'>通过</Radio>
                   </RadioGroup>
                 )
               }
@@ -40,41 +41,44 @@ class Activity extends Component {
       </Fragment>
     )
   }
+
+
+
   handleCancel = () => {
     store.params.visible = false
   }
 
   handleOk = () => {
     let { props, wf_fid } = this.props;
-    let { info } = props;
-    let { flow_id, run_id, flow_process, run_process, nexprocess, submit_to_save } = info;
+    let {info} = props;
+    let {flow_id, run_id,flow_process,run_process, nexprocess } = info;
     let values = this.props.form.getFieldsValue();
-    let { check_con } = values;
+    let { check_con, submit_to_save} = values;
     request({
-      url: '/api/v1/flow/check/pass',
-      method: 'POST',
-      data: {
+      url:'/api/v1/flow/check/pass',
+      method:'POST',
+      data:{
         check_con,
         flow_id,
         run_id,
         flow_process,
         run_process,
         npid: nexprocess.id,
-        submit_to_save,
         wf_fid,
-        wf_type: 'space_recreational_t'
+        submit_to_save,
+        wf_type:'meetingplace_t'
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: () => {
-        store.params.visible = false
+        store.params.visible = false        
       },
-      complete: (res) => {
+      complete: (res)=> {
         console.log(res);
       }
     })
   }
 }
 
-export default Form.create()(Activity)
+export default Form.create()(Approval)

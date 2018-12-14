@@ -6,6 +6,7 @@ import request from '../../helpers/request';
 import {observer} from 'mobx-react';
 import Add from './modal/add'; 
 import { withRouter } from "react-router-dom";
+import exportFile from '../../helpers/export-file';
 
 
 const { RangePicker } = DatePicker;
@@ -87,7 +88,7 @@ class Diningaround extends Component {
             </Select>
             <span>申请人：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList}>查询</Button>
-            <Button type='primary' >导出</Button>
+            <Button type='primary' onClick={this.export} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }} onChange={(v) => { store.status = v }}><Option value={3}>全部</Option></Select>
@@ -100,6 +101,9 @@ class Diningaround extends Component {
         <Add props={addParams}/>
       </Fragment>
     )
+  }
+  componentDidMount() {
+    this.fetchList();
   }
   fetchList = (e, page = 1, size = 10) => {
     let { department, username, time_begin, time_end, status, meal, meal_type} = store;
@@ -132,6 +136,20 @@ class Diningaround extends Component {
     let { history } = this.props;
     let id = record.id;
     history.push(`/reception/diningProgress/${id}`);
+  }
+  export = () => {
+    let { department, time_begin, time_end, status, username, meal_type } = store;
+    exportFile({
+      url: '/api/v1/official/export',
+      data: {
+        department,
+        username,
+        status,
+        meal_type,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+      }
+    })
   }
 }
 

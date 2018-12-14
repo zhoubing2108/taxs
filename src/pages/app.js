@@ -46,9 +46,11 @@ class App extends Component {
                   <Route path='/space/fnRoom' render={() => <WrapperComponent Comp={import('./SpaceUsed/FunctionRoom/FunctionRoom')} globalStore={globalStore} name='FnRoom' />} />
                   <Route path='/space/fnProgress/:id' render={() => <WrapperComponent Comp={import('./SpaceUsed/FunctionRoom/fnRoomPg/Progress')} globalStore={globalStore} name='FnProgress' />} />
                   <Route path='/education/meetingplace' render={() => <WrapperComponent Comp={import('./Education/Meetingplace')} globalStore={globalStore} name='Meetingplace' />} />
+                  <Route path='/education/progress/:id' render={() => <WrapperComponent Comp={import('./Education/Progress/Progress')} globalStore={globalStore} name='Meetingplace' />} />
                   <Route path='/reception/diningaround' render={() => <WrapperComponent Comp={import('./officialReceptions/Diningaround')}  globalStore={globalStore} name='DiningAround' />} />
                   <Route path='/reception/diningProgress/:id' render={() => <WrapperComponent Comp={import('./officialReceptions/Progress/Progress')} globalStore={globalStore} name='DiningProgress' />} />
                   <Route path='/meetingReception/' render={() => <WrapperComponent Comp={import('./MeetingReceptions/meetingReceptions')} globalStore={globalStore} name='MeetingReception' />} />
+                  <Route path='/meetingProgress/:id' render={() => <WrapperComponent Comp={import('./MeetingReceptions/Progress/Progress')} globalStore={globalStore} name='MeetingReceptionProgress' />} />
                   <Route path='/useCar/' render={() => <WrapperComponent Comp={import('./useCar/useCar')} globalStore={globalStore} name='useCar' />} />
                   <Route path='/login' render={(history) => <WrapperComponent history={history} globalStore={globalStore} Comp={import('./Login/login')} name='login' />} />
                   <Route path='/' render={() => <WrapperComponent Comp={import('./Meetings/meeting')} globalStore={globalStore} />} />

@@ -9,6 +9,9 @@ class Store {
   @observable time_begin = moment().startOf('month');
   @observable time_end = moment();
   @observable dataSource = [];
+  @observable addParams = {
+    AddVisible: false,
+  }
 }
 
 export default new Store()
