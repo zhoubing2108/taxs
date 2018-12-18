@@ -17,6 +17,10 @@ const config = {
   module: {
     rules: [
       {
+        test:/\.(png|jpg|jpeg|gif|svg)$/,
+        use: ['url-loader']
+      },
+      {
         test: /\.css$/,
         exclude: path.join(__dirname, 'node_modules'),
         use: [
