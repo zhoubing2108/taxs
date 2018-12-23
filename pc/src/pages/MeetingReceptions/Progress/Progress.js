@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Table, Card, Steps } from 'antd';
+import { Button, Table, Card,Modal } from 'antd';
 import { observer } from 'mobx-react';
 import Approval from './ApprovalModal/Modal';
 import request from '../../../helpers/request';
@@ -7,7 +7,7 @@ import moment from 'moment';
 import { withRouter } from "react-router-dom";
 import store from './store';
 
-
+const confirm = Modal.confirm;
 const _status = {
   '-1': '不通过',
   '0': '保存中',
@@ -160,7 +160,7 @@ class MeetingPlaceProgress extends Component {
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
             <Button style={{ marginRight: 15 }} onClick={() => { history.goBack() }}>返回</Button>
-            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>撤销</Button> : null}
+            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.showDeleteConfirm() }}>撤销</Button> : null}
             {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
@@ -217,6 +217,46 @@ class MeetingPlaceProgress extends Component {
         store.users = res.users;
       }
     })
+  }
+  cancel = () => {
+    let { id } = this.props.match.params;
+    let { data } = store;
+    let run_id = data.info.run_id
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POSt',
+      data: {
+        wf_fid: id,
+        check_con: '',
+        flow_id: '',
+        run_id,
+        flow_process: '',
+        run_process: '',
+        npid: '',
+        submit_to_save: 'cancel',
+        wf_type: 'meeting_recept_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+      }
+    })
+  }
+  showDeleteConfirm = () => {
+    confirm({
+      title: '是否撤销该申请',
+      content: '撤销后将不可撤回',
+      okText: '是',
+      okType: 'danger',
+      cancelText: '否',
+      onOk: () => {
+        this.cancel();
+      },
+      onCancel: () => {
+        console.log('Cancel');
+      },
+    });
   }
 }
 

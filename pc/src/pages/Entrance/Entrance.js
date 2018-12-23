@@ -154,29 +154,7 @@ class Authority extends Component {
       }
     })
   }
-  cancel = (id) => {
-    request({
-      url: '/api/v1/flow/check/pass',
-      method: 'POSt',
-      data: {
-        wf_fid: id,
-        check_con: '',
-        flow_id: '',
-        run_id: '',
-        flow_process: '',
-        run_process: '',
-        npid: '',
-        submit_to_save: 'cancel',
-        wf_type: 'access_control_t'
-      },
-      beforeSend: (xml) => {
-        xml.setRequestHeader('token', localStorage.getItem('token'))
-      },
-      success: (res) => {
-        console.log(res);
-      }
-    })
-  }
+ 
 }
 
 export default withRouter(Authority)

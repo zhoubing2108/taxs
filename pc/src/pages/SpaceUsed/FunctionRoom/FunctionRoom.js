@@ -114,7 +114,7 @@ class FunctionRoom extends Component {
     nextStore.dataSource.push(record);
     let {history} = this.props;
     let id = record.id;
-    history.push(`/space/actProgress/${id}`);
+    history.push(`/space/fnProgress/${id}`);
   }
   export = () => {
     let { department, time_begin, time_end, status, username, space } = store;

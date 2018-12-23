@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Table, Card } from 'antd';
+import { Button, Table, Card, Modal } from 'antd';
 import { observer } from 'mobx-react';
 import store from './store';
 import Activity from './ActivityModal/ActivityModal';
@@ -13,6 +13,7 @@ const _status = {
   '1': '流程中',
   '2': '通过'
 }
+const confirm = Modal.confirm;
 
 const proColumns = [
   {
@@ -91,7 +92,7 @@ class ActProgress extends Component {
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
             <Button style={{ marginRight: 15 }} onClick={()=>{history.goBack()}} >返回</Button>
-            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>撤销</Button> : null}
+            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.showDeleteConfirm() }}>撤销</Button> : null}
             {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
@@ -136,6 +137,46 @@ class ActProgress extends Component {
       complete: () => {
       }
     })
+  }
+  cancel = () => {
+    let { id } = this.props.match.params;
+    let { data } = store;
+    let run_id = data.info.run_id
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POSt',
+      data: {
+        wf_fid: id,
+        check_con: '',
+        flow_id: '',
+        run_id,
+        flow_process: '',
+        run_process: '',
+        npid: '',
+        submit_to_save: 'cancel',
+        wf_type: 'space_recreational_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+      }
+    })
+  }
+  showDeleteConfirm = () => {
+    confirm({
+      title: '是否撤销该申请',
+      content: '撤销后将不可撤回',
+      okText: '是',
+      okType: 'danger',
+      cancelText: '否',
+      onOk: () => {
+        this.cancel();
+      },
+      onCancel: () => {
+        console.log('Cancel');
+      },
+    });
   }
 }
 
