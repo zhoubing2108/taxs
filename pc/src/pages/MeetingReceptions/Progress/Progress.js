@@ -18,9 +18,11 @@ const _status = {
 @observer
 class MeetingPlaceProgress extends Component {
   columns = [
-    {
+    { 
+      width:200,
       title: '日期',
-      dataIndex: 'apply_date'
+      dataIndex: 'create_time',
+      render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm')}</span>
     },
     {
       title: '申请人',
@@ -29,6 +31,14 @@ class MeetingPlaceProgress extends Component {
     {
       title: '部门',
       dataIndex: 'department'
+    }, 
+    {
+      title: '公函字号',
+      dataIndex: 'letter_size'
+    },
+    {
+      title: '公函标题',
+      dataIndex: 'letter_title'
     },
     {
       title: '来访单位',
@@ -42,17 +52,6 @@ class MeetingPlaceProgress extends Component {
       title: '级别',
       dataIndex: 'grade'
     },
-    {
-      title: '公务项目',
-      dataIndex: 'project'
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      render: (text) => (<span>{_status[text]}</span>)
-    },
-  ]
-  detailColumns = [
     {
       title: '厅级人数',
       dataIndex: 'departmental',
@@ -69,50 +68,48 @@ class MeetingPlaceProgress extends Component {
       render: (text) => (<span>{text}人</span>)
     },
     {
-      title: '男',
-      dataIndex: 'male',
-      render: (text) => (<span>{text}人</span>)
-    },
-    {
-      title: '女',
-      dataIndex: 'female',
-      render: (text) => (<span>{text}人</span>)
-    },
-    {
       title: '会议人数',
       dataIndex: 'count',
       render: (text) => (<span>{text}人</span>)
     },
     {
-      title: '使用会场',
-      dataIndex: 'meeting_place'
+      title: '状态',
+      dataIndex: 'status',
+      render: (text) => (<span>{_status[text]}</span>)
+    },
+  ]
+  detailColumns = [
+    
+    {
+      title: '单位',
+      dataIndex: 'unit'
     },
     {
-      title: '会议时间',
-      dataIndex: 'official_time'
+      title: '姓名',
+      dataIndex: 'name'
+    },
+    {
+      title: '职务',
+      dataIndex: 'post'
     },
   ];
   meal_columns = [
     {
-      title: '就餐日期',
-      dataIndex: 'meal_date'
+      title: '时间',
+      dataIndex: 'recept_time'
     },
     {
-      title: '餐次',
-      dataIndex: 'meal_type'
+      title: '项目内容',
+      dataIndex: 'content'
     },
     {
-      title: '就餐人数',
-      dataIndex: 'count'
-    },
-    {
-      title: '就餐地点',
+      title: '地点',
       dataIndex: 'address'
     },
     {
       title: '费用',
       dataIndex: 'money'
-    }
+    },
   ];
   proColumns = [
     {
@@ -151,22 +148,25 @@ class MeetingPlaceProgress extends Component {
     this.getDetail();
   }
   render() {
-    let { params, data, dataSource, info } = store;
+    let { params, data, dataSource, info,users,detail } = store;
     let { id } = this.props.match.params;
-    let { proDataSource, mealData } = info;
-    let disabled = data.check === 1;
+    let { proDataSource, } = info;
+    let _check = data.check === 1;
+    let _cancel = data.cancel === 1;
     let { history } = this.props;
+    let accompany = dataSource[0].accompany;
     return (
       <Fragment>
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
             <Button style={{ marginRight: 15 }} onClick={() => { history.goBack() }}>返回</Button>
-            <Button type='primary' onClick={() => store.params.visible = true} disabled={!disabled}>审批</Button>
+            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>撤销</Button> : null}
+            {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
-            <Table style={{ marginBottom: -2 }} title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} rowKey='id' columns={this.columns} dataSource={dataSource} bordered pagination={false} ></Table>
-            <Table style={{ marginBottom: -2 }} title={() => <div style={{ textAlign: 'center', marginBottom: -10, marginTop: -10 }}>接待明细</div>} rowKey='id' columns={this.detailColumns} dataSource={dataSource} bordered pagination={false} ></Table>
-            <Table title={() => <div style={{ textAlign: 'center', marginBottom: -10, marginTop: -10 }}>就餐信息</div>} rowKey='id' columns={this.meal_columns} dataSource={mealData} bordered pagination={false} ></Table>
+            <Table  title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} rowKey='id' columns={this.columns} dataSource={dataSource} bordered pagination={false} ></Table>
+            <Table footer={() => (<span>陪同人员名单:{accompany}</span> )} rowKey='name' columns={this.detailColumns} dataSource={users} bordered pagination={false} ></Table>
+            <Table rowKey='recept_time' columns={this.meal_columns} dataSource={detail} bordered pagination={false} ></Table>
           </div>
           <div>
             <Table title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>申请进度</div>} rowKey='id' columns={this.proColumns} dataSource={proDataSource} pagination={false} bordered ></Table>
@@ -213,7 +213,8 @@ class MeetingPlaceProgress extends Component {
       },
       success: (res) => {
         console.log(res);
-        store.info.mealData = res.meals;
+        store.detail = res.detail;
+        store.users = res.users;
       }
     })
   }

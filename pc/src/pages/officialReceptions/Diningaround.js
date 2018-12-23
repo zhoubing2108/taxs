@@ -72,11 +72,11 @@ class Diningaround extends Component {
     },
     {
       title: '操作',
-      render: (text, record, index) => <a onClick={() => { this.goDetail(record) }}>查看进度</a>
+      render: (text, record, columns) => (<span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>)
     }
   ]
   render() {
-    let { department, username, time_begin, time_end, status, meal, meal_type, dataSource, addParams } = store;
+    let { department, username, time_begin, time_end, status, meal, meal_type, dataSource, addParams,total,current } = store;
     return (
       <Fragment>
         <Card>
@@ -95,7 +95,7 @@ class Diningaround extends Component {
             <Button type='primary' onClick={() => {store.addParams.AddVisible = true }} >新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <Table columns={this.columns} dataSource={dataSource} bordered rowKey='id' ></Table>
+            <Table columns={this.columns} dataSource={dataSource} bordered rowKey='id' pagination={{current:current,onChange:(e)=>{this.fetchList(e)},total:total,  }} ></Table>
           </div>
         </Card>
         <Add props={addParams}/>
@@ -103,9 +103,9 @@ class Diningaround extends Component {
     )
   }
   componentDidMount() {
-    this.fetchList();
+    this.fetchList(1);
   }
-  fetchList = (e, page = 1, size = 10) => {
+  fetchList = (page) => {
     let { department, username, time_begin, time_end, status, meal, meal_type} = store;
     request({
       url: '/api/v1/official/list',
@@ -118,14 +118,17 @@ class Diningaround extends Component {
         meal_type,
         time_begin: time_begin.format('YYYY-MM-DD'),
         time_end: time_end.format('YYYY-MM-DD'),
-        page,
-        size
+        page:page,
+        size:10
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
         store.dataSource = res.data;
+        let total = Number(res.total);
+        store.total = total;
+        store.current = res.current_page
       }
     })
   }
@@ -150,6 +153,31 @@ class Diningaround extends Component {
         time_end: time_end.format('YYYY-MM-DD'),
       }
     })
+  }
+  cancel = (id) => {
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POSt',
+      data: {
+        wf_fid: id,
+        check_con: '',
+        flow_id: '',
+        run_id: '',
+        flow_process: '',
+        run_process: '',
+        npid: '',
+        submit_to_save: 'cancel',
+        wf_type: 'official_recept_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        console.log(res);
+      }
+
+    })
+
   }
 }
 

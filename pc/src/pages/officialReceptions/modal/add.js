@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Form, Button, Input, TimePicker, DatePicker, Select, Radio, Checkbox,InputNumber } from 'antd';
+import { Modal, Form, Button, Input, TimePicker, DatePicker, Select, Radio, Checkbox, InputNumber } from 'antd';
 import moment from 'moment';
 import store from '../store';
 import { observer } from 'mobx-react';
@@ -23,7 +23,7 @@ class Add extends Component {
         onCancel={() => { store.addParams.AddVisible = false }}
         onOk={() => { this.add() }}
         width='600px'
-        title='文体活动场地申请'
+        title='围餐预定'
       >
         <Form>
           <FormItem {...commonFormProps} label='就餐日期'>
@@ -65,13 +65,19 @@ class Add extends Component {
           <FormItem {...commonFormProps} label='餐饮人数'>
             {
               getFieldDecorator('member')(
-                <InputNumber placeholder='请输入人数' style={{ width: 130 }} />
+                <InputNumber placeholder='人数' style={{ width: 80 }} />
               )
             }
-            <span style={{ marginLeft: 50 }}>桌数：</span>
+            <span style={{ marginLeft: 20 }}>陪同人数：</span>
             {
               getFieldDecorator('table_number')(
-                <InputNumber placeholder='请输入桌数' style={{ width: 190 }} />
+                <InputNumber placeholder='人数' style={{ width: 80 }} />
+              )
+            }
+            <span style={{ marginLeft: 20 }}>桌数：</span>
+            {
+              getFieldDecorator('table_number')(
+                <InputNumber placeholder='请输入桌数' style={{ width: 100 }} />
               )
             }
           </FormItem>
@@ -89,21 +95,30 @@ class Add extends Component {
           <FormItem {...commonFormProps} label='早餐'>
             {
               getFieldDecorator('breakfast')(
-                <Input placeholder='请输入菜式,多道菜式请用、隔开' />
+                <RadioGroup>
+                  <Radio value='自助餐'>自助餐</Radio>
+                  <Radio value='围餐'>围餐</Radio>
+                </RadioGroup>
               )
             }
           </FormItem>
           <FormItem {...commonFormProps} label='午餐'>
             {
               getFieldDecorator('lunch')(
-                <Input placeholder='请输入菜式,多道菜式请用、隔开' />
+                <RadioGroup>
+                  <Radio value='自助餐'>自助餐</Radio>
+                  <Radio value='围餐'>围餐</Radio>
+                </RadioGroup>
               )
             }
           </FormItem>
           <FormItem {...commonFormProps} label='晚餐'>
             {
               getFieldDecorator('dinner')(
-                <Input placeholder='请输入菜式,多道菜式请用、隔开' />
+                <RadioGroup>
+                  <Radio value='自助餐'>自助餐</Radio>
+                  <Radio value='围餐'>围餐</Radio>
+                </RadioGroup>
               )
             }
           </FormItem>
@@ -137,6 +152,35 @@ class Add extends Component {
       },
       success: (res) => {
         store.addParams.AddVisible = false;
+        this.props.form.resetFields();
+        this.fetchList(1)
+      }
+    })
+  }
+  fetchList = (page) => {
+    let { department, username, time_begin, time_end, status, meal, meal_type } = store;
+    request({
+      url: '/api/v1/official/list',
+      method: 'GET',
+      data: {
+        department,
+        username,
+        status,
+        meal,
+        meal_type,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+        page: page,
+        size: 10
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.dataSource = res.data;
+        let total = Number(res.total);
+        store.total = total;
+        store.current = res.current_page
       }
     })
   }

@@ -12,6 +12,7 @@ const format = 'HH:mm';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const CheckboxGroup = Checkbox.Group;
+const spaceItem = ['多功能演播室','荷塘月色露台','职工书屋']
 
 @observer
 class Add extends Component {
@@ -24,7 +25,7 @@ class Add extends Component {
         onCancel={() => { store.addParams.AddVisible = false }}
         onOk={() => { this.add() }}
         width='600px'
-        title='功能室申请'
+        title='多媒体室申请'
       >
         <Form>
           <FormItem {...commonFormProps} label='申请单位'>
@@ -36,7 +37,10 @@ class Add extends Component {
           <FormItem {...commonFormProps} label='场地名称'>
             {
               getFieldDecorator('space')(
-               <Input placeholder='请输入场地名称'/>)
+               <Select style={{width:250}} placeholder='请选择场地'>
+                 {spaceItem.map( e => <Option key={e} value={e}>{e}</Option> )}
+               </Select>
+               )
             }
           </FormItem>
           <FormItem {...commonFormProps} label='开始使用时间'>
@@ -80,6 +84,32 @@ class Add extends Component {
       },
       success: (res) => {
         store.addParams.AddVisible = false;
+        this.fetchList(1)
+      }
+    })
+  }
+  fetchList = (page) => {
+    let { department, time_begin, time_end, status, username, space } = store;
+    request({
+      url: '/api/v1/multi/list',
+      method: 'GET',
+      data: {
+        department,
+        username,
+        status,
+        space,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+        page,
+        size: 10
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.dataSource = res.data;
+        store.current = res.current;
+        store.total = res.total;
       }
     })
   }

@@ -56,13 +56,14 @@ function request({ url, method = 'POST', dataType = 'json', data = {}, beforeSen
 			}else if(xml.status === 401){
 				let data = JSON.parse(xml.responseText);
 				let msg = data.msg;
+				if (msg == 'Token已过期或无效Token') { localStorage.removeItem('token');history.push('/login')}
 				alert(msg)
 			} else {
 				alert('请求遇到了问题，请稍后再尝试');
-				fail();
+				fail(data);
 			}
 		}
-		complete();
+		complete(data);
 	}
 };
 

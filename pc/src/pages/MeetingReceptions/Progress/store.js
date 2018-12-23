@@ -7,11 +7,12 @@ class Store {
   }
   @observable dataSource = [];
   @observable data = {};
+  @observable detail = [];
+  @observable users = [];
   @observable info = {
     preprocess: {},
     log: [],
     proDataSource: [],
-    mealData: [],
   };
 }
 

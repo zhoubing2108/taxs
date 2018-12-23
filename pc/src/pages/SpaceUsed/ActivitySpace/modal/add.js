@@ -74,7 +74,7 @@ class Add extends Component {
           </FormItem>
           <FormItem {...commonFormProps} label='使用人数'>
             {
-              getFieldDecorator('user_count')(<InputNumber placeholder='请输入使用人数' />)
+              getFieldDecorator('user_count')(<InputNumber placeholder='请输入人数' style={{width:150}} />)
             }
           </FormItem>
         </Form>
@@ -101,6 +101,32 @@ class Add extends Component {
       },
       success: (res) => {
         store.addParams.AddVisible = false;
+        this.fetchList(1);
+      }
+    })
+  }
+  fetchList = (page) => {
+    let { department, time_begin, time_end, status, username, space } = store;
+    request({
+      url: '/api/v1/recreational/list',
+      method: 'GET',
+      data: {
+        department,
+        username,
+        status,
+        space,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+        page,
+        size: 10
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'));
+      },
+      success: (res) => {
+        store.dataSource = res.data;
+        store.current = res.current;
+        store.total = res.total;
       }
     })
   }

@@ -1,6 +1,14 @@
 .logo{
-  width: 160px;
-  font-size: 24px;
-  background: rgba(255,255,255,.2);
-  float: left;
+    float: left;
+    width: 64px;
+    height: 64px;
+    background: url("../imgs/logo.png") no-repeat center;
+    background-size: cover;
+    font-weight: bold;
+    font-size: 18px;
+    background-position: center;
+}
+.menuHeader{
+  background: rgba(0,0,0,0);
+  color: #ffffff
 }

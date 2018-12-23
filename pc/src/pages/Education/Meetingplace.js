@@ -4,7 +4,7 @@ import store from './store';
 import request from '../../helpers/request';
 import { observer } from 'mobx-react';
 import Add from './modal/add';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import nextStore from './Progress/store';
 import exportFile from '../../helpers/export-file'
 
@@ -23,35 +23,35 @@ class MeetingPlace extends Component {
   columns = [
     {
       title: '日期',
-      dataIndex: 'apply_date'
+      dataIndex: 'create_time'
     },
     {
-      title: '申请人',
+      title: '姓名',
       dataIndex: 'username'
     },
     {
-      title: '部门',
-      dataIndex: 'department'
+      title: '使用单位',
+      dataIndex: 'unit'
     },
     {
-      title: '公函字号',
-      dataIndex: 'letter_size'
+      title: '申请使用事由',
+      dataIndex: 'reason'
     },
     {
-      title: '公函标题',
-      dataIndex: 'letter_title'
+      title: '场地名称',
+      dataIndex: 'place'
     },
     {
-      title: '接待人数',
-      dataIndex: 'user_count'
+      title: '场地用途',
+      dataIndex: 'purpose'
     },
     {
-      title: '陪餐人数',
-      dataIndex: 'meals_count'
+      title: '开始时间',
+      dataIndex: 'time_begin'
     },
     {
-      title: '费用合计',
-      dataIndex: 'money'
+      title: '结束时间',
+      dataIndex: 'time_end'
     },
     {
       title: '状态',
@@ -60,11 +60,11 @@ class MeetingPlace extends Component {
     },
     {
       title: '操作',
-      render: (text, record, columns) => <a onClick={() => { this.goDetail(record) }}>查看进度</a>
+      render: (text, record, columns) => (<span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>)
     }
   ]
   render() {
-    let { department, dataSource, time_begin, time_end, status, username, addParams } = store;
+    let { department, dataSource, time_begin, time_end, status, username, addParams, total, current } = store;
     return (
       <Fragment>
         <Card>
@@ -79,10 +79,10 @@ class MeetingPlace extends Component {
           </div>
           <div style={{ marginTop: 10 }}>
             <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }} onChange={(v) => { store.status = v }} ><Option value={3}>全部</Option></Select>
-            <Button type='primary' onClick={() => {store.addParams.AddVisible = true}}>新增</Button>
+            <Button type='primary' onClick={() => { store.addParams.AddVisible = true }}>新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered ></Table>
+            <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }} ></Table>
           </div>
         </Card>
         <Add props={addParams} />
@@ -90,9 +90,10 @@ class MeetingPlace extends Component {
     )
   }
   componentDidMount() {
-    this.fetchList();
+    this.fetchList(1);
+    document.title = '教育培训预定';
   }
-  fetchList = (e, page = 1, size = 10) => {
+  fetchList = (page) => {
     let { time_begin, time_end, status, department, username } = store;
     request({
       url: '/api/v1/meeting/place/list',
@@ -104,13 +105,15 @@ class MeetingPlace extends Component {
         status,
         department,
         page,
-        size,
+        size: 10,
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
         store.dataSource = res.data;
+        store.total = res.total;
+        store.current = res.current_page;
       }
     })
   }
@@ -133,6 +136,31 @@ class MeetingPlace extends Component {
         time_end: time_end.format('YYYY-MM-DD'),
       }
     })
+  }
+  cancel = (id) => {
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POSt',
+      data: {
+        wf_fid: id,
+        check_con: '',
+        flow_id: '',
+        run_id: '',
+        flow_process: '',
+        run_process: '',
+        npid: '',
+        submit_to_save: 'cancel',
+        wf_type: 'meetingplace_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        console.log(res);
+      }
+
+    })
+
   }
 }
 

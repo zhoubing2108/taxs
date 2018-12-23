@@ -16,6 +16,8 @@ class Append extends Component {
   render() {
     let { props, form } = this.props;
     let { AddVisible } = props;
+    let { meetingRooms } = store;
+    meetingRooms.slice();
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
     return (
       <Modal visible={AddVisible}
@@ -31,9 +33,16 @@ class Append extends Component {
               getFieldDecorator('meeting_date')(<DatePicker />)
             }
           </FormItem>
+          <FormItem {...commonFormProps} label='主办部门'>
+            {
+              getFieldDecorator('host')(<Input placeholder='请输入主办部门' />)
+            }
+          </FormItem>
           <FormItem {...commonFormProps} label='签到地点'>
             {
-              getFieldDecorator('address')(<Input />)
+              getFieldDecorator('address')(<Select placeholder='请选择签到地点' onChange={e=>{this.findCard(e);console.log(store.selectedRoom) }}>
+                {meetingRooms.map(e => <Option key={e.id} value={e.name}>{e.name+' '+e.count + ' 功能：' + e.function}</Option>)}
+              </Select>)
             }
           </FormItem>
           <FormItem {...commonFormProps} label='签到开始时间'>
@@ -43,7 +52,7 @@ class Append extends Component {
           </FormItem>
           <FormItem {...commonFormProps} label='签到截止时间'>
             {
-              getFieldDecorator('time_end')(<DatePicker showTime format='YYYY-MM-DD HH:mm' placeholder='请选择日期和时间'  />)
+              getFieldDecorator('time_end')(<DatePicker showTime format='YYYY-MM-DD HH:mm' placeholder='请选择日期和时间' />)
             }
           </FormItem>
           <FormItem {...commonFormProps} label='会议开始时间'>
@@ -51,19 +60,29 @@ class Append extends Component {
               getFieldDecorator('meeting_begin')(<DatePicker showTime format='YYYY-MM-DD HH:mm' placeholder='请选择日期和时间' />)
             }
           </FormItem>
+          <FormItem {...commonFormProps} label='会议结束时间'>
+            {
+              getFieldDecorator('meeting_end')(<DatePicker showTime format='YYYY-MM-DD HH:mm' placeholder='请选择日期和时间' />)
+            }
+          </FormItem>
           <FormItem {...commonFormProps} label='会议主题'>
             {
-              getFieldDecorator('theme')(<Input />)
+              getFieldDecorator('theme')(<Input placeholder='请输入会议主题' />)
             }
           </FormItem>
           <FormItem {...commonFormProps} label='内容概要'>
             {
-              getFieldDecorator('outline')(<Input />)
+              getFieldDecorator('outline')(<Input placeholder='请输入内容概要' />)
             }
           </FormItem>
           <FormItem {...commonFormProps} label='备注'>
             {
               getFieldDecorator('remark')(<Input />)
+            }
+          </FormItem>
+          <FormItem {...commonFormProps} label='推送部门'>
+            {
+              getFieldDecorator('push')(<Input placeholder='请输入推送部门 多个用,逗号分隔' />)
             }
           </FormItem>
         </Form>
@@ -72,16 +91,22 @@ class Append extends Component {
   }
   addMeeting = () => {
     let values = this.props.form.getFieldsValue();
-    let { meeting_date, address, time_begin, time_end, meeting_begin, theme, outline, remark } = values;
+    let {selectedRoom} = store;
+    let {card} = selectedRoom;
+    let { meeting_date, address, time_begin, time_end, meeting_begin, theme, outline, remark, meeting_end, host, push } = values;
     request({
       url: '/api/v1/meeting/save',
       method: 'POST',
       data: {
         outline,
         remark,
+        host,
+        push,
         address,
         theme,
+        card,
         meeting_begin: meeting_begin.format(format),
+        meeting_end: meeting_end.format(format),
         meeting_date: meeting_date.format('YYYY-MM-DD'),
         time_begin: time_begin.format(format),
         time_end: time_end.format(format)
@@ -91,6 +116,38 @@ class Append extends Component {
       },
       success: (res) => {
         store.addParams.AddVisible = false;
+        this.props.form.resetFields();
+        this.fetchList(1);
+      }
+    })
+  }
+  findCard = (name) =>{
+    let { meetingRooms } = store;
+    meetingRooms.slice();
+    store.selectedRoom = meetingRooms.find((value)=>{return value.name === name});
+  }
+
+  fetchList = (page) => {
+    let { address, theme, time_begin, time_end, host } = store;
+    request({
+      url: '/api/v1/meeting/list',
+      method: 'GET',
+      data: {
+        address,
+        theme,
+        host,
+        time_begin: time_begin.format('YYYY-MM-DD'),
+        time_end: time_end.format('YYYY-MM-DD'),
+        page,
+        size: 10
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.dataSource = res.data;
+        store.current = res.current;
+        store.total = res.total;
       }
     })
   }

@@ -16,6 +16,11 @@ class Store {
     user_type: '干部职工',
     access: 'A'
   }
+  @observable total = 10;
+  @observable current = 1;
+  @observable disabled = false;
+  @observable checkInputVal = '科室门牌号'
+  @observable members = [];
 }
 
 export default new Store()

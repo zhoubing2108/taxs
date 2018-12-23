@@ -83,13 +83,15 @@ class fnProgress extends Component {
     let { proDataSource } = info;
     let { history } = this.props;
     let { id } = this.props.match.params;
-    let disabled = data.check === 1;
+    let _check = data.check === 1;
+    let _cancel = data.cancel === 1;
     return (
       <Fragment>
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
             <Button style={{ marginRight: 15 }} onClick={()=>{history.goBack()}} >返回</Button>
-            <Button type='primary' onClick={() => store.params.visible = true} disabled={!disabled} >审批</Button>
+            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>撤销</Button> : null}
+            {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
             <Table title={() => <div style={{ textAlign: 'center' }}>基本信息</div>} dataSource={dataSource} columns={this.columns} bordered ></Table>

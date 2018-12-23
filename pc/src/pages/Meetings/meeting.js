@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Table, DatePicker, Button, Input, Select, Card } from 'antd';
+import { Table, DatePicker, Button, Input, Select, Card, message } from 'antd';
 import store from './store';
 import Append from './append/append';
 import Modify from './modify/modify';
@@ -31,6 +31,10 @@ class Meeting extends Component {
     {
       title: '会议主题',
       dataIndex: 'theme'
+    },
+    {
+      title:'主办部门',
+      dataIndex:'host'
     },
     {
       title: '内容概要',
@@ -66,7 +70,7 @@ class Meeting extends Component {
     }
   ]
   render() {
-    let { addParams, modifyParams, address, time_begin, time_end, dataSource, editItem } = store;
+    let { addParams, modifyParams, address, time_begin, time_end, dataSource, editItem, total,current } = store;
     dataSource = dataSource.slice();
     return (
       <Fragment>
@@ -74,6 +78,7 @@ class Meeting extends Component {
           <span style={{ marginRight: 5 }}>
             日期:<RangePicker style={{ width: 240, marginLeft: 5 }} defaultValue={[time_begin, time_end]} onChange={(d, t) => { store.time_begin = t[0]; store.time_end = t[1]; }} />
           </span>
+          <span>部门：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='全部' onChange={(e) => { store.host= e.target.value }} placeholder='全部' />
           <span style={{ marginRight: 5 }}>
             签到地点:
           <Select defaultValue={address} style={{ width: 100, marginLeft: 5 }}>
@@ -83,11 +88,11 @@ class Meeting extends Component {
           <span>
             会议主题: <Input style={{ width: 120, marginLeft: 5 }} placeholder='全部' onChange={(e) => { store.theme = e.target.value }} />
           </span>
-          <Button type='primary' style={{ marginLeft: 10 }} onClick={this.fetchList}>查询</Button>
+          <Button type='primary' style={{ marginLeft: 10 }} onClick={()=>{this.fetchList(1) }}>查询</Button>
           <Button type='primary' style={{ float: 'right', marginLeft: 5 }}onClick={()=>{this.export()}} >导出</Button>
           <Button type='primary' style={{ float: 'right', marginLeft: 5 }} onClick={() => { store.addParams.AddVisible = true }} > 新增</Button>
           <div style={{ marginTop: 15 }}>
-            <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered ></Table>
+            <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }}></Table>
           </div>
         </Card>
         <Append props={addParams} />
@@ -96,26 +101,40 @@ class Meeting extends Component {
     )
   }
   componentDidMount() {
-    this.fetchList();
+    document.title = '会议签到';
+    this.fetchList(1);
+    this.getMeetingRoom();
   }
-  fetchList = (e, page = 1, size = 10) => {
-    let { address, theme, time_begin, time_end } = store;
+  getMeetingRoom = () => {
+    request({
+      url: '/api/v1/meeting/rooms',
+      method: 'GET',
+      success: (res) => {
+        store.meetingRooms = res;
+      }
+    })
+  }
+  fetchList = (page) => {
+    let { address, theme, time_begin, time_end,host } = store;
     request({
       url: '/api/v1/meeting/list',
       method: 'GET',
       data: {
         address,
         theme,
+        host,
         time_begin: time_begin.format('YYYY-MM-DD'),
         time_end: time_end.format('YYYY-MM-DD'),
         page,
-        size
+        size:10
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
         store.dataSource = res.data;
+        store.current = res.current_page;
+        store.total = res.total;
       }
     })
   }
@@ -135,7 +154,8 @@ class Meeting extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-
+        message.success('删除成功');
+        this.fetchList(1);
       }
     })
   }

@@ -57,11 +57,11 @@ class Authority extends Component {
     },
     {
       title: '操作',
-      render: (text, record, index) => <a onClick={() => { this.goDetail(record) }}>查看进度</a>
+      render: (text, record, index) => <span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>
     }
   ]
   render() {
-    let { department, access, status, dataSource, time_begin, time_end, addParams } = store;
+    let { department, access, status, dataSource, time_begin, time_end, addParams, total, current } = store;
     return (
       <Fragment>
         <Card>
@@ -80,7 +80,7 @@ class Authority extends Component {
             <Button type='primary' onClick={() => { store.addParams.AddVisible = true }}>新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <Table columns={this.columns} dataSource={dataSource} bordered rowKey='id' ></Table>
+            <Table columns={this.columns} dataSource={dataSource} bordered rowKey='id' pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }} ></Table>
           </div>
         </Card>
         <Append props={addParams} />
@@ -88,9 +88,11 @@ class Authority extends Component {
     )
   }
   componentDidMount() {
-    this.fetchList();
+    document.title = '门禁权限';
+    this.fetchList(1);
+    this.getMembers();
   }
-  fetchList = (e, page = 1, size = 10) => {
+  fetchList = (page) => {
     let { department, time_begin, time_end, status, username, access } = store;
     request({
       url: '/api/v1/access/list',
@@ -103,13 +105,31 @@ class Authority extends Component {
         time_begin: time_begin.format('YYYY-MM-DD'),
         time_end: time_end.format('YYYY-MM-DD'),
         page,
-        size
+        size:10
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
         store.dataSource = res.data;
+        store.current = res.current_page;
+        store.total=res.total;
+      }
+    })
+  }
+  getMembers = () => {
+    store.members.clear();
+    request({
+      url:'/api/v1/admins/access',
+      method:'GET',
+      data:{
+        key:''
+      },
+      beforeSend:(xml)=>{
+        xml.setRequestHeader('token',localStorage.getItem('token'))
+      },
+      success:(res)=>{
+        store.members = res;
       }
     })
   }
@@ -131,6 +151,29 @@ class Authority extends Component {
         status,
         time_begin: time_begin.format('YYYY-MM-DD'),
         time_end: time_end.format('YYYY-MM-DD'),
+      }
+    })
+  }
+  cancel = (id) => {
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POSt',
+      data: {
+        wf_fid: id,
+        check_con: '',
+        flow_id: '',
+        run_id: '',
+        flow_process: '',
+        run_process: '',
+        npid: '',
+        submit_to_save: 'cancel',
+        wf_type: 'access_control_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        console.log(res);
       }
     })
   }

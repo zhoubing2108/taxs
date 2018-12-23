@@ -14,6 +14,8 @@ class Store {
   @observable addParams = {
     AddVisible: false
   }
+  @observable total = 10;
+  @observable current = 1;
 }
 
 export default new Store()

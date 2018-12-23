@@ -20,35 +20,35 @@ class EducationProgress extends Component {
   columns = [
     {
       title: '日期',
-      dataIndex: 'apply_date'
+      dataIndex: 'create_time'
     },
     {
-      title: '申请人',
+      title: '姓名',
       dataIndex: 'username'
     },
     {
-      title: '部门',
-      dataIndex: 'department'
+      title: '使用单位',
+      dataIndex: 'unit'
     },
     {
-      title: '公函字号',
-      dataIndex: 'letter_size'
+      title: '申请使用事由',
+      dataIndex: 'reason'
     },
     {
-      title: '公函标题',
-      dataIndex: 'letter_title'
+      title: '场地名称',
+      dataIndex: 'place'
     },
     {
-      title: '接待人数',
-      dataIndex: 'user_count'
+      title: '场地用途',
+      dataIndex: 'purpose'
     },
     {
-      title: '陪餐人数',
-      dataIndex: 'meals_count'
+      title: '开始时间',
+      dataIndex: 'time_begin'
     },
     {
-      title: '费用合计',
-      dataIndex: 'money'
+      title: '结束时间',
+      dataIndex: 'time_end'
     },
     {
       title: '状态',
@@ -95,15 +95,17 @@ class EducationProgress extends Component {
     let { params, data, dataSource, info } = store;
     let { id } = this.props.match.params;
     let { proDataSource } = info;
-    let disabled = data.check === 1;
+    let _check = data.check === 1;
+    let _cancel = data._cancel === 1;
     let { history } = this.props;
+    console.log(dataSource);
     return (
       <Fragment>
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
             <Button style={{ marginRight: 15 }} onClick={() => { history.goBack() }}>返回</Button>
-            <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>测试</Button>
-            <Button type='primary' onClick={() => store.params.visible = true} disabled={!disabled}>审批</Button>
+            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>撤销</Button> : null}
+            {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
             <Table title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} rowKey='id' columns={this.columns} dataSource={dataSource} bordered pagination={false} ></Table>
@@ -116,6 +118,7 @@ class EducationProgress extends Component {
       </Fragment>
     )
   }
+
   fetchList = () => {
     let { id } = this.props.match.params;
     var pro = [];
@@ -138,7 +141,9 @@ class EducationProgress extends Component {
         store.info.log.forEach((e, index) => {
           pro.push(Object.assign({}, e, { 'step': step[index] }))
         });
+        // console.log(pro)
         pro.shift();
+        // console.log(pro)
         store.info.proDataSource = pro;
       },
     })
@@ -155,7 +160,7 @@ class EducationProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-       console.log(res);
+        console.log(res);
       }
     })
   }

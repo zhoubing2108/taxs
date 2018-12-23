@@ -50,11 +50,11 @@ class FunctionRoom extends Component {
     },
     {
       title: '操作',
-      render: (text, record, columns) => <a onClick={() => { this.goDetail(record) }}>查看进度</a>
+      render: (text, record, columns) => (<span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>)
     }
   ]
   render() {
-    let { department, dataSource, time_begin, time_end, status, space, addParams } = store;
+    let { department, dataSource, time_begin, time_end, status, space, addParams,total,current } = store;
     return (
       <Fragment>
         <Card>
@@ -73,7 +73,7 @@ class FunctionRoom extends Component {
             <Button type='primary' onClick={()=>{store.addParams.AddVisible = true}} >新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered > </Table>
+            <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }} > </Table>
           </div>
         </Card>
         <Add props={addParams} />
@@ -81,9 +81,10 @@ class FunctionRoom extends Component {
     )
   }
   componentDidMount() {
-    this.fetchList();
+    document.title = '场地使用';
+    this.fetchList(1);
   }
-  fetchList = (e, page = 1, size = 10) => {
+  fetchList = (page) => {
     let { department, time_begin, time_end, status, username, space } = store;
     request({
       url: '/api/v1/multi/list',
@@ -96,13 +97,15 @@ class FunctionRoom extends Component {
         time_begin: time_begin.format('YYYY-MM-DD'),
         time_end: time_end.format('YYYY-MM-DD'),
         page,
-        size
+        size:10
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        store.dataSource = res.data
+        store.dataSource = res.data;
+        store.current = res.current_page;
+        store.total = res.total;
       }
     })
   }
@@ -126,6 +129,31 @@ class FunctionRoom extends Component {
         time_end: time_end.format('YYYY-MM-DD'),
       }
     })
+  }
+  cancel = (id) => {
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POSt',
+      data: {
+        wf_fid: id,
+        check_con: '',
+        flow_id: '',
+        run_id: '',
+        flow_process: '',
+        run_process: '',
+        npid: '',
+        submit_to_save: 'cancel',
+        wf_type: 'space_multi_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        console.log(res);
+      }
+
+    })
+
   }
 }
 

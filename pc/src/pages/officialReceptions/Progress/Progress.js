@@ -123,18 +123,20 @@ class DinningPg extends Component {
     this.getDetail();
   }
   render() {
-    let { params,data, info, dataSource } = store;
+    let { params, data, info, dataSource } = store;
     let { id } = this.props.match.params;
-    let {proDataSource, meals} = info;
+    let { proDataSource, meals } = info;
     console.log(proDataSource);
     let { history } = this.props;
-    let disabled = data.check === 1;
+    let _check = data.check === 1;
+    let _cancel = data.cancel === 1;
     return (
       <Fragment>
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15, }}>
             <Button style={{ marginRight: 15 }} onClick={() => { history.goBack() }} >返回</Button>
-            <Button type='primary' onClick={() => store.params.visible = true} disabled={!disabled} >审批</Button>
+            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>撤销</Button> : null}
+            {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
             <Table title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} columns={basicMsg} dataSource={dataSource} pagination={false} bordered rowKey='id'></Table>
@@ -178,23 +180,23 @@ class DinningPg extends Component {
       }
     })
   }
-  getDetail = ()=> {
+  getDetail = () => {
     let { id } = this.props.match.params;
     request({
-      url:'/api/v1/official',
-      method:'GET',
-      data:{
+      url: '/api/v1/official',
+      method: 'GET',
+      data: {
         id
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
-      success: (res)=> {
+      success: (res) => {
         console.log(res);
         let meals_list = res.meals;
         let meals_time = res.meal_type;
         meals_list.forEach(e => {
-          Object.assign(e,{meals_time});
+          Object.assign(e, { meals_time });
         })
         console.log(meals_list);
         store.info.meals = meals_list;

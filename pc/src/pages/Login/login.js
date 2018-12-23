@@ -12,6 +12,7 @@ const antIcon = <Icon type="loading" spin />;
 @observer
 class Login extends Component {
   componentDidMount() {
+    document.title = '登陆';
     this.props.form.validateFields();
   }
   render() {
@@ -25,7 +26,7 @@ class Login extends Component {
     let btnErr = this.hasErrors(getFieldsError()) || userErr || passwordErr;
     return (
       <div className={st.container}>
-        {isLogin ? <Redirect to='/' /> : null}
+        {isLogin ? <Redirect to='/meetings' /> : null}
         <div className={st.form}>
           <Spin spinning={loading} indicator={antIcon} tip='登陆中...'>
             <Form>
@@ -84,6 +85,7 @@ class Login extends Component {
       success: (res) => {
         console.log(res);
         localStorage.setItem('token', res.token);
+        localStorage.setItem('role', res.role);
         store.params.loginSuccess = true;
         globalStore.loginSuccess = true;
         history.history.push('/')
