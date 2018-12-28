@@ -26,12 +26,3 @@
   height: 22px;
   background: url('../../imgs/unAccount.png') center center /  21px 21px no-repeat;
 }
-
-.content {
-  width: 100%;
-  height: auto;
-  word-wrap:break-word;
-  word-break:break-all;
-  white-space: pre-wrap;
-  display: block;
-}

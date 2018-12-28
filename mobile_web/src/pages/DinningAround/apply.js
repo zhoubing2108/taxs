@@ -33,7 +33,7 @@ class Apply extends Component {
             人员类型：
                 </FlexItem>
           {user_type.map(i => (
-            <FlexItem key={i}>
+            <FlexItem>
               <Radio className='my-radio' key={i} checked={store.RadioValue === i} onChange={() => this.onRadioChange(i)} >
                 {i}
               </Radio>
@@ -60,7 +60,7 @@ class Apply extends Component {
             access.map((v, i) => {
               if (i > 1 && i < 3) {
                 return (
-                  <FlexItem key={i}>
+                  <FlexItem >
                     <AgreeItem style={{ fontSize: '10px' }} name='test' onChange={e => console.log('checkbox', e)}>{v}</AgreeItem>
                   </FlexItem>)
               }
@@ -118,10 +118,9 @@ class Apply extends Component {
         access
       },
       beforeSend: (xml) => {
-        xml.setRequestHeader('token',sessionStorage.getItem('token'))
+        xml.setRequestHeader('token','bf2719753b77e79b15da510b59a4f25c')
       },
       success: (res)=>{
-        alert('提交成功')
         console.log(res);
       }
     })

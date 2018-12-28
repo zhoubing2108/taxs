@@ -1,15 +1,12 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom'
 import { TabBar } from 'antd-mobile';
-import { observer } from 'mobx-react';
-import store from './store';
-import st from './entrance.css';
-import ApplyCom from './apply';
 import MyEntrance from './myMainEntrance';
+import { observer } from 'mobx-react';
+import st from './buffet.css';
+import BuffetApplyCom from './buffetApply';
+import store from './store';
 import request from '../../helpers/request'
-
-
-
 
 const tabs = [
   { title: '申请' },
@@ -19,7 +16,7 @@ const tabs = [
 
 
 @observer
-class Entrance extends Component {
+class Meeting extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,7 +30,7 @@ class Entrance extends Component {
       url: '/api/v1/flow/ready',
       method: 'GET',
       data: {
-        wf_type: 'access_control_t',
+        wf_type: 'buffet_t',
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', sessionStorage.getItem('token'))
@@ -53,7 +50,7 @@ class Entrance extends Component {
       url: '/api/v1/flow/complete',
       method: 'GET',
       data: {
-        wf_type: 'access_control_t',
+        wf_type: 'buffet_t',
         page: page,
         size: 10
       },
@@ -122,7 +119,7 @@ class Entrance extends Component {
             }}
             data-seed="logId"
           >
-            <ApplyCom />
+            <BuffetApplyCom />
           </TabBar.Item>
           <TabBar.Item
             icon={
@@ -140,11 +137,12 @@ class Entrance extends Component {
               this.setState({
                 selectedTab: 'redTab',
               });
-              this.getNeedList();
               this.fetchList(1);
+              this.getNeedList();
             }}
             data-seed="logId1"
           >
+            {/* <MyUsePlace /> */}
             <MyEntrance />
           </TabBar.Item>
         </TabBar>
@@ -153,4 +151,4 @@ class Entrance extends Component {
   }
 }
 
-export default withRouter(Entrance);
+export default withRouter(Meeting);

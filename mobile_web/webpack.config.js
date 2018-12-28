@@ -9,7 +9,7 @@ const config = {
     app: [path.join(__dirname, "src/index.js")]
   },
   output: {
-    path: path.join(__dirname, "dist"),
+    path: path.join(__dirname, "wx"),
     filename: '[name].[hash]js',
     chunkFilename: '[name].[hash].js',
     publicPath: "/"
@@ -72,12 +72,12 @@ if (isDEV) {
   },
     config.devServer = {
       hot: true,
-      port: 8000,
+      port: 7005,
       contentBase: path.join(__dirname, "/"),
       historyApiFallback: true,
       proxy: {
         '/api': {
-          target: 'http://maintain.mengant.cn',
+          target: 'http://ysxt.e-irobot.com:9995',
           changeOrigin: true
         }
       }

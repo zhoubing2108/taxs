@@ -1,9 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
-import { ListView, Pagination, Tabs, Card } from 'antd-mobile';
+import { ListView, Pagination, Tabs, Card, List } from 'antd-mobile';
 import store from './store';
 import request from '../../helpers/request';
-import {observer} from 'mobx-react';
+import { observer } from 'mobx-react';
+import st from './entrance.css';
+import getQueryVarible from '../../helpers/get-query-variable';
+const Item = List.Item;
+
+
 
 const tabs = [
   { title: '申请列表' },
@@ -16,44 +21,7 @@ const _status = {
   '2': '通过'
 }
 
-var data = [
-  {
-    id: 1,
-    create_time: "2018-12-03 10:26:55",
-    username: "朱明良",
-    department: "办公室",
-    role_name: "管理员",
-    user_type: "干部职工",
-    access: "资料室,会议室",
-    deadline: "2018-12-30 00:00:00",
-    status: 0,
-    admin_id: 1
-  },
-  {
-    id: 2,
-    create_time: "2018-12-15 10:26:55",
-    username: "rush",
-    department: "办公室",
-    role_name: "管理员",
-    user_type: "干部职工",
-    access: "资料室,会议室",
-    deadline: "2018-12-30 00:00:00",
-    status: 0,
-    admin_id: 2
-  },
-  {
-    id: 3,
-    create_time: "2018-12-17 10:26:55",
-    username: "天华",
-    department: "办公室",
-    role_name: "管理员",
-    user_type: "干部职工",
-    access: "资料室,会议室",
-    deadline: "2018-12-30 00:00:00",
-    status: 0,
-    admin_id: 4
-  },
-];
+
 const NUM_ROWS = 1;
 let pageIndex = 0;
 
@@ -80,115 +48,246 @@ class MyEntrance extends Component {
     };
   }
 
-
-  componentDidMount() {
-    setTimeout(() => {
-      this.rData = genData();
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(this.rData),
-        isLoading: false,
-      });
-    }, 600);
-    this.fetchList();
-  }
-
-  fetchList = (page, size = 10) => {
-    let { time_begin, time_end, status, username, access, department } = store.listParams;
-    console.log(time_begin, time_end);
-    page = page?page:1
+  getNeedList = () => {
     request({
-      url: '/api/v1/access/list',
+      url: '/api/v1/flow/ready',
       method: 'GET',
       data: {
-        time_begin:time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
-        status,
-        username,
-        access,
-        department,
-        page: page ,
-        size
+        wf_type: 'buffet_t',
       },
       beforeSend: (xml) => {
-        xml.setRequestHeader('token', 'bf2719753b77e79b15da510b59a4f25c')
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
       },
       success: (res) => {
-        data = res.data;
-        store.total = res.total
+        store.needList = res;
+        console.log('代办的数据',res);
+        console.log(res.length);
+        console.log(res);
+      }
+    })
+  }
+
+  fetchList = (page) => {
+    let { time_begin, time_end, status, username, access, department } = store.listParams;
+    request({
+      url: '/api/v1/flow/complete',
+      method: 'GET',
+      data: {
+        wf_type: 'buffet_t',
+        page: page,
+        size: 10
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.dataSource = res.data;
+        store.total = res.last_page
+        console.log(res);
+      }
+    })
+
+  }
+  componentDidMount() {
+    // setTimeout(() => {
+    //   this.rData = genData();
+    //   this.setState({
+    //     dataSource: this.state.dataSource.cloneWithRows(this.rData),
+    //     isLoading: false,
+    //   });
+    // }, 600);
+
+    // if(!sessionStorage.getItem('token')){
+    //   this.getUser();
+
+    // }
+    sessionStorage.setItem('token','88dff0667c8fdd46fbfc9f864bb3d227')
+    if (!sessionStorage.getItem('token')) {
+      this.getUser();
+    }
+    this.fetchList();
+    this.fetchListLeft();
+  }
+
+
+  getUser = () => {
+    // let code = getQueryVarible('code');
+    let code = '3qtilxOr_cGRxLHLmtec6jnwfNhkAr5g9zJzHmVsw-8';
+    request({
+      url: '/api/v1/token/user',
+      data: {
+        code
+      },
+      method: 'GET',
+      success: (res) => {
+        sessionStorage.setItem('token', res.token);
+        sessionStorage.setItem('u_id', res.u_id);
+        sessionStorage.setItem('username', res.username);
+        sessionStorage.setItem('account', res.account);
+        sessionStorage.setItem('role', res.role);
+        this.fetchList(1);
+        this.fetchListLeft();
+      }
+    })
+  }
+
+  test = () => {
+    console.log(sessionStorage);
+    this.fetchList(1);
+  }
+  fetchList = (page) => {
+    let { time_begin, time_end, status, username, access, department } = store.listParams;
+    console.log(time_begin, time_end);
+    page = page ? page : 1;
+    let u_id = sessionStorage.getItem('u_id');
+    request({
+      // url: '/api/v1/meeting/place/list',
+      url: '/api/v1/flow/complete',
+      method: 'GET',
+      data: {
+        page: page,
+        size: 10,
+        wf_type: 'access_control_t'
+
+      },
+
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+      },
+      success: (res) => {
+        console.log('右边', res);
+        // data = res.data;
+        store.data = res.data;
+        store.total = res.total;
+      }
+    })
+
+  }
+  fetchListLeft = () => {
+    request({
+      url: '/api/v1/flow/ready',
+      method: 'GET',
+      data: {
+        wf_type: 'access_control_t'
+      },
+
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+      },
+      success: (res) => {
+        console.log('左边', res);
+        // data = res.data;
+        store.dataleft = res.data;
+        // store.totalleft = res.total
       }
     })
 
   }
 
-  onEndReached = (event) => {
-    // if (this.state.isLoading && !this.state.hasMore) {
-    //   return;
-    // }
-    // console.log('reach end', event);
-    // this.setState({ isLoading: true });
-    // setTimeout(() => {
-    //   this.rData = { ...this.rData, ...genData(++pageIndex) };
-    //   this.setState({
-    //     dataSource: this.state.dataSource.cloneWithRows(this.rData),
-    //     isLoading: false,
-    //   });
-    // }, 1000);
-  }
+
 
   render() {
-    let {total} = store;
-    const separator = (sectionID, rowID) => (
-      <div
-        key={`${sectionID}-${rowID}`}
-        style={{
-          backgroundColor: '#F5F5F9',
-          height: 8,
-          borderTop: '1px solid #ECECED',
-          borderBottom: '1px solid #ECECED',
-        }}
-      />
-    );
-    let index = data.length - 1;
-    const row = (rowData, sectionID, rowID) => {
-      if (index < 0) {
-        index = data.length - 1;
-      }
-      const obj = data[index--];
+    let mydata = store.data;
+    let mydataleft = store.dataleft;
+    if (mydata.length == 0) {
       return (
-        <div key={rowID} style={{ padding: '0 15px' }}>
-          <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }}>
-            <div style={{ fontWeight: 'bold', fontSize:16 }}>
-              <span>{obj.create_time}  </span>
-              <span>{obj.username}  </span>
-              <span>{obj.department}  </span>
-              <span>{obj.role_name}  </span>
-              <span>{obj.access}  </span><br />
-              <span>{obj.deadline}  </span>
-              <span><a href="" onClick={(e) => e.preventDefault()}>{_status[obj.status]}</a>  </span>
+        <div>
+          <Fragment>
+            <div style={{ marginTop: 50, }}>
+              <Tabs tabs={tabs} initialPage={0} animated={false} useOnPan={false} onChange={(tab, index) => { console.log('onChange', index, tab); }}>
+                <div style={{ height: '100%', backgroundColor: '#fff' }}>
+                  <List>
+                    <Item style={{ fontWeight: 'bold' }}>
+                      <Card>
+                        <Card.Body>
+                          <pre>
+                            <div style={{ textAlign: 'center' }}>暂无数据</div>
+                          </pre>
+                        </Card.Body>
+                      </Card>
+                    </Item>
+                  </List>
+                </div>
+              </Tabs>
             </div>
-          </div>
-        </div>
-      );
-    };
+          </Fragment>
+        </div>)
+    }
     return (
       <Fragment>
-        <div style={{ marginTop: 5 }}>
+        <div style={{ marginTop: 50, }}>
           <Tabs tabs={tabs} initialPage={0} animated={false} useOnPan={false}>
             <div style={{ height: '100%', backgroundColor: '#fff' }}>
-              <ListView
-                ref={el => { this.lv = el; }}
-                dataSource={this.state.dataSource}
-                renderFooter={() => (<div >
-                  {/* {this.state.isLoading ? 'Loading...' : 'Loaded'} */}
-                  <Pagination total={total} current={1} onChange={(e,i) => {let page = e;this.fetchList(page)}} />
-                </div>)}
-                renderRow={row}
-                renderSeparator={separator}
-                className="am-list"
-                useBodyScroll
-              />
+              <List>
+                {mydataleft.map(e => (
+                  <Item style={{ fontWeight: 'bold' }} key={e.id}>
+                    <Card>
+                      <Card.Body>
+                        <pre>
+                          <span>{e.flow.create_time}</span>&nbsp;
+                      <span className={st.content}>{e.flow.members}</span>
+                          <span>{e.flow.access}</span>&nbsp;
+                      <span>{e.flow.deadline}</span>&nbsp;
+                      <span>{e.flow.user_type}</span><br />
+
+                          <span>{e.deadline}  <button onClick={this.test}>test</button>  </span>
+
+                          <span>审核中</span><br />
+                          <span>{e.process[0].admin.username + ':' + "申请"}</span>&nbsp;&nbsp;
+
+                      {e.process.map(i => (
+                            <span key={i.id}>
+                              <span>{i.admin.username + ':' + i.btn}<br /></span>
+                            </span>))}
+                          {/* <span>{e.process[1].admin.username+':'+e.process[1].btn}</span><br />
+                            <span>{e.process[2].admin.username+':'+e.process[2].btn}</span>
+                            <span>{e.process[3].admin.username+':'+e.process[3].btn}</span>  */}
+                          <span><a href="" onClick={(e) => e.preventDefault()}>{_status[e.status]}</a></span><br />
+
+                        </pre>
+                      </Card.Body>
+                    </Card>
+                  </Item>
+
+                )
+                )}
+              </List>
             </div>
             <div style={{ height: '100%', backgroundColor: '#fff' }}>
+              <List>
+                {mydata.map(e => (
+                  <Item style={{ fontWeight: 'bold' }} key={e.id}>
+                    <Card>
+                      <Card.Body>
+                        <pre style={{}}>
+                          <span>{e.flow.create_time}</span>&nbsp;
+                    <span className={st.content}>{e.flow.members}</span>
+                          <span>{e.flow.access}</span>&nbsp;
+                    <span>{e.flow.deadline}</span>&nbsp;
+                    <span>{e.flow.user_type}</span><br />
+
+                          {/* <span className={st.content}>{e.access}</span> */}
+                          {/* 在<pre>标签下实现文本自动换行 */}
+
+                          <span>{e.deadline}  <button onClick={this.test}>test</button>  </span>
+
+                          <span style={{ float: 'right' }}><a href="" onClick={(e) => e.preventDefault()}>{_status[e.status]}</a></span><br />
+                          <span>{e.process[0].admin.username + ':' + "申请"}</span>&nbsp;&nbsp;
+
+                    {[...e.process].map(i => (
+                            <span key={i.id}>
+                              <span>{i.admin.username + ':' + i.btn}<br /></span>
+                            </span>))}
+                          {/* <span>{e.process[1].admin.username+':'+e.process[1].btn}</span><br />
+                    <span>{e.process[2].admin.username+':'+e.process[2].btn}</span> */}
+                          {/* <span>{e.process[3].admin.username+':'+e.process[3].btn}</span> */}
+                        </pre>
+                      </Card.Body>
+                    </Card>
+                  </Item>
+
+                ))}
+              </List>
             </div>
           </Tabs>
         </div>
