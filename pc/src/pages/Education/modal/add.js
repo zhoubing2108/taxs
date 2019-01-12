@@ -51,6 +51,7 @@ class Add extends Component {
                   <Option key='1' value='会议'>会议</Option>
                   <Option key='2' value='培训'>培训</Option>
                   <Option key='3' value='集中办公' >集中办公</Option>
+                  <Option key='4' value='其他' >其他</Option>
                 </Select>
               )
             }

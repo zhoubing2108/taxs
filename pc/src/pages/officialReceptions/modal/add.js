@@ -11,6 +11,8 @@ const Option = Select.Option;
 const RadioGroup = Radio.Group;
 const selectProduct = ['公务接待', '会议', '培训', '党建活动', '离退休活动', '学会活动'];
 const selectArea = ['金瑞酒店', '机关食堂'];
+const { RangePicker } = DatePicker
+const TextArea = Input.TextArea;
 
 @observer
 class Add extends Component {
@@ -23,102 +25,65 @@ class Add extends Component {
         onCancel={() => { store.addParams.AddVisible = false }}
         onOk={() => { this.add() }}
         width='600px'
-        title='围餐预定'
+        title='酒店预定'
       >
         <Form>
-          <FormItem {...commonFormProps} label='就餐日期'>
+          <FormItem {...commonFormProps} label='入住日期'>
             {
-              getFieldDecorator('meal_date')(
-                <DatePicker />
+              getFieldDecorator('time_begin')(
+                <DatePicker showTime format='YYYY-MM-DD HH点'/>
               )
             }
           </FormItem>
-          <FormItem {...commonFormProps} label='业务内容'>
+          <FormItem {...commonFormProps} label='退房日期'>
             {
-              getFieldDecorator('content')(
-                <Input placeholder='请输入业务内容' />)
-            }
-          </FormItem>
-          <FormItem {...commonFormProps} label='联系人电话'>
-            {
-              getFieldDecorator('phone')(
-                <Input placeholder='请输入联系人电话' />)
-            }
-          </FormItem>
-          <FormItem {...commonFormProps} label='承办项目'>
-            {
-              getFieldDecorator('product', { initialValue: `${selectProduct[0]}` })(
-                <Select style={{ width: 130 }}>
-                  {selectProduct.map(v => <Option value={v} key={v}>{v}</Option>)}
-                </Select>
-              )
-            }
-            <span style={{ marginLeft: 50 }}>餐饮地点：</span>
-            {
-              getFieldDecorator('meal_space', { initialValue: `${selectArea[0]}` })(
-                <Select style={{ width: 160 }}>
-                  {selectArea.map(v => <Option value={v} key={v}>{v}</Option>)}
-                </Select>
+              getFieldDecorator('time_end')(
+                <DatePicker showTime format='YYYY-MM-DD HH点' />
               )
             }
           </FormItem>
-          <FormItem {...commonFormProps} label='餐饮人数'>
+          <FormItem {...commonFormProps} label='来访单位'>
             {
-              getFieldDecorator('member')(
-                <InputNumber placeholder='人数' style={{ width: 80 }} />
+              getFieldDecorator('unit')(
+                <Input placeholder='请输入来访单位' />)
+            }
+          </FormItem>
+          <FormItem {...commonFormProps} label='拟入住酒店'>
+            {
+              getFieldDecorator('hotel')(
+                <Input placeholder='请输入酒店名称' />)
+            }
+          </FormItem>
+          <FormItem {...commonFormProps} label='单人房'>
+            {
+              getFieldDecorator('single_room')(
+                <InputNumber placeholder='间数' style={{ width: 150 }} min={0} />
               )
             }
-            <span style={{ marginLeft: 20 }}>陪同人数：</span>
+            <span style={{ marginLeft: 50 }}>双人房：</span>
             {
-              getFieldDecorator('table_number')(
-                <InputNumber placeholder='人数' style={{ width: 80 }} />
-              )
-            }
-            <span style={{ marginLeft: 20 }}>桌数：</span>
-            {
-              getFieldDecorator('table_number')(
-                <InputNumber placeholder='请输入桌数' style={{ width: 100 }} />
+              getFieldDecorator('double_room')(
+                <InputNumber placeholder='间数' style={{ width: 150 }} min={0} />
               )
             }
           </FormItem>
-          <FormItem {...commonFormProps} label='餐类'>
+          <FormItem {...commonFormProps} label='男'>
             {
-              getFieldDecorator('meal_type')(
-                <RadioGroup>
-                  <Radio value='工作餐'>工作餐</Radio>
-                  <Radio value='会议餐'>会议餐</Radio>
-                  <Radio value='培训餐'>培训餐</Radio>
-                </RadioGroup>
+              getFieldDecorator('male')(
+                <InputNumber placeholder='人数' style={{ width: 80 }} min={0} />
+              )
+            }
+            <span style={{ marginLeft: 120 }}>女：</span>
+            {
+              getFieldDecorator('female')(
+                <InputNumber placeholder='人数' style={{ width: 80 }} min={0} />
               )
             }
           </FormItem>
-          <FormItem {...commonFormProps} label='早餐'>
+          <FormItem {...commonFormProps} label='人员名单'>
             {
-              getFieldDecorator('breakfast')(
-                <RadioGroup>
-                  <Radio value='自助餐'>自助餐</Radio>
-                  <Radio value='围餐'>围餐</Radio>
-                </RadioGroup>
-              )
-            }
-          </FormItem>
-          <FormItem {...commonFormProps} label='午餐'>
-            {
-              getFieldDecorator('lunch')(
-                <RadioGroup>
-                  <Radio value='自助餐'>自助餐</Radio>
-                  <Radio value='围餐'>围餐</Radio>
-                </RadioGroup>
-              )
-            }
-          </FormItem>
-          <FormItem {...commonFormProps} label='晚餐'>
-            {
-              getFieldDecorator('dinner')(
-                <RadioGroup>
-                  <Radio value='自助餐'>自助餐</Radio>
-                  <Radio value='围餐'>围餐</Radio>
-                </RadioGroup>
+              getFieldDecorator('members')(
+                <TextArea placeholder='请输入人员名单' />
               )
             }
           </FormItem>
@@ -128,24 +93,20 @@ class Add extends Component {
   }
   add = () => {
     let values = this.props.form.getFieldsValue();
-    let { meal_type, breakfast, lunch, dinner, table_number, meal_space, product, content, meal_date, member, phone } = values;
-    breakfast === undefined ? '' : breakfast;
-    lunch === undefined ? '' : lunch;
-    dinner === undefined ? '' : dinner;
-    let meals = '早餐,' + breakfast + 'A午餐,' + lunch + 'A晚餐,' + dinner;
+    let {single_room, double_room, female, male, hotel, unit, members, time_begin, time_end  } = values;
     request({
-      url: '/api/v1/official/save',
+      url: '/api/v1/hotel/save',
       method: 'POST',
       data: {
-        meal_type,
-        table_number,
-        meal_space,
-        product,
-        content,
-        meal_date: meal_date.format('YYYY-MM-DD'),
-        member,
-        meals: meals,
-        phone
+        single_room,
+        double_room,
+        female,
+        male,
+        hotel,
+        unit,
+        members,
+        time_begin: time_begin.format('YYYY-MM-DD HH'),
+        time_end: time_end.format('YYYY-MM-DD HH')
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
@@ -160,14 +121,12 @@ class Add extends Component {
   fetchList = (page) => {
     let { department, username, time_begin, time_end, status, meal, meal_type } = store;
     request({
-      url: '/api/v1/official/list',
+      url: '/api/v1/hotel/list',
       method: 'GET',
       data: {
         department,
         username,
         status,
-        meal,
-        meal_type,
         time_begin: time_begin.format('YYYY-MM-DD'),
         time_end: time_end.format('YYYY-MM-DD'),
         page: page,

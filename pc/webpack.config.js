@@ -1,6 +1,8 @@
 const webpack = require("webpack");
 const path = require("path");
 const htmlWebpackPlugin = require("html-webpack-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isDEV = process.env.NODE_ENV === 'development';
 const config = {
@@ -58,8 +60,22 @@ const config = {
     new htmlWebpackPlugin({
       template: path.join(__dirname, "src/template.html")
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
   ],
+  // optimization: {
+  //   splitChunks: {
+  //     chunks:'all'
+  //   },
+  //   minimizer: [
+  //     new UglifyJsPlugin({
+  //       uglifyOptions: {
+  //       ecma: 6,
+  //       cache: true,
+  //       parallel: true
+  //     }}),
+  //     new OptimizeCSSAssetsPlugin({})
+  //   ]
+  // }
 
 };
 

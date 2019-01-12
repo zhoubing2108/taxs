@@ -6,6 +6,7 @@ import Modify from './modify/modify';
 import { observer } from 'mobx-react';
 import request from '../../helpers/request';
 import exportFile from '../../helpers/export-file';
+import moment from 'moment';
 
 const Option = Select.Option;
 const RangePicker = DatePicker.RangePicker;
@@ -115,7 +116,8 @@ class Meeting extends Component {
     })
   }
   fetchList = (page) => {
-    let { address, theme, time_begin, time_end,host } = store;
+    let { address, theme, time_begin, time_end, host } = store;
+    console.log(time_begin);
     request({
       url: '/api/v1/meeting/list',
       method: 'GET',
@@ -123,8 +125,8 @@ class Meeting extends Component {
         address,
         theme,
         host,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
         page,
         size:10
       },
@@ -167,8 +169,8 @@ class Meeting extends Component {
       data: {
         address, 
         theme,
-         time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }

@@ -5,8 +5,8 @@ import request from '../../../helpers/request';
 
 class PswSetting extends Component {
   componentDidMount() {
-    alert(window.location)
-    alert(this.getQueryVariable('code'))
+    // alert(window.location)
+    // alert(this.getQueryVariable('code'))
     // this.test()
     // this.test(code);
     // this.fetchList();

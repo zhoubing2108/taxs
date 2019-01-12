@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Card, Table, Button } from 'antd';
+import { Card, Table, Button,Modal } from 'antd';
 import { observer } from 'mobx-react';
 import store from './store';
 import request from '../../../helpers/request';
@@ -7,6 +7,7 @@ import moment from 'moment';
 import Approval from './ApprovalModal/Modal';
 import { withRouter } from 'react-router-dom';
 
+const confirm = Modal.confirm;
 
 const _status = {
   '-1': '不通过',
@@ -29,61 +30,45 @@ const basicMsg = [
     dataIndex: 'department'
   },
   {
-    title: '联系人电话',
-    dataIndex: 'phone'
+    title: '公务时间',
+    key: 'id',
+    render: (text, record) => (<span>{record.time_begin}——{record.time_end}</span>)
   },
   {
-    title: '人数',
-    dataIndex: 'member'
+    title: '来访单位',
+    dataIndex: 'unit'
   },
   {
-    title: '桌数',
-    dataIndex: 'table_number'
+    title: '拟入住酒店',
+    dataIndex: 'hotel'
   },
   {
-    title: '就餐地点',
-    dataIndex: 'meal_space'
+    title: '男',
+    dataIndex: 'male'
   },
   {
-    title: '就餐日期',
-    dataIndex: 'meal_date'
+    title: '女',
+    dataIndex: 'female'
+  },
+  {
+    title: '单人房',
+    dataIndex: 'single_room'
+  },
+  {
+    title: '双人房',
+    dataIndex: 'double_room'
+  },
+  {
+    title: '人员名单',
+    dataIndex: 'members'
   },
   {
     title: '状态',
     dataIndex: 'status',
     render: (text) => (<span>{_status[text]}</span>)
-  }
-]
-const nextColumns = [
-  {
-    align: 'center',
-    title: '项目',
-    dataIndex: 'product'
   },
-  {
-    align: 'center',
-    title: '业务内容',
-    dataIndex: 'content'
-  }
 ]
 
-const thirdColumns = [
-  {
-    align: 'center',
-    title: '餐次',
-    dataIndex: 'meal_type'
-  },
-  {
-    align: 'center',
-    title: '餐类',
-    dataIndex: 'meals_time'
-  },
-  {
-    align: 'center',
-    title: '菜式',
-    dataIndex: 'cuisine'
-  }
-]
 const proColumns = [
   {
     title: '序号',
@@ -120,7 +105,6 @@ const proColumns = [
 class DinningPg extends Component {
   componentDidMount() {
     this.fetchList();
-    this.getDetail();
   }
   render() {
     let { params, data, info, dataSource } = store;
@@ -135,13 +119,11 @@ class DinningPg extends Component {
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15, }}>
             <Button style={{ marginRight: 15 }} onClick={() => { history.goBack() }} >返回</Button>
-            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.getDetail() }}>撤销</Button> : null}
+            {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.showDeleteConfirm() } }>撤销</Button> : null}
             {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
             <Table title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} columns={basicMsg} dataSource={dataSource} pagination={false} bordered rowKey='id'></Table>
-            <Table columns={nextColumns} bordered rowKey='id' dataSource={dataSource} pagination={false} ></Table>
-            <Table columns={thirdColumns} bordered rowKey='id' dataSource={meals} pagination={false} ></Table>
           </div>
           <div>
             <Table title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>申请进度</div>} columns={proColumns} dataSource={proDataSource} bordered rowKey='id' ></Table>
@@ -158,7 +140,7 @@ class DinningPg extends Component {
       url: '/api/v1/flow/info',
       method: 'GET',
       data: {
-        wf_type: 'official_recept_t',
+        wf_type: 'hotel_t',
         wf_fid: id
       },
       beforeSend: (xml) => {
@@ -180,29 +162,71 @@ class DinningPg extends Component {
       }
     })
   }
-  getDetail = () => {
+  showDeleteConfirm = () => {
+    confirm({
+      title: '是否撤销该申请',
+      content: '撤销后将不可撤回',
+      okText: '是',
+      okType: 'danger',
+      cancelText: '否',
+      onOk: () => {
+        this.cancel();
+      },
+      onCancel: () => {
+        console.log('Cancel');
+      },
+    });
+  }
+  cancel = () => {
     let { id } = this.props.match.params;
+    let { data } = store;
+    let run_id = data.info.run_id;
+    let {history} = this.props;
     request({
-      url: '/api/v1/official',
-      method: 'GET',
+      url: '/api/v1/flow/check/pass',
+      method: 'POST',
       data: {
-        id
+        wf_fid: id,
+        check_con: '',
+        flow_id: '',
+        run_id,
+        flow_process: '',
+        run_process: '',
+        npid: '',
+        submit_to_save: 'cancel',
+        wf_type: 'hotel_t'
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        console.log(res);
-        let meals_list = res.meals;
-        let meals_time = res.meal_type;
-        meals_list.forEach(e => {
-          Object.assign(e, { meals_time });
-        })
-        console.log(meals_list);
-        store.info.meals = meals_list;
+        history.push('/hotelBooking')
       }
     })
   }
+  // getDetail = () => {
+  //   let { id } = this.props.match.params;
+  //   request({
+  //     url: '/api/v1/official',
+  //     method: 'GET',
+  //     data: {
+  //       id
+  //     },
+  //     beforeSend: (xml) => {
+  //       xml.setRequestHeader('token', localStorage.getItem('token'))
+  //     },
+  //     success: (res) => {
+  //       console.log(res);
+  //       let meals_list = res.meals;
+  //       let meals_time = res.meal_type;
+  //       meals_list.forEach(e => {
+  //         Object.assign(e, { meals_time });
+  //       })
+  //       console.log(meals_list);
+  //       store.info.meals = meals_list;
+  //     }
+  //   })
+  // }
 }
 
 export default withRouter(DinningPg)

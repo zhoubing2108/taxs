@@ -6,7 +6,8 @@ import { observer } from 'mobx-react';
 import Add from './modal/add';
 import { withRouter } from 'react-router-dom';
 import nextStore from './Progress/store';
-import exportFile from '../../helpers/export-file'
+import exportFile from '../../helpers/export-file';
+import moment from 'moment';
 
 const { RangePicker } = DatePicker;
 const Option = Select.Option;
@@ -99,8 +100,8 @@ class MeetingPlace extends Component {
       url: '/api/v1/meeting/place/list',
       method: 'GET',
       data: {
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
         username,
         status,
         department,
@@ -132,13 +133,14 @@ class MeetingPlace extends Component {
         department,
         username,
         status,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }
   cancel = (id) => {
-    request({
+    let {history} = this.props;
+        request({
       url: '/api/v1/flow/check/pass',
       method: 'POSt',
       data: {

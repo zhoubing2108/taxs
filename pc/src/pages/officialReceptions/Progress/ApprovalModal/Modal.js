@@ -66,7 +66,7 @@ class Approval extends Component {
         npid: nexprocess.id,
         submit_to_save,
         wf_fid,
-        wf_type:'official_recept_t'
+        wf_type:'hotel_t'
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))

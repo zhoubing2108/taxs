@@ -108,8 +108,8 @@ class MeetingReception extends Component {
         department,
         username,
         status,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
         page,
         size:10
       },
@@ -138,8 +138,8 @@ class MeetingReception extends Component {
         department,
         username,
         status,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }

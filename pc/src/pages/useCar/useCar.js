@@ -7,7 +7,7 @@ import { withRouter } from "react-router-dom";
 import exportFile from '../../helpers/export-file';
 import nextStore from './Progress/store';
 import Add from './modal/add';
-
+import moment from 'moment';
 const { RangePicker } = DatePicker;
 const Option = Select.Option;
 const _status = {
@@ -101,8 +101,8 @@ class UseCar extends Component {
       url: '/api/v1/car/list',
       method: 'GET',
       data: {
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
         reason,
         username,
         status,
@@ -136,8 +136,8 @@ class UseCar extends Component {
         username,
         status,
         reason,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }

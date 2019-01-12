@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router-dom';
-import { Card,Input,Table,Button } from 'antd';
+import { Card,Input,Table,Button,Select } from 'antd';
 import store from './store';
 import {observer} from 'mobx-react';
 import request from '../../../helpers/request';
 import Setting from './modal/change';
+
+const Option = Select.Option
 
 
 const rowSelection = {
@@ -37,29 +39,37 @@ class UserSetting extends Component {
       dataIndex:'department'
     },
     {
+      title:'职务',
+      dataIndex:'post'
+    },
+    {
       title:'角色',
       dataIndex:'role'
     },
-    {
-      title:'操作',
-      render: (text, record, columns) => (<span><a style={{ marginRight: 5 }} onClick={() => { store.params.visible=true;store.params.data.clear();store.params.data.push(record)}}>修改</a></span>)
-    }
+    // {
+    //   title:'操作',
+    //   render: (text, record, columns) => (<span><a style={{ marginRight: 5 }} onClick={() => { store.params.visible=true;store.params.data.clear();store.params.data.push(record)}}>修改</a></span>)
+    // }
   ];
   render() {
-    let { dataSource, total, current, params} = store;
+    let { dataSource, total, current, params,departmentList} = store;
     dataSource = Array.from(dataSource);
+    // let disabled = sessionStorage.getItem('role') === 26;
     return (
       <Fragment>
         <Card>
           <div>
-            <span>姓名：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='全部' onChange={(e) => { store.username = e.target.value }}/>
+            <span>姓名：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='名字' onChange={(e) => { store.username = e.target.value }}/>
             <span>手机号码：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='手机号码' onChange={(e) => {store.phone = e.target.value} } />
-            {/* <span>申请人：</span> <Input style={{ width: 120, marginRight: 10 }} placeholder='全部' onChange={(e) => { store.username = e.target.value }} /> */}
+            <span>部门：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='部门' onChange={(e) => { store.department = e.target.value }} />
+            <span>职务：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='职务' onChange={(e) => { store.post = e.target.value }} />
             <Button type='primary' style={{ marginRight: 10 }} onClick={() => {this.fetchList(1)}} >查询</Button>
+            {/* { disabled?  */}
             <Button type='primary' onClick={()=>{store.params.visible = true}} >修改</Button>
+              {/* : null} */}
           </div>
           <div style={{ marginTop: 10 }}>
-            <Table columns={this.columns} dataSource={dataSource} rowSelection={rowSelection} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }} />
+            <Table columns={this.columns} dataSource={dataSource} rowSelection={rowSelection} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { store.current=e;this.fetchList(e) }, total: total, }} />
           </div>
         </Card>
         <Setting props={params} />
@@ -68,7 +78,8 @@ class UserSetting extends Component {
   }
   componentDidMount() {
     this.fetchList(1);
-    this.getRole()
+    this.getRole();
+    this.getDepartment();
   }
   getRole = () => {
     request({
@@ -79,17 +90,26 @@ class UserSetting extends Component {
       }
     })
   }
+  getDepartment = ()=>{
+    request({
+      url:'/api/v1/department/list',
+      method:'GET',
+      success:(res) => {
+        store.departmentList = res;
+      }
+    })
+  }
   fetchList = (page) => {
-    let {role, department,phone,username} = store;
+    let {phone,username,department,post} = store;
     request({
       url:'/api/v1/admin/list',
       method:'GET',
       data:{
-        role,
         username,
-        department,
         phone,
         page,
+        department,
+        post,
         size:10
       },
       beforeSend: (xml) => {

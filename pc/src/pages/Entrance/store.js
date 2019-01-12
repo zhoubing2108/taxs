@@ -18,8 +18,10 @@ class Store {
   }
   @observable total = 10;
   @observable current = 1;
-  @observable disabled = false;
-  @observable checkInputVal = '科室门牌号'
+  @observable disabled_k = false;
+  @observable disabled_d = false;
+  @observable checkInputVal_k = '科室门牌号'
+  @observable checkInputVal_d = '档案室门牌号(5、6楼)'
   @observable members = [];
 }
 

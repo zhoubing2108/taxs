@@ -96,10 +96,10 @@ class EducationProgress extends Component {
     let { params, data, dataSource, info } = store;
     let { id } = this.props.match.params;
     let { proDataSource } = info;
+    console.log(data);
     let _check = data.check === 1;
-    let _cancel = data._cancel === 1;
+    let _cancel = data.cancel === 1;
     let { history } = this.props;
-    console.log(dataSource);
     return (
       <Fragment>
         <Card>
@@ -171,7 +171,7 @@ class EducationProgress extends Component {
     let run_id = data.info.run_id
     request({
       url: '/api/v1/flow/check/pass',
-      method: 'POSt',
+      method: 'POST',
       data: {
         wf_fid: id,
         check_con: '',
@@ -187,6 +187,7 @@ class EducationProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
+        history.push('/education/meetingplace')
       }
     })
   }

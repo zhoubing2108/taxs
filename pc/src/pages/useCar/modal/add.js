@@ -61,7 +61,7 @@ class Add extends Component {
             {getFieldDecorator('apply_date')(
               <DatePicker placeholder='请选择时间' showTime format='YYYY-MM-DD HH:mm' style={{ width: 180, marginRight: 10 }} />
             )}
-            <span>联系电话:<Input placeholder='请输入联系电话' style={{ width: 160 }} /></span>
+            <span>用车人电话：<Input placeholder='请输入联系电话' style={{ width: 140 }} /></span>
           </FormItem>
           <FormItem {...commonFormProps} label='目的地'>
             {getFieldDecorator('address')(

@@ -7,6 +7,7 @@ import nextStore from './fnRoomPg/store';
 import Add from './modal/add';
 import {withRouter} from 'react-router-dom';
 import exportFile from '../../../helpers/export-file';
+import moment from 'moment';
 
 const { RangePicker } = DatePicker;
 const _status = {
@@ -94,8 +95,8 @@ class FunctionRoom extends Component {
         username,
         status,
         space,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
         page,
         size:10
       },
@@ -125,8 +126,8 @@ class FunctionRoom extends Component {
         username,
         status,
         space,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }

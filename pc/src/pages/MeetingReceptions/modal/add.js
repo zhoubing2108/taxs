@@ -34,8 +34,8 @@ class Add extends Component {
                 <Input placeholder='请输入来访单位' style={{ width: 200, marginRight: 10 }} />)
             }
             {
-              getFieldDecorator('accompany_count')(
-                <span>陪同人数：<InputNumber style={{ width: 100 }} placeholder='人数' /></span>
+              getFieldDecorator('meeting_count')(
+                <span>会议人数：<InputNumber style={{ width: 100 }} placeholder='人数' /></span>
               )
             }
           </FormItem>
@@ -85,9 +85,9 @@ class Add extends Component {
                 <InputNumber style={{ width: 100 }} placeholder='人数' />)
             }
           </FormItem>
-          <FormItem {...commonFormProps} label='会议人数'>
+          <FormItem {...commonFormProps} label='陪同人数'>
             {
-              getFieldDecorator('meeting_count')(
+              getFieldDecorator('accompany_count')(
                 <InputNumber style={{ width: 60, marginRight: 10 }} placeholder='人数' />
               )
             }

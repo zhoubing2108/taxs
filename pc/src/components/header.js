@@ -21,7 +21,7 @@ class HeaderInclude extends Component {
           >
             <Menu.Item key="1"><Link to='/userAuthority/user'></Link>角色权限</Menu.Item>
             <Menu.Item key="2"><Link to='/meetings'></Link>预约申请</Menu.Item>
-            <Menu.Item key="3">用品管理</Menu.Item>
+          <Menu.Item key="3"><Link to='/good/recipients/'></Link>用品管理</Menu.Item>
             <Menu.Item key="4">个人订餐</Menu.Item>
             <Menu.Item key="5">部门人员</Menu.Item>
             <Menu.Item key="6">结算管理</Menu.Item>

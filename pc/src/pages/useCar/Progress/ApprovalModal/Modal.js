@@ -64,33 +64,33 @@ class Approval extends Component {
                 {
                   getFieldDecorator('word1')(
                     <RadioGroup name='arCar'>
-                      <Radio value='公车'>公车</Radio>
-                      <Radio value='租车'>租车</Radio>
+                      <Radio value={1}>公车</Radio>
+                      <Radio value={2}>租车</Radio>
                     </RadioGroup>
                   )
                 }
-                    <div style={{ marginTop: 10 }}>
-                      <span>车辆:
+                <div style={{ marginTop: 10 }}>
+                  <span>车辆:
                 {
-                  getFieldDecorator('word2')(
-                    <Select style={{ width: 200 }}>
+                      getFieldDecorator('word2')(
+                        <Select style={{ width: 200 }}>
                           <Option value={'粤J00000' + '限载5人'}>粤J00000 限载5人</Option>
                         </Select>
-                  )
-                }
-                </span>
-              </div>
-                    <div style={{ marginTop: 10 }}>
-                      <span>司机:
+                      )
+                    }
+                  </span>
+                </div>
+                <div style={{ marginTop: 10 }}>
+                  <span>司机:
                 {
-                  getFieldDecorator('word3')(
-                    <Select style={{ width: 200 }}>
+                      getFieldDecorator('word3')(
+                        <Select style={{ width: 200 }}>
                           <Option value={'小杨13712123333'}>小杨13712123333</Option>
                         </Select>
-                  )
-                }
-                </span>
-              </div>
+                      )
+                    }
+                  </span>
+                </div>
               </div>
             </Form>
             : null
@@ -114,44 +114,78 @@ class Approval extends Component {
     let values = this.props.form.getFieldsValue();
     let { check_con, submit_to_save, arrange, word1, word2, word3 } = values;
     let role = localStorage.getItem('role');
+    let type;
+    let car_info;
+    let driver;
     if (arrange == 3) {
       submit_to_save = 'back';
       check_con = '不符合申请条件';
-      console.log(submit_to_save);
     } else if (arrange) {
       submit_to_save = 'ok'
       check_con = arrange;
-      console.log(submit_to_save);
     }
     if (role == 37) {
-      check_con = word1 + word2 + word3;
-      submit_to_save = 'ok'
+      type = word1;
+      car_info = word2;
+      driver = word3;
+      submit_to_save = 'ok';
+      check_con = '';
     }
-    console.log(check_con)
-    // request({
-    //   url: '/api/v1/flow/check/pass',
-    //   method: 'POST',
-    //   data: {
-    //     check_con,
-    //     flow_id,
-    //     run_id,
-    //     flow_process,
-    //     run_process,
-    //     npid: nexprocess.id,
-    //     wf_fid,
-    //     submit_to_save,
-    //     wf_type: 'car_t'
-    //   },
-    //   beforeSend: (xml) => {
-    //     xml.setRequestHeader('token', localStorage.getItem('token'))
-    //   },
-    //   success: () => {
-    //     store.params.visible = false
-    //   },
-    //   complete: (res) => {
-    //     console.log(res);
-    //   }
-    // })
+    request({
+      url: '/api/v1/flow/check/pass',
+      method: 'POST',
+      data: {
+        check_con,
+        flow_id,
+        run_id,
+        flow_process,
+        run_process,
+        npid: nexprocess.id,
+        wf_fid,
+        submit_to_save,
+        wf_type: 'car_t',
+        type,
+        car_info,
+        driver
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: () => {
+        store.params.visible = false;
+        this.fetchList();
+      },
+      complete: (res) => {
+        console.log(res);
+      }
+    })
+  }
+  fetchList = () => {
+    let { wf_fid } = this.props;
+    var pro = [];
+    request({
+      url: '/api/v1/flow/info',
+      method: 'GET',
+      data: {
+        wf_type: 'car_t',
+        wf_fid
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.data = res;
+        store.info.log = res.info.log;
+        store.info.preprocess = res.info.preprocess;
+        store.info.proDataSource.clear();
+        let step = Object.values(store.info.preprocess);
+        store.info.log.forEach((e, index) => {
+          pro.push(Object.assign({}, e, { 'step': step[index] }))
+        });
+        pro.shift();
+        store.info.proDataSource = pro;
+      },
+    })
   }
 }
 

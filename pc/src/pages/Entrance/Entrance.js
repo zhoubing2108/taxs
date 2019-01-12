@@ -7,6 +7,7 @@ import Append from './modal/append';
 import { withRouter } from "react-router-dom";
 import nextStore from './Progress/store';
 import exportFile from '../../helpers/export-file';
+import moment from 'moment';
 
 
 
@@ -94,6 +95,8 @@ class Authority extends Component {
   }
   fetchList = (page) => {
     let { department, time_begin, time_end, status, username, access } = store;
+    let t_begin = moment(time_begin).format('YYYY-MM-DD')
+    let t_end = moment(time_end).format('YYYY-MM-DD');
     request({
       url: '/api/v1/access/list',
       method: 'GET',
@@ -102,8 +105,8 @@ class Authority extends Component {
         username,
         access,
         status,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin:t_begin,
+        time_end: t_end,
         page,
         size:10
       },
@@ -149,8 +152,8 @@ class Authority extends Component {
         username,
         access,
         status,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }

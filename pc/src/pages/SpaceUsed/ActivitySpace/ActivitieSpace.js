@@ -5,6 +5,7 @@ import store from './store';
 import request from '../../../helpers/request';
 import Add from './modal/add';
 import { withRouter } from 'react-router-dom';
+import moment from 'moment';
 import nextStore from './ActProgress/store';
 import exportFile from '../../../helpers/export-file';
 
@@ -95,8 +96,8 @@ class ActivitySpace extends Component {
         username,
         status,
         space,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
         page,
         size:10
       },
@@ -127,8 +128,8 @@ class ActivitySpace extends Component {
         username,
         status,
         space,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }

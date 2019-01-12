@@ -7,7 +7,7 @@ import {observer} from 'mobx-react';
 import Add from './modal/add'; 
 import { withRouter } from "react-router-dom";
 import exportFile from '../../helpers/export-file';
-
+import moment from 'moment';
 
 const { RangePicker } = DatePicker;
 const Option = Select.Option;
@@ -34,36 +34,37 @@ class Diningaround extends Component {
       dataIndex: 'department'
     },
     {
-      title: '联系人电话',
-      dataIndex: 'phone'
+      title: '公务时间',
+      key: 'id',
+      render: (text, record) => (<span>{record.time_begin}点——{record.time_end}点</span>)
     },
     {
-      title: '人数',
-      dataIndex: 'member'
+      title: '来访单位',
+      dataIndex: 'unit'
     },
     {
-      title: '桌数',
-      dataIndex: 'table_number'
+      title: '拟入住酒店',
+      dataIndex: 'hotel'
     },
     {
-      title: '项目',
-      dataIndex: 'product'
+      title: '男',
+      dataIndex: 'male'
     },
     {
-      title: '业务内容',
-      dataIndex: 'content'
+      title: '女',
+      dataIndex: 'female'
     },
     {
-      title: '餐类',
-      dataIndex: 'meal_type'
+      title: '单人房',
+      dataIndex: 'single_room'
     },
     {
-      title: '就餐地点',
-      dataIndex: 'meal_space'
+      title: '双人房',
+      dataIndex: 'double_room'
     },
     {
-      title: '就餐日期',
-      dataIndex: 'meal_date'
+      title: '人员名单',
+      dataIndex: 'members'
     },
     {
       title: '状态',
@@ -108,16 +109,14 @@ class Diningaround extends Component {
   fetchList = (page) => {
     let { department, username, time_begin, time_end, status, meal, meal_type} = store;
     request({
-      url: '/api/v1/official/list',
+      url: '/api/v1/hotel/list',
       method: 'GET',
       data: {
         department,
         username,
         status,
-        meal,
-        meal_type,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
         page:page,
         size:10
       },
@@ -138,19 +137,19 @@ class Diningaround extends Component {
     nextStore.dataSource.push(record);
     let { history } = this.props;
     let id = record.id;
-    history.push(`/reception/diningProgress/${id}`);
+    history.push(`/diningProgress/${id}`);
   }
   export = () => {
     let { department, time_begin, time_end, status, username, meal_type } = store;
     exportFile({
-      url: '/api/v1/official/export',
+      url: '/api/v1/hotel/export',
       data: {
         department,
         username,
         status,
         meal_type,
-        time_begin: time_begin.format('YYYY-MM-DD'),
-        time_end: time_end.format('YYYY-MM-DD'),
+        time_begin: moment(time_begin).format('YYYY-MM-DD'),
+        time_end: moment(time_end).format('YYYY-MM-DD'),
       }
     })
   }

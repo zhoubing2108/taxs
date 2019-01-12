@@ -50,14 +50,14 @@ class Approval extends Component {
 
   handleOk = () => {
     let { props, wf_fid } = this.props;
-    let {info} = props;
-    let {flow_id, run_id,flow_process,run_process, nexprocess } = info;
+    let { info } = props;
+    let { flow_id, run_id, flow_process, run_process, nexprocess } = info;
     let values = this.props.form.getFieldsValue();
-    let { check_con, submit_to_save} = values;
+    let { check_con, submit_to_save } = values;
     request({
-      url:'/api/v1/flow/check/pass',
-      method:'POST',
-      data:{
+      url: '/api/v1/flow/check/pass',
+      method: 'POST',
+      data: {
         check_con,
         flow_id,
         run_id,
@@ -66,17 +66,45 @@ class Approval extends Component {
         npid: nexprocess.id,
         wf_fid,
         submit_to_save,
-        wf_type:'access_control_t'
+        wf_type: 'access_control_t'
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: () => {
-        store.params.visible = false        
+        store.params.visible = false;
+        store.data.check = 2
+        this.fetchList();
       },
-      complete: (res)=> {
-        console.log(res);
+      complete: (res) => {
       }
+    })
+  }
+  fetchList = () => {
+    let { props, wf_fid } = this.props;
+    var pro = [];
+    request({
+      url: '/api/v1/flow/info',
+      method: 'GET',
+      data: {
+        wf_type: 'access_control_t',
+        wf_fid: wf_fid
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.data = res;
+        store.info.log = res.info.log;
+        store.info.preprocess = res.info.preprocess;
+        store.info.proDataSource.clear();
+        let step = Object.values(store.info.preprocess);
+        store.info.log.forEach((e, index) => {
+          pro.push(Object.assign({}, e, { 'step': step[index] }))
+        });
+        pro.shift();
+        store.info.proDataSource = pro;
+      },
     })
   }
 }

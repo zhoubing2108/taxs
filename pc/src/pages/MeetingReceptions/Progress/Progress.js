@@ -221,10 +221,12 @@ class MeetingPlaceProgress extends Component {
   cancel = () => {
     let { id } = this.props.match.params;
     let { data } = store;
-    let run_id = data.info.run_id
+    let run_id = data.info.run_id;
+    let { history } = this.props;
+
     request({
       url: '/api/v1/flow/check/pass',
-      method: 'POSt',
+      method: 'POST',
       data: {
         wf_fid: id,
         check_con: '',
@@ -240,6 +242,7 @@ class MeetingPlaceProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
+        history.push('/meetingReception')
       }
     })
   }

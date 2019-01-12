@@ -6,6 +6,7 @@ import { observer } from 'mobx-react';
 import request from '../../../../helpers/request';
 
 const Option = Select.Option;
+
 @observer
 class Setting extends Component {
   columns = [
@@ -70,24 +71,24 @@ class Setting extends Component {
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
-      success: (res) => {
+      success: () => {
         store.params.visible = false;
-        this.fetchList(1);
+        this.fetchList();
       }
     })
   }
  
-  fetchList = (page) => {
-    let { role, department, phone, username } = store;
+  fetchList = () => {
+    let { post, department, phone, username,current } = store;
     request({
       url: '/api/v1/admin/list',
       method: 'GET',
       data: {
-        role,
         username,
         department,
         phone,
-        page,
+        post,
+        page: current,
         size: 10
       },
       beforeSend: (xml) => {

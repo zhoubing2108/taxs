@@ -68,10 +68,40 @@ class Activity extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: () => {
-        store.params.visible = false
+        store.params.visible = false;
+        this.fetchList()
       },
       complete: (res) => {
         console.log(res);
+      }
+    })
+  }
+  fetchList = () => {
+    let { props, wf_fid } = this.props;
+    var pro = [];
+    request({
+      url: '/api/v1/flow/info',
+      method: 'GET',
+      data: {
+        wf_type: 'space_recreational_t',
+        wf_fid
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.data = res;
+        store.info.log = res.info.log;
+        store.info.preprocess = res.info.preprocess;
+        store.info.proDataSource.clear();
+        let step = Object.values(store.info.preprocess);
+        store.info.log.forEach((e, index) => {
+          pro.push(Object.assign({}, e, { 'step': step[index] }))
+        });
+        pro.shift();
+        store.info.proDataSource = pro;
+      },
+      complete: () => {
       }
     })
   }

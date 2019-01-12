@@ -5,6 +5,8 @@ import { observer } from 'mobx-react';
 import request from '../../helpers/request';
 import exportFile from '../../helpers/export-file';
 import {withRouter} from 'react-router-dom';
+import moment from 'moment'
+
 const { RangePicker } = DatePicker;
 
 @observer
@@ -76,6 +78,9 @@ class CheckIn extends Component {
   fetchList = (p) => {
     let { check_address, check_theme, check_time_begin, check_time_end, department, username } = store;
     let page = p;
+    let time_begin = moment(check_time_begin).format('YYYY-MM-DD')
+    let time_end = moment(check_time_end).format('YYYY-MM-DD')
+    console.log()
     request({
       url: '/api/v1/meeting/sign/in/list',
       method: 'GET',
@@ -84,8 +89,8 @@ class CheckIn extends Component {
         theme: check_theme,
         username,
         department,
-        time_begin: check_time_begin.format('YYYY-MM-DD'),
-        time_end: check_time_end.format('YYYY-MM-DD'),
+        time_begin,
+        time_end,
         page,
         size:10
       },
@@ -101,6 +106,8 @@ class CheckIn extends Component {
   }
   export = () => {
     let { check_address, check_theme, check_time_begin, check_time_end, department, username } = store;
+    let time_begin = moment(check_time_begin).format('YYYY-MM-DD')
+    let time_end = moment(check_time_end).format('YYYY-MM-DD')
     exportFile({
       url: '/api/v1/meeting/sign/in/export',
       data: {
@@ -108,8 +115,8 @@ class CheckIn extends Component {
         theme: check_theme,
         username,
         department,
-        time_begin: check_time_begin.format('YYYY-MM-DD'),
-        time_end: check_time_end.format('YYYY-MM-DD'),
+        time_begin,
+        time_end,
       }
     })
   }

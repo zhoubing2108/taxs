@@ -19,9 +19,11 @@ class Append extends Component {
     let { props, form } = this.props;
     let { AddVisible, user_type } = props;
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
-    let { checkInputVal, members } = store
+    let { checkInputVal, members } = store;
+    let values = this.props.form.getFieldsValue();
     members.slice();
-    let disabled = store.disabled;
+    let disabled_k = store.disabled_k;
+    let disabled_d = store.disabled_d;
     return (
       <Modal visible={AddVisible}
         onCancel={() => { store.addParams.AddVisible = false }}
@@ -31,26 +33,6 @@ class Append extends Component {
         okText='创建'
       >
         <Form>
-          {/* <FormItem {...commonFormProps} label='日期'>
-            {
-              getFieldDecorator('create_date')(<DatePicker />)
-            }
-          </FormItem>
-          <FormItem {...commonFormProps} label='申请人'>
-            {
-              getFieldDecorator('username')(<DatePicker />)
-            }
-          </FormItem>
-          <FormItem {...commonFormProps} label='职务'>
-            {
-              getFieldDecorator('duty')(<DatePicker />)
-            }
-          </FormItem>
-          <FormItem {...commonFormProps} label='申请部门'>
-            {
-              getFieldDecorator('department')(<DatePicker />)
-            }
-          </FormItem> */}
           <FormItem {...commonFormProps} label='人员类型'>
             {
               getFieldDecorator('user_type', { initialValue: user_type })(
@@ -64,7 +46,7 @@ class Append extends Component {
           <FormItem {...commonFormProps} label='人员名称'>
             {
               getFieldDecorator('members')(
-                <Select placeholder='请选择人员------输入可查询' mode='multiple' onSearch={this.selectMember} >
+                <Select placeholder='请选择人员------输入可查询' mode='tags' onSearch={this.selectMember} >
                   {members.map(e => <Option key={e.id} value={e.username + '-' + e.post}>{e.username}-{e.post ? e.post : '普通员工'}  </Option>)}
                 </Select>
               )
@@ -74,16 +56,21 @@ class Append extends Component {
             {
               getFieldDecorator('access')(
                 <CheckboxGroup name="checkboxgroup">
-                  <Checkbox value={1} onChange={(e) => { if (e.target.checked) { store.disabled = true } else { store.disabled = false } }}>
-                    科室门牌号{disabled ?
+                  <Checkbox value={1} onChange={(e) => { if (e.target.checked) { store.disabled_k = true } else { store.disabled_k = false } }}>
+                    科室门牌号{disabled_k ?
                       (
-                        <Input style={{ width: 50 }} size='small' placeholder='门牌' onChange={(e) => { store.checkInputVal = e.target.value + '号科室' }} />
+                        <Input style={{ width: 50 }} size='small' placeholder='门牌' onChange={(e) => { store.checkInputVal_k = e.target.value + '号科室' }} />
                       ) : ''
                     }
                   </Checkbox>
-                  <Checkbox value="资料室">资料室</Checkbox>
+                  <Checkbox value={2} onChange={(e) => { if (e.target.checked) { store.disabled_d = true } else { store.disabled_d = false } }}>
+                    档案室门牌（5、6楼）{disabled_d ?
+                      (
+                        <Input style={{ width: 50 }} size='small' placeholder='门牌' onChange={(e) => { store.checkInputVal_d = e.target.value + '档案室(5、6楼)' }} />
+                      ) : ''
+                    }</Checkbox>
+                  <Checkbox value="科室资料室">科室资料室</Checkbox>
                   <Checkbox value="会议室">会议室</Checkbox>
-                  <Checkbox value="档案室门牌（5、6楼）">档案室门牌（5、6楼）</Checkbox>
                   <Checkbox value="地下车库">地下车库</Checkbox>
                   <Checkbox value="电梯及步梯">电梯及步梯</Checkbox>
                   <Checkbox value="餐厅">餐厅</Checkbox>
@@ -116,15 +103,19 @@ class Append extends Component {
   add = () => {
     let values = this.props.form.getFieldsValue();
     let { deadline, user_type, access, members } = values;
-    let { checkInputVal } = store;
+    let { checkInputVal_k, checkInputVal_d } = store;
+    checkInputVal_k = checkInputVal_k ? checkInputVal_k : '科室门牌号'
+    checkInputVal_d = checkInputVal_d ? checkInputVal_d : '档案资料室'
     members = members.toString()
     access = access.join(',');
-    access = access.replace(1, checkInputVal);
+    access = access.replace(1, checkInputVal_k);
+    access = access.replace(2, checkInputVal_d);
+    deadline = deadline ? deadline.format('YYYY-MM-DD') : ''
     request({
       url: '/api/v1/access/save',
       method: 'POST',
       data: {
-        deadline: deadline.format('YYYY-MM-DD'),
+        deadline,
         access,
         members,
         user_type

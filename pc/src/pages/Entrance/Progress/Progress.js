@@ -66,6 +66,12 @@ class EntranceProgress extends Component {
     {
       title: '处理步骤',
       dataIndex: 'step',
+      render:(text)=>{
+        // let arr = text.split('(');
+        return(
+          <span>{text}</span>
+        )
+      }
     },
     {
       title: '送达时间',
@@ -130,17 +136,19 @@ class EntranceProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        console.log(res.info.log);
         store.data = res;
         store.info.log = res.info.log;
         store.info.preprocess = res.info.preprocess;
         store.info.proDataSource.clear();
         let step = Object.values(store.info.preprocess);
         store.info.log.forEach((e, index) => {
-          pro.push(Object.assign({}, e, { 'step': step[index] }))
+          if(step[index]){
+            pro.push(Object.assign({}, e, { 'step': step[index] }))
+          }else{
+            pro.push(Object.assign({},e,{'step':'结束'}))
+          }
         });
-        // pro.shift();
-        console.log(pro)
+        pro.shift();
         store.info.proDataSource = pro;
       },
     })
@@ -148,10 +156,11 @@ class EntranceProgress extends Component {
   cancel = () => {
     let { id } = this.props.match.params;
     let { data } = store;
-    let run_id = data.info.run_id
+    let run_id = data.info.run_id;
+    let {history} = this.props;
     request({
       url: '/api/v1/flow/check/pass',
-      method: 'POSt',
+      method: 'POST',
       data: {
         wf_fid: id,
         check_con: '',
@@ -167,6 +176,7 @@ class EntranceProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
+        history.push('/education/meetingplace')
       }
     })
   }
