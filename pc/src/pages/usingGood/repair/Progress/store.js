@@ -12,6 +12,9 @@ class Store {
     log: [],
     proDataSource: []
   };
+  @observable fileList=[];
+  @observable imgs = [];
+
 }
 
 export default new Store();

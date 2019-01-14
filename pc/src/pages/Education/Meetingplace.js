@@ -66,20 +66,30 @@ class MeetingPlace extends Component {
   ]
   render() {
     let { department, dataSource, time_begin, time_end, status, username, addParams, total, current } = store;
+    let { globalStore } = this.props;
+    let { departmentList } = globalStore;
     return (
       <Fragment>
         <Card>
           <div>
             <span>日期：</span><RangePicker style={{ width: 250, marginRight: 10 }} defaultValue={[time_begin, time_end]} onChange={(d, t) => { store.time_begin = t[0]; store.time_end = t[1]; }} />
-            <span>部门：</span><Select defaultValue={department} onChange={(v) => { store.department = v }} style={{ width: 100, marginRight: 10 }}>
-              <Option value="all">全部</Option>
+            <span>部门：</span>            
+            <Select defaultValue={department} onChange={(v) => { store.department = v }} style={{ width: 150, marginRight: 10 }}>
+              <Option value={'全部'}>全部</Option>
+              {departmentList.map(e => <Option value={e.name}>{e.name}</Option>)}
             </Select>
             <span>申请人：</span> <Input style={{ width: 120, marginRight: 10 }} placeholder='全部' onChange={(e) => { store.username = e.target.value }} />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList}>查询</Button>
             <Button type='primary' onClick={this.export} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }} onChange={(v) => { store.status = v }} ><Option value={3}>全部</Option></Select>
+            <span>状态：</span>
+            <Select defaultValue={status} style={{ width: 100, marginRight: 10 }} onChange={(v) => { store.status = v }} >
+            <Option value={3}>全部</Option>
+            <Option value={1}>流程中</Option>
+            <Option value={2}>通过</Option>
+            <Option value={-1}>不通过</Option>
+            </Select>
             <Button type='primary' onClick={() => { store.addParams.AddVisible = true }}>新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>

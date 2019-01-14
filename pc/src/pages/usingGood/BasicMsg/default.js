@@ -23,6 +23,7 @@ class BasicType extends Component {
   componentDidMount() {
     this.getUnit();
     this.getTypeList();
+    document.title = '基本资料';
   }
 
   add = () => {
@@ -50,7 +51,7 @@ class BasicType extends Component {
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
-      success: (res) => {
+      success: () => {
         message.success('添加成功');
         this.props.form.resetFields();
         this.setState({ fileList: [] });
@@ -114,7 +115,7 @@ class BasicType extends Component {
                   <FormItem>
                     <span>类别：</span>
                     {getFieldDecorator('c_id')(
-                      <Select style={{ width: '96%' }} placeholder='请选择用品类别' disabled >
+                      <Select style={{ width: '90%' }} placeholder='请选择用品类别' disabled >
                         {
                           typeList ? typeList.map(e => <Option value={e.id} key={e.id}>{e.name}</Option>) :
                             <Option value='打印耗材'>打印耗材</Option>
@@ -126,26 +127,26 @@ class BasicType extends Component {
                   <FormItem>
                     <span>编号：</span>
                     {getFieldDecorator('code')(
-                      <Input style={{ width: '96%' }} placeholder='请输入编号' disabled />
+                      <Input style={{ width: '90%' }} placeholder='请输入编号' disabled />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>用品规格：</span>
                     {getFieldDecorator('format')(
-                      <Input style={{ width: '94%' }} placeholder='请输入用品规格' disabled />
+                      <Input style={{ width: '90%' }} placeholder='请输入用品规格' disabled />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>用品名称：</span>
                     {getFieldDecorator('name')(
-                      <Input style={{ width: '94%' }} placeholder='请输入用品名称' disabled />
+                      <Input style={{ width: '90%' }} placeholder='请输入用品名称' disabled />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>领用方式：</span>
                     {
                       getFieldDecorator('use_type')(
-                        <Select style={{ width: '94%' }} placeholder='请选择领用方式' disabled>
+                        <Select style={{ width: '90%' }} placeholder='请选择领用方式' disabled>
                           <Option value='借用'>借用</Option>
                           <Option value='领用'>领用</Option>
                         </Select>
@@ -165,11 +166,11 @@ class BasicType extends Component {
                     <a onClick={() => { store.addParams.AddVisible = true; return false }} style={{ marginRight: 8 }}>计量单位设置</a>
                     <span>进货包装：</span>
                     {getFieldDecorator('pack')(
-                      <Input style={{ width: '27%', marginRight: 8 }} placeholder='请输入包装格式' disabled />
+                      <Input style={{ width: '20%', marginRight: 8 }} placeholder='请输入包装格式' disabled />
                     )}
                     <span>拆箱比：</span>
                     {getFieldDecorator('count')(
-                      <InputNumber min={0} style={{ width: '28%', }} placeholder='请输入拆箱比' disabled />
+                      <InputNumber min={0} style={{ width: '20%', }} placeholder='请输入拆箱比' disabled />
                     )}
                   </FormItem>
                   <FormItem>
@@ -195,19 +196,19 @@ class BasicType extends Component {
                   <FormItem>
                     <span>最低警示数量：</span>
                     {getFieldDecorator('min')(
-                      <InputNumber min={0} style={{ width: '92%' }} disabled placeholder='请输入最低警示数量' />
+                      <InputNumber min={0} style={{ width: '85%' }} disabled placeholder='请输入最低警示数量' />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>最高警示数量：</span>
                     {getFieldDecorator('max')(
-                      <InputNumber min={0} style={{ width: '92%' }} disabled placeholder='请输入最高警示数量' />
+                      <InputNumber min={0} style={{ width: '85%' }} disabled placeholder='请输入最高警示数量' />
                     )}
                   </FormItem>
-                  <FormItem>
+                  {/* <FormItem>
                     <Button type='primary' style={{ marginRight: 10 }} disabled onClick={this.add}>确定</Button>
-                    <Button onClick={()=>{}}>返回</Button>
-                  </FormItem>
+                    <Button onClick={() => { }}>返回</Button>
+                  </FormItem> */}
                 </Form>
               </div>
             </Card>

@@ -52,16 +52,22 @@ class UserSetting extends Component {
     // }
   ];
   render() {
-    let { dataSource, total, current, params,departmentList} = store;
+    let { dataSource, total, current, params,department} = store;
     dataSource = Array.from(dataSource);
     // let disabled = sessionStorage.getItem('role') === 26;
+    let { globalStore } = this.props;
+    let { departmentList } = globalStore;
     return (
       <Fragment>
         <Card>
           <div>
             <span>姓名：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='名字' onChange={(e) => { store.username = e.target.value }}/>
             <span>手机号码：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='手机号码' onChange={(e) => {store.phone = e.target.value} } />
-            <span>部门：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='部门' onChange={(e) => { store.department = e.target.value }} />
+            <span>部门：</span>
+            <Select defaultValue={department} onChange={(v) => { store.department = v }} style={{ width: 150, marginRight: 10 }}>
+              <Option value={'全部'}>全部</Option>
+              {departmentList.map(e => <Option value={e.name}>{e.name}</Option>)}
+            </Select>
             <span>职务：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='职务' onChange={(e) => { store.post = e.target.value }} />
             <Button type='primary' style={{ marginRight: 10 }} onClick={() => {this.fetchList(1)}} >查询</Button>
             {/* { disabled?  */}
@@ -79,7 +85,6 @@ class UserSetting extends Component {
   componentDidMount() {
     this.fetchList(1);
     this.getRole();
-    this.getDepartment();
   }
   getRole = () => {
     request({
@@ -87,15 +92,6 @@ class UserSetting extends Component {
       method: 'GET',
       success: (res) => {
         store.check_role = res;
-      }
-    })
-  }
-  getDepartment = ()=>{
-    request({
-      url:'/api/v1/department/list',
-      method:'GET',
-      success:(res) => {
-        store.departmentList = res;
       }
     })
   }

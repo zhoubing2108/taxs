@@ -5,8 +5,13 @@ import SiderMenu from '../components/sider';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import st from './index.css'
 const { Header, Content, Sider, Footer } = Layout;
+import store from '../globalStore';
+import request from '../helpers/request';
 
 class App extends Component {
+  componentDidMount() {
+  }
+
   render() {
     let { globalStore, history } = this.props;
     let { loginSuccess } = globalStore
@@ -50,7 +55,9 @@ class App extends Component {
                   <Route path='/good/repair/' render={() => <WrapperComponent Comp={import('./usingGood/repair/Repaired')} globalStore={globalStore} name='repair' />} />
                   <Route path='/good/repairProgress/:id' render={() => <WrapperComponent Comp={import('./usingGood/repair/Progress/Progress')} globalStore={globalStore} name='repairPg' />} />
                   <Route path='/good/borrow/' render={() => <WrapperComponent Comp={import('./usingGood/borrow/borrow')} globalStore={globalStore} name='borrow' />} />
+                  <Route path='/good/borrowPg/:id' render={() => <WrapperComponent Comp={import('./usingGood/borrow/Progress/Progress')} globalStore={globalStore} name='borrowPg' />} />
                   <Route path='/good/recipients/' render={() => <WrapperComponent Comp={import('./usingGood/recipients/recipients')} globalStore={globalStore} name='recipients' />} />
+                  <Route path='/good/recipientsPg/:id' render={() => <WrapperComponent Comp={import('./usingGood/recipients/Progress/Progress')} globalStore={globalStore} name='recipientsPg' />} />
                   <Route path='/good/warehousing/' render={() => <WrapperComponent Comp={import('./usingGood/Warehousing/warehousing')} globalStore={globalStore} name='warehousing' />} />
                   <Route path='/good/basic/default/' render={() => <WrapperComponent Comp={import('./usingGood/BasicMsg/default')} globalStore={globalStore} name='defalut' />} />
                   <Route path='/good/basic/new/' render={() => <WrapperComponent Comp={import('./usingGood/BasicMsg/Basic')} globalStore={globalStore} name='basic' />} />
@@ -93,6 +100,26 @@ class WrapperComponent extends React.Component {
   }
   componentDidMount() {
     this.updateComp(this.props);
+    this.getDepartment();
+    this.getMeetingRoom()
+  }
+  getMeetingRoom = () => {
+    request({
+      url: '/api/v1/meeting/rooms',
+      method: 'GET',
+      success: (res) => {
+        store.placeList = res;
+      }
+    })
+  }
+  getDepartment = () => {
+    request({
+      url: '/api/v1/department/list',
+      method: 'GET',
+      success: (res) => {
+        store.departmentList = res;
+      }
+    })
   }
   render() {
     let Comp = this.state.Comp;

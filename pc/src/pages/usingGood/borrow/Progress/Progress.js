@@ -82,10 +82,10 @@ class EntranceProgress extends Component {
     {
       title: '处理步骤',
       dataIndex: 'step',
-      render:(text)=>{
-        // let arr = text.split('(');
-        return(
-          <span>{text}</span>
+      render: (text) => {
+        var splits = text.split("(", 1).toString();
+        return (
+          <span>{splits}</span>
         )
       }
     },
@@ -115,6 +115,7 @@ class EntranceProgress extends Component {
     let { params, data, dataSource, info } = store;
     let { id } = this.props.match.params;
     let { proDataSource } = info;
+    let step = proDataSource.length;
     let _check = data.check === 1;
     let _cancel = data.cancel === 1;
     let { history } = this.props;
@@ -124,7 +125,7 @@ class EntranceProgress extends Component {
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
             <Button style={{ marginRight: 15 }} onClick={() => { history.goBack() }}>返回</Button>
             {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.showDeleteConfirm() }}>撤销</Button> : null}
-            {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
+            {_check ? <Button type='primary' onClick={() => store.params.visible = true}>{step == 3?'归还':'审批'}</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
             <Table title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} rowKey='id' columns={this.basicMsg} dataSource={dataSource} bordered ></Table>
@@ -192,7 +193,7 @@ class EntranceProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        history.push('/education/meetingplace')
+        history.push('/good/borrow/')
       }
     })
   }

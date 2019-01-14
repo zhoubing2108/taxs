@@ -57,7 +57,7 @@ class Recipients extends Component {
     },
     {
       title: '使用方式',
-      dataIndex: 'type'
+      render:()=><span>领用</span>
     },
     {
       title: '领用日期',
@@ -74,22 +74,32 @@ class Recipients extends Component {
     }
   ]
   render() {
-    let { department, access, status, dataSource, time_begin, time_end, addParams, total, current } = store;
+    let { department, status, dataSource, time_begin, time_end, addParams, total, current } = store;
+    let { globalStore } = this.props;
+    let { departmentList } = globalStore;
     return (
       <Fragment>
         <Card>
           <div>
             <span>日期：</span><RangePicker style={{ width: 250, marginRight: 10 }} defaultValue={[time_begin, time_end]} onChange={(d, t) => { store.time_begin = t[0]; store.time_end = t[1]; }} />
             <span>部门：</span>
-            <Select defaultValue={department} onChange={(v) => { store.department = v }} style={{ width: 100, marginRight: 10 }}>
-              <Option value={'全部'}>全部</Option></Select>
+            <Select defaultValue={department} onChange={(v) => { store.department = v }} style={{ width: 150, marginRight: 10 }}>
+              <Option value={'全部'}>全部</Option>
+              {departmentList.map(e => <Option value={e.name}>{e.name}</Option>)}
+            </Select>
             <span>领用人：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={() => { store.addParams.AddVisible = true }}>申请</Button>
             <Button type='primary' style={{ marginRight: 10 }} onClick={() => this.fetchList(1)}>查询</Button>
             <Button type='primary' onClick={() => { this.export() }} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <span>状态：</span><Select defaultValue={status} style={{ width: 100, marginRight: 10 }}><Option value={3}>全部</Option></Select>
+            <span>状态：</span>
+            <Select defaultValue={status} style={{ width: 100, marginRight: 10 }} onChange={(v) => { store.status = v }} >
+              <Option value={3}>全部</Option>
+              <Option value={1}>流程中</Option>
+              <Option value={2}>通过</Option>
+              <Option value={-1}>不通过</Option>
+            </Select>
             <span>品名：</span> <Input style={{ width: 100, marginRight: 10 }} onChange={(e) => { store.sku = e.target.value }} placeholder='全部' />
             <span>类别：</span> <Input style={{ width: 100, marginRight: 10 }} onChange={(e) => { store.category = e.target.value }} placeholder='全部' />
           </div>
@@ -102,8 +112,19 @@ class Recipients extends Component {
     )
   }
   componentDidMount() {
-    document.title = '借用申请';
+    document.title = '领用申请';
     this.fetchList(1);
+    this.getSkusUse();
+  }
+  getSkusUse = () => {
+    request({
+      url: '/api/v1/sku/list/use',
+      method: 'GET',
+      success: (res) => {
+        let useList = res.filter(e => e.use_type == '领用');
+        store.useList = useList;
+      }
+    })
   }
   fetchList = (page) => {
     let { department, time_begin, time_end, status, username, category, sku } = store;
@@ -140,7 +161,7 @@ class Recipients extends Component {
     nextStore.dataSource.push(record);
     let { history } = this.props;
     let id = record.id;
-    history.push(`/good/borrow/${id}`);
+    history.push(`/good/recipientsPg/${id}`);
   }
   export = () => {
     let { department, time_begin, time_end, status, username, category, sku } = store;

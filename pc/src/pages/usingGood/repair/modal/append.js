@@ -36,7 +36,6 @@ class Append extends Component {
     let { AddVisible, user_type } = props;
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
     let { fileList } = this.state;
-    let { imgs } = store;
     return (
       <Modal visible={AddVisible}
         onCancel={() => { store.addParams.AddVisible = false }}
@@ -75,12 +74,10 @@ class Append extends Component {
           <FormItem label='上传图片' {...commonFormProps}>
             <Upload
               action='/api/v1/image/upload'
-              fileList={fileList}
               listType='picture'
+              fileList={fileList}
               onChange={this.handleChange}
-              onRemove={(e) => console.log(e)}
               onPreview={this.handlePreview}
-              onSuccess={(e) => {imgs.push(e.id)}}
               onError={(e) => console.log(e)}
             >
               <Button><Icon type="upload" />Upload</Button>
@@ -92,9 +89,14 @@ class Append extends Component {
   }
 
   add = () => {
+    store.imgs.clear();
+    let { fileList } = this.state;
+    fileList.forEach(e => {
+      store.imgs.push(e.response.id)
+    });
+    let imgs = store.imgs.toString();
     let values = this.props.form.getFieldsValue();
     let { type, name, address, remark } = values;
-    let imgs = store.imgs.toString();
     request({
       url: '/api/v1/repair/save',
       method: 'POST',

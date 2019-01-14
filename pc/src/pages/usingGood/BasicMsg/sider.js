@@ -32,7 +32,18 @@ class BasicSider extends Component {
       },
       success: (res) => {
         store.defaultData = res;
-        history.push('/good/basic/modify/')
+        store.fileList = [];
+        console.log(res);
+        store.fileList = res.imgs.map(img=>{
+          return {
+            name:img.img_id,
+            uid:img.img_id,
+            url:img.img_url.url,
+            response:{id:img.img_id},
+            status:'done'
+          }
+        })
+        history.push('/good/basic/modify/');
       }
     })
   }

@@ -67,9 +67,9 @@ class EntranceProgress extends Component {
       title: '处理步骤',
       dataIndex: 'step',
       render: (text) => {
-        // let arr = text.split('(');
+        var splits = text.split("(", 1).toString();
         return (
-          <span>{text}</span>
+          <span>{splits}</span>
         )
       }
     },
@@ -137,6 +137,7 @@ class EntranceProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
+        console.log(res);
         store.data = res;
         store.info.log = res.info.log;
         store.info.preprocess = res.info.preprocess;

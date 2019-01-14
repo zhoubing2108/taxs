@@ -4,7 +4,7 @@ import store from './store';
 import { observer } from 'mobx-react';
 import request from '../../helpers/request';
 import exportFile from '../../helpers/export-file';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import moment from 'moment'
 
 const { RangePicker } = DatePicker;
@@ -46,21 +46,31 @@ class CheckIn extends Component {
     }
   ]
   render() {
-    let { check_address, check_time_begin, check_time_end, check_dataSource,check_current,check_total } = store;
+    let { check_address, check_time_begin, check_time_end, check_dataSource, check_current, check_total, check_department } = store;
+    let { globalStore } = this.props;
+    let { departmentList, placeList } = globalStore;
     return (
       <Fragment>
         <Card>
           <div>
             <span>日期：</span><RangePicker style={{ width: 250, marginRight: 10 }} defaultValue={[check_time_begin, check_time_end]} onChange={(d, t) => { store.check_time_begin = t[0]; store.check_time_end = t[1]; }} />
-            <span>部门：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='全部' onChange={(e) => { store.check_deparment = e.target.value }} placeholder='全部' />
+            <span>部门：</span>
+            <Select defaultValue={check_department} onChange={(v) => { store.check_department = v }} style={{ width: 150, marginRight: 10 }}>
+              <Option value={'全部'}>全部</Option>
+              {departmentList.map(e => <Option value={e.name}>{e.name}</Option>)}
+            </Select>
             <span>姓名：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
-            <Button type='primary' style={{ marginRight: 10 }} onClick={() => {this.fetchList(1)} }>查询</Button>
-            <Button type='primary' onClick={()=>{this.export()}} >导出</Button>
+            <Button type='primary' style={{ marginRight: 10 }} onClick={() => { this.fetchList(1) }}>查询</Button>
+            <Button type='primary' onClick={() => { this.export() }} >导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <span>签到地点：</span><Select defaultValue={check_address} style={{ width: 100, marginRight: 10 }}>
-              <Option value="全部">全部</Option>
-            </Select>
+            <span style={{ marginRight: 5 }}>
+              签到地点:
+            <Select defaultValue={check_address} onChange={(v) => { store.check_address = v }} style={{ width: 150, marginLeft: 5 }}>
+                <Option value={'全部'}>全部</Option>
+                {placeList.map(e => <Option value={e.name}>{e.name}</Option>)}
+              </Select>
+            </span>
             <span>会议主题：</span><Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.check_theme = e.target.value }} placeholder='全部' />
           </div>
           <div style={{ marginTop: 10 }}>
@@ -76,7 +86,7 @@ class CheckIn extends Component {
   }
 
   fetchList = (p) => {
-    let { check_address, check_theme, check_time_begin, check_time_end, department, username } = store;
+    let { check_address, check_theme, check_time_begin, check_time_end, department, username, check_department } = store;
     let page = p;
     let time_begin = moment(check_time_begin).format('YYYY-MM-DD')
     let time_end = moment(check_time_end).format('YYYY-MM-DD')
@@ -88,11 +98,11 @@ class CheckIn extends Component {
         address: check_address,
         theme: check_theme,
         username,
-        department,
+        department: check_department,
         time_begin,
         time_end,
         page,
-        size:10
+        size: 10
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
@@ -100,7 +110,7 @@ class CheckIn extends Component {
       success: (res) => {
         store.check_dataSource = res.data;
         store.check_current = res.current_page;
-        store.check_total=res.total;
+        store.check_total = res.total;
       }
     })
   }

@@ -34,8 +34,8 @@ class Meeting extends Component {
       dataIndex: 'theme'
     },
     {
-      title:'主办部门',
-      dataIndex:'host'
+      title: '主办部门',
+      dataIndex: 'host'
     },
     {
       title: '内容概要',
@@ -71,26 +71,33 @@ class Meeting extends Component {
     }
   ]
   render() {
-    let { addParams, modifyParams, address, time_begin, time_end, dataSource, editItem, total,current } = store;
+    let { addParams, modifyParams, address, time_begin, time_end, dataSource, editItem, total, current, department } = store;
     dataSource = dataSource.slice();
+    let { globalStore } = this.props;
+    let { departmentList, placeList } = globalStore;
     return (
       <Fragment>
         <Card>
           <span style={{ marginRight: 5 }}>
             日期:<RangePicker style={{ width: 240, marginLeft: 5 }} defaultValue={[time_begin, time_end]} onChange={(d, t) => { store.time_begin = t[0]; store.time_end = t[1]; }} />
           </span>
-          <span>部门：</span><Input style={{ width: 120, marginRight: 10 }} placeholder='全部' onChange={(e) => { store.host= e.target.value }} placeholder='全部' />
+          <span>部门：</span>
+          <Select defaultValue={department} onChange={(v) => { store.department = v }} style={{ width: 120, marginRight: 10 }}>
+            <Option value={'全部'}>全部</Option>
+            {departmentList.map(e => <Option value={e.name}>{e.name}</Option>)}
+          </Select>
           <span style={{ marginRight: 5 }}>
             签到地点:
-          <Select defaultValue={address} style={{ width: 100, marginLeft: 5 }}>
-              <Option value="全部">全部</Option>
+            <Select defaultValue={address} onChange={(v) => { store.address = v }} style={{ width: 150, marginLeft: 5 }}>
+              <Option value={'全部'}>全部</Option>
+              {placeList.map(e => <Option value={e.name}>{e.name}</Option>)}
             </Select>
           </span>
           <span>
             会议主题: <Input style={{ width: 120, marginLeft: 5 }} placeholder='全部' onChange={(e) => { store.theme = e.target.value }} />
           </span>
-          <Button type='primary' style={{ marginLeft: 10 }} onClick={()=>{this.fetchList(1) }}>查询</Button>
-          <Button type='primary' style={{ float: 'right', marginLeft: 5 }}onClick={()=>{this.export()}} >导出</Button>
+          <Button type='primary' style={{ marginLeft: 10 }} onClick={() => { this.fetchList(1) }}>查询</Button>
+          <Button type='primary' style={{ float: 'right', marginLeft: 5 }} onClick={() => { this.export() }} >导出</Button>
           <Button type='primary' style={{ float: 'right', marginLeft: 5 }} onClick={() => { store.addParams.AddVisible = true }} > 新增</Button>
           <div style={{ marginTop: 15 }}>
             <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }}></Table>
@@ -128,7 +135,7 @@ class Meeting extends Component {
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
         page,
-        size:10
+        size: 10
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
@@ -163,11 +170,11 @@ class Meeting extends Component {
   }
   export = () => {
     let { address, theme, time_begin, time_end } = store;
-    console.log(address, theme, time_begin, time_end );
+    console.log(address, theme, time_begin, time_end);
     exportFile({
       url: '/api/v1/meeting/export',
       data: {
-        address, 
+        address,
         theme,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),

@@ -2,11 +2,35 @@ import React, { Component, Fragment } from 'react';
 import { Modal, Radio, Input, Form, Select } from 'antd';
 import { observer } from 'mobx-react';
 import store from '../store';
-import request from '../../../../helpers/request'
+import request from '../../../../helpers/request';
 
 const { TextArea } = Input;
 const RadioGroup = Radio.Group;
-
+const carList = [
+  { name: '粤J65036', info: '核载人数7' },
+  { name: '粤J49635', info: '核载人数5' },
+  { name: '粤J44406', info: '核载人数23' },
+  { name: '粤J17088', info: '核载人数5' },
+  { name: '粤J53728', info: '核载人数7' },
+  { name: '粤J82033', info: '核载人数5' },
+  { name: '粤J64973', info: '核载人数7' },
+  { name: '粤J50562', info: '核载人数7' },
+  { name: '粤J63543', info: '核载人数5' },
+  { name: '粤J70855', info: '核载人数7' },
+  { name: '粤JGS607', info: '核载人数5' },
+  { name: '粤JGS617', info: '核载人数5' },
+  { name: '粤JD7863', info: '核载人数5' },
+  { name: '粤JD7868', info: '核载人数5' },
+  { name: '粤J73739', info: '核载人数5' },
+  { name: '粤J68291', info: '核载人数5' },
+  { name: '粤J72309', info: '核载人数5' },
+  { name: '粤J72335', info: '核载人数5' },
+  { name: '粤J72355', info: '核载人数5' },
+  { name: '粤J23681', info: '核载人数5' },
+  { name: '粤J73052', info: '核载人数9' },
+  { name: '粤J64282', info: '核载人数10' },
+  { name: '粤J49565', info: '核载人数10' },
+];
 @observer
 class Approval extends Component {
 
@@ -33,7 +57,6 @@ class Approval extends Component {
                   </RadioGroup>
                 )
               }
-
             </div>
             <div style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               <span style={{ lineHeight: 7 }} >审批意见：</span>
@@ -74,7 +97,7 @@ class Approval extends Component {
                 {
                       getFieldDecorator('word2')(
                         <Select style={{ width: 200 }}>
-                          <Option value={'粤J00000' + '限载5人'}>粤J00000 限载5人</Option>
+                          {carList.map(e => <Option value={e.name + e.info}>{e.name}{e.info}</Option>)}
                         </Select>
                       )
                     }
@@ -84,9 +107,7 @@ class Approval extends Component {
                   <span>司机:
                 {
                       getFieldDecorator('word3')(
-                        <Select style={{ width: 200 }}>
-                          <Option value={'小杨13712123333'}>小杨13712123333</Option>
-                        </Select>
+                     <Input placeholder='请输入司机及手机号码'/>
                       )
                     }
                   </span>
@@ -95,7 +116,6 @@ class Approval extends Component {
             </Form>
             : null
           }
-
         </Modal>
       </Fragment>
     )

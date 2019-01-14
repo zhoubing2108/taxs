@@ -27,6 +27,7 @@ class GoodType extends Component {
     }
   ];
   componentDidMount() {
+    document.title = '定义类别';
     this.fetchList(1);
   }
   fetchList = (page)=>{

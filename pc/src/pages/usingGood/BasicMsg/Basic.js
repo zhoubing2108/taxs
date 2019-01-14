@@ -26,10 +26,15 @@ class BasicType extends Component {
   }
 
   add = () => {
+    store.imgs.clear();
+    let { fileList } = this.state;
+    fileList.forEach(e => {
+      store.imgs.push(e.response.id)
+    });
+    let imgs = store.imgs.toString();
     let values = this.props.form.getFieldsValue();
     let { c_id, code, name, unit_id, pack, count, format, use_type, min, max } = values;
     let alert = store.alert;
-    let imgs = store.imgs.toString();
     request({
       url: '/api/v1/sku/save',
       method: 'POST',
@@ -114,7 +119,7 @@ class BasicType extends Component {
                   <FormItem>
                     <span>类别：</span>
                     {getFieldDecorator('c_id')(
-                      <Select style={{ width: '96%' }} placeholder='请选择用品类别' >
+                      <Select style={{ width: '90%' }} placeholder='请选择用品类别' >
                         {
                           typeList ? typeList.map(e => <Option value={e.id} key={e.id}>{e.name}</Option>) :
                             <Option value='打印耗材'>打印耗材</Option>
@@ -126,26 +131,26 @@ class BasicType extends Component {
                   <FormItem>
                     <span>编号：</span>
                     {getFieldDecorator('code')(
-                      <Input style={{ width: '96%' }} placeholder='请输入编号' />
+                      <Input style={{ width: '90%' }} placeholder='请输入编号' />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>用品规格：</span>
                     {getFieldDecorator('format')(
-                      <Input style={{ width: '94%' }} placeholder='请输入用品规格' />
+                      <Input style={{ width: '90%' }} placeholder='请输入用品规格' />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>用品名称：</span>
                     {getFieldDecorator('name')(
-                      <Input style={{ width: '94%' }} placeholder='请输入用品名称' />
+                      <Input style={{ width: '90%' }} placeholder='请输入用品名称' />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>领用方式：</span>
                     {
                       getFieldDecorator('use_type')(
-                        <Select style={{ width: '94%' }} placeholder='请选择领用方式'>
+                        <Select style={{ width: '90%' }} placeholder='请选择领用方式'>
                           <Option value='借用'>借用</Option>
                           <Option value='领用'>领用</Option>
                         </Select>
@@ -165,11 +170,11 @@ class BasicType extends Component {
                     <a onClick={() => { store.addParams.AddVisible = true; return false }} style={{ marginRight: 8 }}>计量单位设置</a>
                     <span>进货包装：</span>
                     {getFieldDecorator('pack')(
-                      <Input style={{ width: '27%', marginRight: 8 }} placeholder='请输入包装格式' />
+                      <Input style={{ width: '20%', marginRight: 8 }} placeholder='请输入包装格式' />
                     )}
                     <span>拆箱比：</span>
                     {getFieldDecorator('count')(
-                      <InputNumber min={0} style={{ width: '28%', }} placeholder='请输入拆箱比' />
+                      <InputNumber min={0} style={{ width: '20%', }} placeholder='请输入拆箱比' />
                     )}
                   </FormItem>
                   <FormItem>
@@ -181,8 +186,6 @@ class BasicType extends Component {
                         fileList={fileList}
                         onPreview={this.handlePreview}
                         onChange={this.handleChange}
-                        onSuccess={(e) => {store.imgs.push(e.id) }}
-                        onRemove={() => { store.imgs.clear();this.setState({fileList:[]}) }}
                       >
                         <Button><Icon type="upload" />Upload</Button>
                       </Upload>
@@ -195,18 +198,17 @@ class BasicType extends Component {
                   <FormItem>
                     <span>最低警示数量：</span>
                     {getFieldDecorator('min')(
-                      <InputNumber min={0} style={{ width: '92%' }} placeholder='请输入最低警示数量' />
+                      <InputNumber min={0} style={{ width: '85%' }} placeholder='请输入最低警示数量' />
                     )}
                   </FormItem>
                   <FormItem>
                     <span>最高警示数量：</span>
                     {getFieldDecorator('max')(
-                      <InputNumber min={0} style={{ width: '92%' }} placeholder='请输入最高警示数量' />
+                      <InputNumber min={0} style={{ width: '85%' }} placeholder='请输入最高警示数量' />
                     )}
                   </FormItem>
                   <FormItem>
                     <Button type='primary' style={{ marginRight: 10 }} onClick={this.add}>确定</Button>
-                    <Button>取消</Button>
                   </FormItem>
                 </Form>
               </div>

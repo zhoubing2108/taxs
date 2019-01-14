@@ -67,7 +67,13 @@ class UseCarProgress extends Component {
     },
     {
       title: '处理步骤',
-      dataIndex: 'step'
+      dataIndex: 'step',
+      render: (text) => {
+        var splits = text.split("(", 1).toString();
+        return (
+          <span>{splits}</span>
+        )
+      }
     },
     {
       title: '送达时间',

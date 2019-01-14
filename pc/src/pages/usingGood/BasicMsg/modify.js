@@ -25,11 +25,17 @@ class ModifyType extends Component {
     this.getTypeList();
   }
   add = () => {
+    let { history } = this.props;
+    store.imgs.clear();
+    let { fileList } = store;
+    fileList.forEach(e => {
+      if(e.response)store.imgs.push(e.response.id);
+    });
+    let imgs = store.imgs.toString();
     let values = this.props.form.getFieldsValue();
     let { c_id, code, name, unit_id, pack, count, format, use_type, min, max } = values;
     let id = store.defaultData.id;
     let alert = store.alert;
-    let imgs = store.imgs.toString();
     request({
       url: '/api/v1/sku/update',
       method: 'POST',
@@ -51,12 +57,13 @@ class ModifyType extends Component {
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
-      success: (res) => {
-        message.success('修改');
+      success: () => {
+        message.success('添加成功');
         this.props.form.resetFields();
-        // this.setState({ fileList: [] });
+        this.setState({ fileList: [] });
         store.imgs.clear();
         this.getNav();
+        history.push('/good/basic/default/');
       }
     })
   }
@@ -89,20 +96,19 @@ class ModifyType extends Component {
   }
   handleChange = ({ fileList }) => {                                  //处理照片
     store.fileList = fileList;
-    console.log(store.fileList);
   };
   handleCancel = () => {
     store.previewVisible = false
   };
   handlePreview = (file) => {
-    console.log(file);
-    // store.previewImage = file.url;
-    // store.previewVisible = true;
+    store.previewImage = file.url;
+    store.previewVisible = true;
   }
   render() {
     let { form, history } = this.props;
     let { getFieldDecorator } = form;
     let { unitList, addParams, typeList, defaultData, fileList } = store;
+    fileList = Array.from(fileList);
     let { alert, c_id, code, count, format, max, min, name, pack, unit_id, use_type, imgs } = defaultData;
     alert === 1;
     return (
@@ -120,7 +126,7 @@ class ModifyType extends Component {
                     {getFieldDecorator('c_id', {
                       initialValue: c_id
                     })(
-                      <Select style={{ width: '96%' }} placeholder='请选择用品类别' >
+                      <Select style={{ width: '90%' }} placeholder='请选择用品类别' >
                         {
                           typeList ? typeList.map(e => <Option value={e.id} key={e.id}>{e.name}</Option>) :
                             <Option value='打印耗材'>打印耗材</Option>
@@ -134,7 +140,7 @@ class ModifyType extends Component {
                     {getFieldDecorator('code', {
                       initialValue: code
                     })(
-                      <Input style={{ width: '96%' }} placeholder='请输入编号' />
+                      <Input style={{ width: '90%' }} placeholder='请输入编号' />
                     )}
                   </FormItem>
                   <FormItem>
@@ -142,7 +148,7 @@ class ModifyType extends Component {
                     {getFieldDecorator('format', {
                       initialValue: format
                     })(
-                      <Input style={{ width: '94%' }} placeholder='请输入用品规格' />
+                      <Input style={{ width: '90%' }} placeholder='请输入用品规格' />
                     )}
                   </FormItem>
                   <FormItem>
@@ -151,7 +157,7 @@ class ModifyType extends Component {
                       {
                         initialValue: name
                       })(
-                        <Input style={{ width: '94%' }} placeholder='请输入用品名称' />
+                        <Input style={{ width: '90%' }} placeholder='请输入用品名称' />
                       )}
                   </FormItem>
                   <FormItem>
@@ -161,7 +167,7 @@ class ModifyType extends Component {
                         {
                           initialValue: use_type
                         })(
-                          <Select style={{ width: '94%' }} placeholder='请选择领用方式'>
+                          <Select style={{ width: '90%' }} placeholder='请选择领用方式'>
                             <Option value='借用'>借用</Option>
                             <Option value='领用'>领用</Option>
                           </Select>
@@ -187,13 +193,13 @@ class ModifyType extends Component {
                       {
                         initialValue: pack
                       })(
-                        <Input style={{ width: '27%', marginRight: 8 }} placeholder='请输入包装格式' />
+                        <Input style={{ width: '20%', marginRight: 8 }} placeholder='请输入包装格式' />
                       )}
                     <span>拆箱比：</span>
                     {getFieldDecorator('count', {
                       initialValue: count
                     })(
-                      <InputNumber min={0} style={{ width: '28%', }} placeholder='请输入拆箱比' />
+                      <InputNumber min={0} style={{ width: '20%', }} placeholder='请输入拆箱比' />
                     )}
                   </FormItem>
                   <FormItem>
@@ -205,8 +211,6 @@ class ModifyType extends Component {
                         fileList={fileList}
                         onPreview={this.handlePreview}
                         onChange={this.handleChange}
-                        onSuccess={(e) => { store.imgs.push(e.id) }}
-                        onRemove={() => { store.imgs.clear(); store.fileList.clear() }}
                       >
                         <Button><Icon type="upload" />Upload</Button>
                       </Upload>
@@ -221,7 +225,7 @@ class ModifyType extends Component {
                     {getFieldDecorator('min', {
                       initialValue: min
                     })(
-                      <InputNumber min={0} style={{ width: '92%' }} placeholder='请输入最低警示数量' />
+                      <InputNumber min={0} style={{ width: '85%' }} placeholder='请输入最低警示数量' />
                     )}
                   </FormItem>
                   <FormItem>
@@ -230,7 +234,7 @@ class ModifyType extends Component {
                       {
                         initialValue: max
                       })(
-                        <InputNumber min={0} style={{ width: '92%' }} placeholder='请输入最高警示数量' />
+                        <InputNumber min={0} style={{ width: '85%' }} placeholder='请输入最高警示数量' />
                       )}
                   </FormItem>
                   <FormItem>

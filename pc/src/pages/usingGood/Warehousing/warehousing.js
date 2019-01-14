@@ -23,11 +23,12 @@ class Warehousing extends Component {
     },
     {
       title: '库存',
-      dataIndex: 'stock'
+      dataIndex: 'all_count'      
     },
     {
       title: '入库',
-      dataIndex: 'all_count'
+      dataIndex: 'stock'
+
     },
     {
       title: '单价',
@@ -55,6 +56,7 @@ class Warehousing extends Component {
     }
   ];
   componentDidMount() {
+    document.title = '入库管理';
     this.fetchList(1);
     this.getSkusUse();
   }

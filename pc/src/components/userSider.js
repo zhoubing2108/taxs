@@ -19,7 +19,7 @@ class UserSider extends Component {
       >
         <SubMenu key="sub1" title={<span><Icon type="edit" theme="twoTone" />用户权限</span>}>
           <Menu.Item key="1"><Link to='/userAuthority/user'></Link>角色设置</Menu.Item>
-          <Menu.Item key="2"><Link to='/userAuthority/psw'>密码设置</Link></Menu.Item>
+          {/* <Menu.Item key="2"><Link to='/userAuthority/psw'>密码设置</Link></Menu.Item> */}
         </SubMenu>
       </Menu>
     )

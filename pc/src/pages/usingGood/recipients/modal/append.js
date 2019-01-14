@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Modal, Form,Input,InputNumber, DatePicker, Select, Table } from 'antd';
+import { Modal, Form, Input, InputNumber, DatePicker, Select, Table } from 'antd';
 import moment from 'moment';
 import store from '../store';
 import { observer } from 'mobx-react';
@@ -42,37 +42,35 @@ class Append extends Component {
     let { props, form } = this.props;
     let { AddVisible, user_type } = props;
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
-    let { checkInputVal, skuList } = store;
+    let { checkInputVal, skuList, useList } = store;
     return (
       <Modal visible={AddVisible}
         onCancel={() => { store.addParams.AddVisible = false }}
         onOk={() => { this.add() }}
         width='600px'
-        title='借用申请'
+        title='领用申请'
         okText='创建'
       >
         <Form>
           <FormItem {...commonFormProps} label='物品名称'>
-            <Select placeholder='请选择物品' style={{width:150, marginRight:10}} onChange={this.getSkuList}>
-              <Option value='洗手液'>洗手液</Option>
-            </Select>
+            {getFieldDecorator('sku_id')(
+              <Select placeholder='请选择物品' style={{ width: 150, marginRight: 10 }} onChange={this.getSkuList}>
+                {
+                  useList.map(e => <Option value={e.id} key={e.id} >{e.name}</Option>)
+                }
+              </Select>
+            )}
             <span>数量：</span>
             {
               getFieldDecorator('count')(
-                <InputNumber style={{width:150}} placeholder='数量'/>
+                <InputNumber style={{ width: 150 }} placeholder='数量' />
               )
             }
           </FormItem>
           <FormItem {...commonFormProps} label='领用日期'>
             {
               getFieldDecorator('time_begin')(
-                <DatePicker style={{ width: 150,marginRight:10 }}/>
-              )
-            }
-            <span>归还日期：</span>
-            {
-              getFieldDecorator('time_end')(
-                <DatePicker style={{ width: 150 }}/>
+                <DatePicker style={{ width: 150, marginRight: 10 }} />
               )
             }
           </FormItem>
@@ -85,18 +83,18 @@ class Append extends Component {
   }
   add = () => {
     let values = this.props.form.getFieldsValue();
-    let {count,time_begin,time_end} = values;
-    time_begin = time_begin.format('YYYY-MM-DD')
-    time_end = time_end.format('YYYY-MM-DD')
+    let { count, time_begin, time_end, sku_id } = values;
+    time_begin = moment(time_begin).format('YYYY-MM-DD');
+    time_end = moment(time_end).format('YYYY-MM-DD');
+    console.log(time_begin);
     request({
-      url: '/api/v1/access/save',
+      url: '/api/v1/collar/use/save',
       method: 'POST',
       data: {
         sku_id,
         count,
         time_begin,
-        time_end,
-        type:1
+        type: 2
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
@@ -108,17 +106,9 @@ class Append extends Component {
       }
     })
   }
-  getSkuList = ()=>{
-    request({
-      url:'/api/v1/sku/list',
-      method:'GET',
-      data:{
-        c_id:1,
-      },
-      success:(res)=>{
-        store.skuList = res;
-      }
-    })
+  getSkuList = (id) => {
+    let skuList = store.useList.filter(e => e.id == id);
+    store.skuList = skuList;
   }
   fetchList = (page) => {
     let { department, time_begin, time_end, status, username, category } = store;
@@ -128,7 +118,7 @@ class Append extends Component {
       url: '/api/v1/sku/apply/list',
       method: 'GET',
       data: {
-        type: 'borrow_t',
+        type: 'collar_use_t',
         category,
         department,
         username,
