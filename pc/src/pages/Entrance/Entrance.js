@@ -10,7 +10,6 @@ import exportFile from '../../helpers/export-file';
 import moment from 'moment';
 
 
-
 const { RangePicker } = DatePicker;
 const Option = Select.Option;
 const _status = {
@@ -87,7 +86,6 @@ class Authority extends Component {
               <Option value={2}>通过</Option>
               <Option value={-1}>不通过</Option>
             </Select>
-            <span>开通功能：</span><Select defaultValue={access} style={{ width: 100, marginRight: 10 }}><Option value={'全部'}>全部</Option></Select>
             <Button type='primary' onClick={() => { store.addParams.AddVisible = true }}>新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>

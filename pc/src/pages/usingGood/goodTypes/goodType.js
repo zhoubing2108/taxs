@@ -60,8 +60,6 @@ class GoodType extends Component {
             <span>序号：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.category_id = e.target.value }} />
             <Button type='primary' style={{ marginRight: 5 }} onClick={()=>{this.fetchList(1)}}>查询</Button>
             <Button type='primary' style={{ marginRight: 5 }} onClick={()=>{store.addParams.AddVisible = true}}>新建</Button>
-            <Button type='primary' style={{ marginRight: 5 }}>编辑</Button>
-            <Button type='primary' style={{ marginRight: 5 }}>删除</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <Table columns={this.columns} dataSource={dataSource} bordered pagination={{ current: current, onChange: (e) => { store.current = e; this.fetchList(e) }, total: total, }}></Table>

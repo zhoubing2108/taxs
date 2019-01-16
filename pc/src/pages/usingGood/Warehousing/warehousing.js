@@ -116,7 +116,6 @@ class Warehousing extends Component {
               {/* <span>类别编号：</span><Input style={{ width: 100, marginRight: 5 }} onChange={(e)=>{store.category_id = e.target.value}} />
               <span>序号：</span><Input style={{ width: 100, marginRight: 5 }} onChange={(e)=>{store.order_number = e.target.value}} /> */}
               <Button type='primary' style={{marginRight:5}} onClick={()=>{this.fetchList(1);}}>查询</Button>
-              <Button type='primary' style={{marginRight:5}} >删除</Button>
               <Button type='primary' style={{marginRight:5}} onClick={()=>{store.addParams.AddVisible = true}} >新增</Button>
               <Button type='primary'>导出</Button>
             </Card>

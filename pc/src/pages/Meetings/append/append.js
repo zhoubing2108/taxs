@@ -14,8 +14,8 @@ const format = 'YYYY-MM-DD HH:mm';
 @observer
 class Append extends Component {
   render() {
-    let { props, form } = this.props;
-    let { AddVisible } = props;
+    let { props, form, departmentList } = this.props;
+    let { AddVisible, } = props;
     let { meetingRooms } = store;
     meetingRooms.slice();
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
@@ -35,7 +35,11 @@ class Append extends Component {
           </FormItem>
           <FormItem {...commonFormProps} label='主办部门'>
             {
-              getFieldDecorator('host')(<Input placeholder='请输入主办部门' />)
+              getFieldDecorator('host')(
+                <Select placeholder='请选择主办部门'>
+                  {departmentList.map(e=><Option value={e.name} key={e.id}>{e.name}</Option>)}
+                </Select>
+              )
             }
           </FormItem>
           <FormItem {...commonFormProps} label='签到地点'>
@@ -82,7 +86,11 @@ class Append extends Component {
           </FormItem>
           <FormItem {...commonFormProps} label='推送部门'>
             {
-              getFieldDecorator('push')(<Input placeholder='请输入推送部门 多个用,逗号分隔' />)
+              getFieldDecorator('push')(
+                <Select placeholder='请选择推送部门' mode='multiple'>
+                  {departmentList.map(e => <Option value={e.name} key={e.id}>{e.name}</Option>)}
+                </Select>
+              )
             }
           </FormItem>
         </Form>
@@ -94,6 +102,7 @@ class Append extends Component {
     let {selectedRoom} = store;
     let {card} = selectedRoom;
     let { meeting_date, address, time_begin, time_end, meeting_begin, theme, outline, remark, meeting_end, host, push } = values;
+    push = push.toString();
     request({
       url: '/api/v1/meeting/save',
       method: 'POST',

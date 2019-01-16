@@ -28,7 +28,11 @@ const proColumns = [
     title: '处理步骤',
     dataIndex: 'step',
     render: (text) => {
-      var splits = text.split("(", 1).toString();
+      var splits;
+      console.log(text);
+      if (text){
+        splits = text.split("(", 1).toString()
+      }
       return (
         <span>{splits}</span>
       )
@@ -135,7 +139,11 @@ class ActProgress extends Component {
         store.info.proDataSource.clear();
         let step = Object.values(store.info.preprocess);
         store.info.log.forEach((e, index) => {
-          pro.push(Object.assign({}, e, { 'step': step[index] }))
+          if (step[index]) {
+            pro.push(Object.assign({}, e, { 'step': step[index] }))
+          } else {
+            pro.push(Object.assign({}, e, { 'step': '结束' }))
+          }
         });
         pro.shift();
         store.info.proDataSource = pro;

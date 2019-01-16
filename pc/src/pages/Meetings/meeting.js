@@ -103,8 +103,8 @@ class Meeting extends Component {
             <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }}></Table>
           </div>
         </Card>
-        <Append props={addParams} />
-        <Modify props={modifyParams} editItem={editItem} />
+        <Append props={addParams} departmentList={departmentList} />
+        <Modify props={modifyParams} editItem={editItem} departmentList={departmentList} />
       </Fragment>
     )
   }
