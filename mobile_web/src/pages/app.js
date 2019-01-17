@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect, Link } from 'react-router-dom';
-import {Drawer,Icon,List,NavBar} from 'antd-mobile';
+import { Drawer, Icon, List, NavBar } from 'antd-mobile';
 import './index.css'
 
 const ListItem = List.Item;
@@ -26,8 +26,7 @@ class App extends Component {
     )
     return (
       <div>
-        <NavBar icon={<Icon type="ellipsis" />}style={{marginBottom:50}}>干部职工之窗</NavBar>
-        <Drawer
+        {/* <Drawer
           className="my-drawer"
           style={{ minHeight: document.documentElement.clientHeight }}
           enableDragHandle
@@ -36,17 +35,18 @@ class App extends Component {
           open={this.state.open}
           onOpenChange={this.onOpenChange}
           position='right'
-        >
+        > */}
         <Switch>
-          <Route path='/meetingbooking' render={()=> <WrapperComponent Comp={import('./MeetingBooking/bottomtab')} name='meetingbooking' /> } />
-          <Route path='/hotelbooking' render={()=> <WrapperComponent Comp={import('./HotelBooking/bottomtab')} name='hotelbooking' /> } />
-          <Route path='/buffet' render={()=> <WrapperComponent Comp={import('./Buffet/bottomtab')} name='buffet' /> } />
-          <Route path='/useplacemeeting' render={()=> <WrapperComponent Comp={import('./UsePlaceMeeting/bottomtab')} name='useplacemeeting' /> } />
-          <Route path='/useplace' render={()=> <WrapperComponent Comp={import('./UsePlace/bottomtab')} name='useplace' /> } />
-          <Route path='/reception' render={()=> <WrapperComponent Comp={import('./MeetingReception/bottomtab')} name='reception' /> } />
-          <Route path='/' render={()=> <WrapperComponent Comp={import('./Entrance/Entrance')} name='entrance' /> } />
+          <Route path='/meetingbooking' render={() => <WrapperComponent Comp={import('./MeetingBooking/bottomtab')} name='meetingbooking' />} />
+          <Route path='/default' render={() => <WrapperComponent Comp={import('./defaultPage/index')} name='index' />} />
+          <Route path='/hotelbooking' render={() => <WrapperComponent Comp={import('./HotelBooking/bottomtab')} name='hotelbooking' />} />
+          <Route path='/buffet' render={() => <WrapperComponent Comp={import('./Buffet/bottomtab')} name='buffet' />} />
+          <Route path='/useplacemeeting' render={() => <WrapperComponent Comp={import('./UsePlaceMeeting/bottomtab')} name='useplacemeeting' />} />
+          <Route path='/useplace' render={() => <WrapperComponent Comp={import('./UsePlace/bottomtab')} name='useplace' />} />
+          <Route path='/reception' render={() => <WrapperComponent Comp={import('./MeetingReception/bottomtab')} name='reception' />} />
+          <Route path='/' render={() => <WrapperComponent Comp={import('./defaultPage/index')} name='index' />} />
         </Switch>
-        </Drawer>
+        {/* </Drawer> */}
       </div>
     )
   }

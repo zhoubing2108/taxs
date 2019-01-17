@@ -37,10 +37,10 @@ class MyEntrance extends Component {
 
   componentDidMount(){
     if(!sessionStorage.getItem('token')){
-      this.getUser();
+      // this.getUser();
     }else{
-      this.fetchList(1);
-      this.getNeedList();
+      // this.fetchList(1);
+      // this.getNeedList();
     }
   }
   getUser = () => {
