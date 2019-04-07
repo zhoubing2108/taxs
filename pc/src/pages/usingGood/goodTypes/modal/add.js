@@ -52,10 +52,10 @@ class AddType extends Component {
   render() {
     let { props, form } = this.props;
     let { AddVisible, user_type } = props;
-    let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
+    let { getFieldDecorator, } = form;
     return (
       <Modal
-        title='借用申请'
+        title='定义类别'
         visible={AddVisible}
         onOk={() => { this.add() }}
         onCancel={() => { store.addParams.AddVisible = false }}

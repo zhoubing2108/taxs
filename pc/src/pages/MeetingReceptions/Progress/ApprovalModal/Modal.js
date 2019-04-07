@@ -81,14 +81,14 @@ class Approval extends Component {
     })
   }
   fetchList = () => {
-    let { id } = this.props.match.params;
+    let { props, wf_fid } = this.props;
     var pro = [];
     request({
       url: '/api/v1/flow/info',
       method: 'GET',
       data: {
         wf_type: 'meeting_recept_t',
-        wf_fid: id
+        wf_fid,
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
@@ -100,7 +100,11 @@ class Approval extends Component {
         store.info.proDataSource.clear();
         let step = Object.values(store.info.preprocess);
         store.info.log.forEach((e, index) => {
-          pro.push(Object.assign({}, e, { 'step': step[index] }))
+          if (step[index]) {
+            pro.push(Object.assign({}, e, { 'step': step[index] }))
+          } else {
+            pro.push(Object.assign({}, e, { 'step': '结束' }))
+          }
         });
         pro.shift();
         store.info.proDataSource = pro;

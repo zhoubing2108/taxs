@@ -106,11 +106,12 @@ class Append extends Component {
     let { checkInputVal_k, checkInputVal_d } = store;
     checkInputVal_k = checkInputVal_k ? checkInputVal_k : '科室门牌号'
     checkInputVal_d = checkInputVal_d ? checkInputVal_d : '档案资料室'
-    members = members.toString()
+    members = members.toString();
     access = access.join(',');
     access = access.replace(1, checkInputVal_k);
     access = access.replace(2, checkInputVal_d);
-    deadline = deadline ? deadline.format('YYYY-MM-DD') : ''
+    deadline = deadline ? deadline.format('YYYY-MM-DD') : '';
+    if (user_type=='借调人员'&& !deadline){ alert('请选择日期');return false}
     request({
       url: '/api/v1/access/save',
       method: 'POST',

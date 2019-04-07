@@ -86,11 +86,10 @@ class CheckIn extends Component {
   }
 
   fetchList = (p) => {
-    let { check_address, check_theme, check_time_begin, check_time_end, department, username, check_department } = store;
+    let { check_address, check_theme, check_time_begin, check_time_end,username, check_department } = store;
     let page = p;
     let time_begin = moment(check_time_begin).format('YYYY-MM-DD')
     let time_end = moment(check_time_end).format('YYYY-MM-DD')
-    console.log()
     request({
       url: '/api/v1/meeting/sign/in/list',
       method: 'GET',

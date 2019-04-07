@@ -9,6 +9,24 @@ import moment from 'moment';
 import nextStore from './ActProgress/store';
 import exportFile from '../../../helpers/export-file';
 
+const selectItem = [
+  { name: '1号气排球场' },
+  { name: '2号气排球场' },
+  { name: '1号羽毛球场' },
+  { name: '2号羽毛球场' },
+  { name: '1号网球场' },
+  { name: '2号网球场' },
+  { name: '1号乒乓球场' },
+  { name: '2号乒乓球场' },
+  { name: '1号健身室' },
+  { name: '2号健身室' },
+  { name: '1号棋牌室' },
+  { name: '2号棋牌室' },
+  { name: '英式台球' },
+  { name: '美式台球' },
+  { name: '健身舞室' },
+  { name: '篮球' },
+]
 const { RangePicker } = DatePicker;
 const _status = {
   '-1': '不通过',
@@ -50,12 +68,12 @@ class ActivitySpace extends Component {
     },
     {
       title: '操作',
-      render: (text, record, columns) => (<span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>  )
+      render: (text, record, columns) => (<span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>)
     }
   ]
 
   render() {
-    let { department, dataSource, time_begin, time_end, status, space, addParams, total,current } = store;
+    let { department, dataSource, time_begin, time_end, status, space, addParams, total, current } = store;
     let { globalStore } = this.props;
     let { departmentList } = globalStore;
     return (
@@ -80,7 +98,10 @@ class ActivitySpace extends Component {
               <Option value={2}>通过</Option>
               <Option value={-1}>不通过</Option>
             </Select>
-            <span>场地名称：</span><Select defaultValue={space} style={{ width: 100, marginRight: 10 }}><Option value={'全部'}>全部</Option></Select>
+            <span>场地名称：</span><Select defaultValue={space} style={{ width: 150, marginRight: 10 }}>
+              <Option value={'全部'}>全部</Option>
+              {selectItem.map(e => <Option value={e.name}>{e.name}</Option>)}
+            </Select>
             <Button type='primary' onClick={() => { store.addParams.AddVisible = true }} >新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>
@@ -108,7 +129,7 @@ class ActivitySpace extends Component {
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
         page,
-        size:10
+        size: 10
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'));
@@ -124,7 +145,7 @@ class ActivitySpace extends Component {
   goDetail = (record) => {
     nextStore.dataSource.clear();
     nextStore.dataSource.push(record);
-    let {history} = this.props;
+    let { history } = this.props;
     let id = record.id;
     history.push(`/space/actProgress/${id}`);
   }

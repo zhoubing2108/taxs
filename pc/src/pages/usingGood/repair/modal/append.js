@@ -41,7 +41,7 @@ class Append extends Component {
         onCancel={() => { store.addParams.AddVisible = false }}
         onOk={() => { this.add() }}
         width='600px'
-        title='门禁权限开通申请'
+        title='报修申请'
         okText='创建'
       >
         <Form>

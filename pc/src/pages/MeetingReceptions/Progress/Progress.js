@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Button, Table, Card,Modal } from 'antd';
+import { Button, Table, Card, Modal } from 'antd';
 import { observer } from 'mobx-react';
 import Approval from './ApprovalModal/Modal';
 import request from '../../../helpers/request';
@@ -18,8 +18,8 @@ const _status = {
 @observer
 class MeetingPlaceProgress extends Component {
   columns = [
-    { 
-      width:200,
+    {
+      width: 200,
       title: '日期',
       dataIndex: 'create_time',
       render: (text) => <span>{moment(text).format('YYYY-MM-DD HH:mm')}</span>
@@ -31,7 +31,7 @@ class MeetingPlaceProgress extends Component {
     {
       title: '部门',
       dataIndex: 'department'
-    }, 
+    },
     {
       title: '公函字号',
       dataIndex: 'letter_size'
@@ -79,7 +79,7 @@ class MeetingPlaceProgress extends Component {
     },
   ]
   detailColumns = [
-    
+
     {
       title: '单位',
       dataIndex: 'unit'
@@ -154,7 +154,7 @@ class MeetingPlaceProgress extends Component {
     this.getDetail();
   }
   render() {
-    let { params, data, dataSource, info,users,detail } = store;
+    let { params, data, dataSource, info, users, detail } = store;
     let { id } = this.props.match.params;
     let { proDataSource, } = info;
     let _check = data.check === 1;
@@ -170,8 +170,8 @@ class MeetingPlaceProgress extends Component {
             {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
           <div style={{ marginBottom: 60 }}>
-            <Table  title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} rowKey='id' columns={this.columns} dataSource={dataSource} bordered pagination={false} ></Table>
-            <Table footer={() => (<span>陪同人员名单:{accompany}</span> )} rowKey='name' columns={this.detailColumns} dataSource={users} bordered pagination={false} ></Table>
+            <Table title={() => <div style={{ textAlign: 'center', fontSize: 20 }}>基本信息</div>} rowKey='id' columns={this.columns} dataSource={dataSource} bordered pagination={false} ></Table>
+            <Table footer={() => (<span>陪同人员名单:{accompany}</span>)} rowKey='name' columns={this.detailColumns} dataSource={users} bordered pagination={false} ></Table>
             <Table rowKey='recept_time' columns={this.meal_columns} dataSource={detail} bordered pagination={false} ></Table>
           </div>
           <div>
@@ -202,7 +202,11 @@ class MeetingPlaceProgress extends Component {
         store.info.proDataSource.clear();
         let step = Object.values(store.info.preprocess);
         store.info.log.forEach((e, index) => {
-          pro.push(Object.assign({}, e, { 'step': step[index] }))
+          if (step[index]) {
+            pro.push(Object.assign({}, e, { 'step': step[index] }))
+          } else {
+            pro.push(Object.assign({}, e, { 'step': '结束' }))
+          }
         });
         pro.shift();
         store.info.proDataSource = pro;
@@ -229,7 +233,6 @@ class MeetingPlaceProgress extends Component {
     let { data } = store;
     let run_id = data.info.run_id;
     let { history } = this.props;
-
     request({
       url: '/api/v1/flow/check/pass',
       method: 'POST',

@@ -6,7 +6,8 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isDEV = process.env.NODE_ENV === 'development';
 const config = {
-  mode: "development",
+  // mode: "development",
+  mode: "production",
   entry: {
     app: [path.join(__dirname, "src/index.js")]
   },
@@ -14,7 +15,7 @@ const config = {
     path: path.join(__dirname, "taxs"),
     filename: '[name].[hash]js',
     chunkFilename: '[name].[hash].js',
-    publicPath: "/"
+    publicPath: "/taxs/"
   },
   module: {
     rules: [
@@ -62,21 +63,20 @@ const config = {
     }),
     new webpack.HotModuleReplacementPlugin(),
   ],
-  // optimization: {
-  //   splitChunks: {
-  //     chunks:'all'
-  //   },
-  //   minimizer: [
-  //     new UglifyJsPlugin({
-  //       uglifyOptions: {
-  //       ecma: 6,
-  //       cache: true,
-  //       parallel: true
-  //     }}),
-  //     new OptimizeCSSAssetsPlugin({})
-  //   ]
-  // }
-
+  optimization: {
+    splitChunks: {
+      chunks:'all'
+    },
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+        ecma: 6,
+        cache: true,
+        parallel: true
+      }}),
+      new OptimizeCSSAssetsPlugin({})
+    ]
+  }
 };
 
 if (isDEV) {
@@ -93,7 +93,7 @@ if (isDEV) {
       historyApiFallback: true,
       proxy: {
         '/api': {
-          target: 'http://maintain.mengant.cn',
+          target: 'http://jmswj.e-irobot.com:1035',
           changeOrigin: true
         }
       }

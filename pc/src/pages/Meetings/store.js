@@ -8,6 +8,7 @@ import moment from 'moment';
    @observable modifyParams = {
      ModifyVisible: false
    }
+   @observable alertDepartment = [];
    @observable meetingRooms = [];
    @observable selectedRoom = {};
    @observable roomName = '';

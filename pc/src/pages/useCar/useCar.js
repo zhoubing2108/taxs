@@ -89,7 +89,6 @@ class UseCar extends Component {
               <Option value={2}>通过</Option>
               <Option value={-1}>不通过</Option>
             </Select>
-            <span>用车原因：</span><Select defaultValue={reason} style={{ width: 100, marginRight: 10 }} onChange={(v) => { store.reason = v }} ><Option value={'全部'}>全部</Option></Select>
             <Button type='primary' onClick={() => store.addParams.AddVisible = true} >新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>

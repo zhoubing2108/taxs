@@ -100,11 +100,13 @@ class Approval extends Component {
         store.info.proDataSource.clear();
         let step = Object.values(store.info.preprocess);
         store.info.log.forEach((e, index) => {
-          pro.push(Object.assign({}, e, { 'step': step[index] }))
+          if (step[index]) {
+            pro.push(Object.assign({}, e, { 'step': step[index] }))
+          } else {
+            pro.push(Object.assign({}, e, { 'step': '结束' }))
+          }
         });
-        // console.log(pro)
         pro.shift();
-        // console.log(pro)
         store.info.proDataSource = pro;
       },
     })

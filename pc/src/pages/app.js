@@ -35,17 +35,7 @@ class App extends Component {
               </Sider>)
               : null
           }
-          {/* //   <SiderMenu /> */}
           <Layout style={{ background: '#eee', padding: '0 24px 24px' }}>
-            {/* {
-              !atLogin ? (<span>
-                您现在的位置：
-            <Breadcrumb style={{ margin: '16px 0', display: 'inline' }}>
-                  <Breadcrumb.Item>Home</Breadcrumb.Item>
-                  <Breadcrumb.Item>List</Breadcrumb.Item>
-                  <Breadcrumb.Item>App</Breadcrumb.Item>
-                </Breadcrumb>
-              </span>) : null} */}
             <Content style={{ padding: '10px 0', margin: 0, minHeight: 800 }}>
               <div>
                 <Switch>
@@ -100,22 +90,27 @@ class WrapperComponent extends React.Component {
   }
   componentDidMount() {
     this.updateComp(this.props);
-    this.getDepartment();
-    this.getMeetingRoom()
+    this.getMeetingRoom();
+    if(localStorage.getItem('token')){
+      this.getDepartment();
+    }
   }
-  getMeetingRoom = () => {
+  getMeetingRoom = () =>{
     request({
-      url: '/api/v1/meeting/rooms',
-      method: 'GET',
-      success: (res) => {
+      url:'/api/v1/meeting/rooms',
+      method:'GET',
+      success:(res)=>{
         store.placeList = res;
       }
     })
   }
   getDepartment = () => {
     request({
-      url: '/api/v1/department/list',
+      url: '/api/v1/departments',
       method: 'GET',
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
       success: (res) => {
         store.departmentList = res;
       }

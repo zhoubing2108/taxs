@@ -77,7 +77,7 @@ class Activity extends Component {
     })
   }
   fetchList = () => {
-    let { props, wf_fid } = this.props;
+    let { wf_fid } = this.props;
     var pro = [];
     request({
       url: '/api/v1/flow/info',

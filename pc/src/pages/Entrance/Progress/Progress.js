@@ -176,7 +176,7 @@ class EntranceProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        history.push('/education/meetingplace')
+        history.goBack()
       }
     })
   }

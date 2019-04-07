@@ -4,6 +4,7 @@ import { Form, Input, Button, Icon, Spin } from 'antd'
 import st from './login.css'
 import request from '../../helpers/request';
 import store from './store';
+import globalStore from '../../globalStore';
 import { observer } from 'mobx-react';
 
 const FormItem = Form.Item;
@@ -83,12 +84,12 @@ class Login extends Component {
       url: '/api/v1/token/admin',
       data: values,
       success: (res) => {
-        console.log(res);
         localStorage.setItem('token', res.token);
         localStorage.setItem('role', res.role);
         store.params.loginSuccess = true;
         globalStore.loginSuccess = true;
-        history.history.push('/')
+        history.history.push('/');
+        this.getDepartment();
       },
       complete: () => {
       }
@@ -97,6 +98,18 @@ class Login extends Component {
   hasErrors = (fieldsError) => {
     return Object.keys(fieldsError).some(field => fieldsError[field]);
   };
+  getDepartment = () => {
+    request({
+      url: '/api/v1/departments',
+      method: 'GET',
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        globalStore.departmentList = res;
+      }
+    })
+  }
 }
 
 export default Form.create()(Login)

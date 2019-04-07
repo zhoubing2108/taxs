@@ -5,6 +5,7 @@ class Store {
     visible:false,
     data:[],
   }
+  @observable departmentList = [];
   @observable department = '全部'
   @observable post = '';
   @observable username = '';

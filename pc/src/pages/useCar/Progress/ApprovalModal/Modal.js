@@ -107,7 +107,7 @@ class Approval extends Component {
                   <span>司机:
                 {
                       getFieldDecorator('word3')(
-                     <Input placeholder='请输入司机及手机号码'/>
+                     <Input style={{width:200}} placeholder='请输入司机及手机号码'/>
                       )
                     }
                   </span>

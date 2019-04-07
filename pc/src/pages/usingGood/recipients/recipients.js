@@ -8,6 +8,7 @@ import { withRouter } from "react-router-dom";
 import nextStore from './Progress/store';
 import exportFile from '../../../helpers/export-file';
 import moment from 'moment';
+import GoodDetail from './detail';
 
 
 
@@ -40,24 +41,12 @@ class Recipients extends Component {
       dataIndex: 'phone'
     },
     {
-      title: '品名',
-      dataIndex: 'sku'
-    },
-    {
-      title: '类别',
-      dataIndex: 'category'
-    },
-    {
-      title: '规格型号',
-      dataIndex: 'format'
-    },
-    {
-      title: '数量',
-      dataIndex: 'count'
-    },
-    {
       title: '使用方式',
       render:()=><span>领用</span>
+    },
+    {
+      title: '领用物品',
+      render: (text, record) => <span> <a onClick={() => { this.getDetails(record); return false; }} >查看</a></span>
     },
     {
       title: '领用日期',
@@ -74,7 +63,7 @@ class Recipients extends Component {
     }
   ]
   render() {
-    let { department, status, dataSource, time_begin, time_end, addParams, total, current } = store;
+    let { department, status, dataSource, time_begin, time_end, addParams, total, current, details } = store;
     let { globalStore } = this.props;
     let { departmentList } = globalStore;
     return (
@@ -100,7 +89,7 @@ class Recipients extends Component {
               <Option value={2}>通过</Option>
               <Option value={-1}>不通过</Option>
             </Select>
-            <span>品名：</span> <Input style={{ width: 100, marginRight: 10 }} onChange={(e) => { store.sku = e.target.value }} placeholder='全部' />
+            {/* <span>品名：</span> <Input style={{ width: 100, marginRight: 10 }} onChange={(e) => { store.sku = e.target.value }} placeholder='全部' /> */}
             <span>类别：</span> <Input style={{ width: 100, marginRight: 10 }} onChange={(e) => { store.category = e.target.value }} placeholder='全部' />
           </div>
           <div style={{ marginTop: 10 }}>
@@ -108,6 +97,7 @@ class Recipients extends Component {
           </div>
         </Card>
         <Append props={addParams} />
+        <GoodDetail props={details} />
       </Fragment>
     )
   }
@@ -134,10 +124,8 @@ class Recipients extends Component {
       url: '/api/v1/sku/apply/list',
       method: 'GET',
       data: {
-        type: 'collar_use_t ',
-        category,
+        type: 'collar_use_t',
         department,
-        sku,
         username,
         status,
         time_begin: t_begin,
@@ -155,7 +143,24 @@ class Recipients extends Component {
       }
     })
   }
-
+  getDetails = (record) => {
+    let id = record.id;
+    request({
+      url: '/api/v1/sku/apply/detail',
+      method: 'GET',
+      data: {
+        id,
+        type: 'collar_use_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.detailsArr = res;
+        store.details.visible = true;
+      }
+    })
+  }
   goDetail = (record) => {
     nextStore.dataSource.clear();
     nextStore.dataSource.push(record);

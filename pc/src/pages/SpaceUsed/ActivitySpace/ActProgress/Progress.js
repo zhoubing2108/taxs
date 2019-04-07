@@ -3,7 +3,7 @@ import { Button, Table, Card, Modal } from 'antd';
 import { observer } from 'mobx-react';
 import store from './store';
 import Activity from './ActivityModal/ActivityModal';
-import {withRouter} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import request from '../../../../helpers/request';
 import moment from 'moment';
 
@@ -30,7 +30,7 @@ const proColumns = [
     render: (text) => {
       var splits;
       console.log(text);
-      if (text){
+      if (text) {
         splits = text.split("(", 1).toString()
       }
       return (
@@ -91,8 +91,8 @@ class ActProgress extends Component {
     },
   ]
   render() {
-    let { params, dataSource, info,data } = store;
-    let {proDataSource} = info;
+    let { params, dataSource, info, data } = store;
+    let { proDataSource } = info;
     let { history } = this.props;
     let { id } = this.props.match.params;
     let _cancel = data.cancel === 1;
@@ -101,7 +101,7 @@ class ActProgress extends Component {
       <Fragment>
         <Card>
           <div style={{ textAlign: 'center', marginBottom: 15 }}>
-            <Button style={{ marginRight: 15 }} onClick={()=>{history.goBack()}} >返回</Button>
+            <Button style={{ marginRight: 15 }} onClick={() => { history.goBack() }} >返回</Button>
             {_cancel ? <Button style={{ marginRight: 15 }} onClick={() => { this.showDeleteConfirm() }}>撤销</Button> : null}
             {_check ? <Button type='primary' onClick={() => store.params.visible = true}>审批</Button> : null}
           </div>
@@ -116,7 +116,7 @@ class ActProgress extends Component {
       </Fragment>
     )
   }
-  componentDidMount(){
+  componentDidMount() {
     this.fetchList();
   }
   fetchList = () => {

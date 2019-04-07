@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Table, Input, Select, DatePicker, Button, Card } from 'antd';
+import { Table, Input, Select, DatePicker, Button, Card, } from 'antd';
 import { observer } from 'mobx-react';
 import store from './store';
 import request from '../../../helpers/request';
@@ -8,8 +8,7 @@ import { withRouter } from "react-router-dom";
 import nextStore from './Progress/store';
 import exportFile from '../../../helpers/export-file';
 import moment from 'moment';
-
-
+import GoodDetail from './detail';
 
 const { RangePicker } = DatePicker;
 const Option = Select.Option;
@@ -40,24 +39,12 @@ class Borrow extends Component {
       dataIndex: 'phone'
     },
     {
-      title: '品名',
-      dataIndex: 'sku'
-    },
-    {
-      title: '类别',
-      dataIndex: 'category'
-    },
-    {
-      title: '规格型号',
-      dataIndex: 'format'
-    },
-    {
-      title: '数量',
-      dataIndex: 'count'
-    },
-    {
       title: '使用方式',
       render: () => <span>借用</span>
+    },
+    {
+      title: '领用物品',
+      render: (text, record) => <span> <a onClick={() => { this.getDetails(record); return false; }} >查看</a></span>
     },
     {
       title: '领用日期',
@@ -78,7 +65,7 @@ class Borrow extends Component {
     }
   ]
   render() {
-    let { department, status, dataSource, time_begin, time_end, addParams, total, current } = store;
+    let { department, status, dataSource, time_begin, time_end, addParams, total, current, details } = store;
     let { globalStore } = this.props;
     let { departmentList } = globalStore;
     return (
@@ -112,6 +99,7 @@ class Borrow extends Component {
           </div>
         </Card>
         <Append props={addParams} />
+        <GoodDetail props={details} />
       </Fragment>
     )
   }
@@ -125,7 +113,6 @@ class Borrow extends Component {
       url: '/api/v1/sku/list/use',
       method: 'GET',
       success: (res) => {
-        console.log(res);
         let useList = res.filter(e => e.use_type == '借用');
         store.useList = useList;
       }
@@ -160,7 +147,24 @@ class Borrow extends Component {
       }
     })
   }
-
+  getDetails = (record) => {
+    let id = record.id;
+    request({
+      url: '/api/v1/sku/apply/detail',
+      method: 'GET',
+      data: {
+        id,
+        type: 'borrow_t'
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.detailsArr = res;
+        store.details.visible = true;
+      }
+    })
+  }
   goDetail = (record) => {
     nextStore.dataSource.clear();
     nextStore.dataSource.push(record);

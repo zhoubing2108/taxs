@@ -57,7 +57,7 @@ function request({ url, method = 'POST', dataType = 'json', data = {}, beforeSen
 				let data = JSON.parse(xml.responseText);
 				let msg = data.msg;
 				if (msg == 'Token已过期或无效Token') { localStorage.removeItem('token');history.push('/login')}
-				alert(msg)
+				alert(msg);
 			} else {
 				alert('请求遇到了问题，请稍后再尝试');
 				fail(data);

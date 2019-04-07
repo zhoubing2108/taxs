@@ -152,9 +152,7 @@ class EducationProgress extends Component {
             pro.push(Object.assign({}, e, { 'step': '结束' }))
           }
         });
-        // console.log(pro)
         pro.shift();
-        // console.log(pro)
         store.info.proDataSource = pro;
       },
     })

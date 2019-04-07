@@ -19,10 +19,12 @@ class FnModal extends Component {
           <Form>
             <div style={{ textAlign: 'center' }}>
               {
-                getFieldDecorator('submit_to_save')(
+                getFieldDecorator('submit_to_save',{
+                  initialValue:'ok'
+                })(
                   <RadioGroup name='radiogroup'>
-                    <Radio value='ok' style={{ marginRight: 15 }}>不通过</Radio>
-                    <Radio value='back'>通过</Radio>
+                    <Radio value='back' style={{ marginRight: 15 }}>不通过</Radio>
+                    <Radio value='ok'>通过</Radio>
                   </RadioGroup>
                 )
               }
@@ -31,7 +33,9 @@ class FnModal extends Component {
             <div style={{ textAlign: 'center', verticalAlign: 'middle' }}>
               <span style={{ lineHeight: 7 }} >审批意见：</span>
               {
-                getFieldDecorator('check_con')(<TextArea rows={4} style={{ width: '60%', marginTop: 15 }} ></TextArea>)
+                getFieldDecorator('check_con',{
+                  initialValue:'同意'
+                })(<TextArea rows={4} style={{ width: '60%', marginTop: 15 }} ></TextArea>)
               }
 
             </div>
@@ -44,14 +48,14 @@ class FnModal extends Component {
     store.params.visible = false
   }
   fetchList = () => {
-    let { id } = this.props.match.params;
+    let {  wf_fid } = this.props;
     var pro = [];
     request({
       url: '/api/v1/flow/info',
       method: 'GET',
       data: {
         wf_type: 'space_multi_t',
-        wf_fid: id
+        wf_fid: wf_fid
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', localStorage.getItem('token'))
@@ -103,8 +107,7 @@ class FnModal extends Component {
         store.params.visible = false;
         this.fetchList()
       },
-      complete: (res) => {
-        console.log(res);
+      complete: () => {
       }
     })
   }

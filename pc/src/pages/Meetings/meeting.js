@@ -71,7 +71,7 @@ class Meeting extends Component {
     }
   ]
   render() {
-    let { addParams, modifyParams, address, time_begin, time_end, dataSource, editItem, total, current, department } = store;
+    let { addParams, modifyParams, address, time_begin, time_end, dataSource, editItem, total, current, department, alertDepartment } = store;
     dataSource = dataSource.slice();
     let { globalStore } = this.props;
     let { departmentList, placeList } = globalStore;
@@ -103,8 +103,8 @@ class Meeting extends Component {
             <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }}></Table>
           </div>
         </Card>
-        <Append props={addParams} departmentList={departmentList} />
-        <Modify props={modifyParams} editItem={editItem} departmentList={departmentList} />
+        <Append props={addParams} departmentList={alertDepartment} />
+        <Modify props={modifyParams} editItem={editItem} departmentList={alertDepartment} />
       </Fragment>
     )
   }
@@ -112,6 +112,7 @@ class Meeting extends Component {
     document.title = '会议签到';
     this.fetchList(1);
     this.getMeetingRoom();
+    this.getDepartment();
   }
   getMeetingRoom = () => {
     request({
@@ -122,14 +123,23 @@ class Meeting extends Component {
       }
     })
   }
+  getDepartment = () => {
+    request({
+      url: '/api/v1/department/list',
+      method: 'GET',
+      success: (res) => {
+        store.alertDepartment = res;
+      }
+    })
+  }
   fetchList = (page) => {
-    let { address, theme, time_begin, time_end, host } = store;
-    console.log(time_begin);
+    let { address, theme, time_begin, time_end, host,department } = store;
     request({
       url: '/api/v1/meeting/list',
       method: 'GET',
       data: {
         address,
+        department,
         theme,
         host,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
@@ -170,7 +180,6 @@ class Meeting extends Component {
   }
   export = () => {
     let { address, theme, time_begin, time_end } = store;
-    console.log(address, theme, time_begin, time_end);
     exportFile({
       url: '/api/v1/meeting/export',
       data: {

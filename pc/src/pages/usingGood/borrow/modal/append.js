@@ -54,29 +54,30 @@ class Append extends Component {
         <Form>
           <FormItem {...commonFormProps} label='物品名称'>
             {getFieldDecorator('sku_id')(
-              <Select placeholder='请选择物品' style={{ width: 150, marginRight: 10 }} onChange={this.getSkuList}>
+              <Select placeholder='请选择物品' mode='multiple' onChange={this.getSkuList}>
                 {
                   useList.map(e => <Option value={e.id} key={e.id} >{e.name}</Option>)
                 }
               </Select>
             )}
-            <span>数量：</span>
+          </FormItem>
+          <FormItem {...commonFormProps} label='数量'>
             {
-              getFieldDecorator('count')(
-                <InputNumber style={{ width: 150 }} placeholder='数量' />
+              getFieldDecorator('sku_count')(
+                <Input placeholder='多个用英文逗号隔开' />
               )
             }
           </FormItem>
           <FormItem {...commonFormProps} label='领用日期'>
             {
               getFieldDecorator('time_begin')(
-                <DatePicker style={{ width: 150, marginRight: 10 }} />
+                <DatePicker style={{ width: 150, marginRight: 12 }} />
               )
             }
             <span>归还日期：</span>
             {
               getFieldDecorator('time_end')(
-                <DatePicker style={{ width: 150 }} />
+                <DatePicker style={{ width: 180 }} />
               )
             }
           </FormItem>
@@ -89,15 +90,16 @@ class Append extends Component {
   }
   add = () => {
     let values = this.props.form.getFieldsValue();
-    let { count, time_begin, time_end,sku_id } = values;
+    let { sku_count, time_begin, time_end,sku_id } = values;
     time_begin = moment(time_begin).format('YYYY-MM-DD');
     time_end = moment(time_end).format('YYYY-MM-DD');
+    sku_id = sku_id.toString();
     request({
       url: '/api/v1/collar/use/save',
       method: 'POST',
       data: {
         sku_id,
-        count,
+        sku_count,
         time_begin,
         time_end,
         type: 1
@@ -112,9 +114,14 @@ class Append extends Component {
       }
     })
   }
-  getSkuList = (id) => {
-   let skuList = store.useList.filter(e=>e.id == id);
-   store.skuList = skuList;
+  getSkuList = (arr) => {
+    var skuList = [];
+    arr.forEach(e => {
+      let sku_list = store.useList.filter(v=> v.id == e);
+      skuList.push(sku_list[0]);
+    })
+    skuList = Array.from(skuList);
+     store.skuList = skuList;
   }
   fetchList = (page) => {
     let { department, time_begin, time_end, status, username, category } = store;

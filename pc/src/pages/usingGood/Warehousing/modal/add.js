@@ -72,6 +72,24 @@ class Append extends Component {
         this.props.form.resetFields();
         this.getNav();
         store.addParams.AddVisible = false;
+        this.fetchList(1);
+      }
+    })
+  }
+  fetchList = (p) => {
+    let { category, category_id, order_number } = store;
+    request({
+      url: '/api/v1/stock/list',
+      method: 'GET',
+      data: {
+        category,
+        category_id,
+        order_number,
+        page: p,
+        size: 10
+      },
+      success: (res) => {
+        store.dataSource = res.data;
       }
     })
   }

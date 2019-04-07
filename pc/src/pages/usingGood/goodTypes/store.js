@@ -2,8 +2,12 @@ import { observable } from 'mobx';
 
 class Store {
   @observable addParams = {
-    AddVisible: false
+    AddVisible: false,
   }
+  @observable ModifyParams = {
+    ModifyVisible: false,
+  }
+  @observable editItem={}
   @observable dataSource = [];
   @observable category = '';
   @observable order_number = '';

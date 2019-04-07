@@ -36,24 +36,8 @@ class EntranceProgress extends Component {
       dataIndex: 'phone'
     },
     {
-      title: '品名',
-      dataIndex: 'sku'
-    },
-    {
-      title: '类别',
-      dataIndex: 'category'
-    },
-    {
-      title: '规格型号',
-      dataIndex: 'format'
-    },
-    {
-      title: '数量',
-      dataIndex: 'count'
-    },
-    {
       title: '使用方式',
-      dataIndex: 'type'
+      render:()=> <span>借用</span>
     },
     {
       title: '领用日期',

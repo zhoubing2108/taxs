@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react';
-import { Card, Button, Input, Table } from 'antd';
+import { Card, Button, Input, Table,message } from 'antd';
 import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import AddType from './modal/add';
+import ModifyType from './modal/modify';
 import store from './store'
 import request from '../../../helpers/request';
 
@@ -24,6 +25,14 @@ class GoodType extends Component {
     {
       title: '备注',
       dataIndex: 'remark',
+    },
+    {
+      title:'操作',
+      render: (record, text, columns) => (
+        <span>
+          <a style={{ marginRight: 10 }} onClick={() => this.editItem(record)}>编辑</a>
+          <a onClick={() => this.deleteItem(record)}>删除</a>
+        </span>)
     }
   ];
   componentDidMount() {
@@ -49,8 +58,29 @@ class GoodType extends Component {
       }
     })
   }
+  editItem = (item) => {
+    store.ModifyParams.ModifyVisible = true;
+    store.editItem = item;
+  }
+  deleteItem = (record) => {
+    let { id } = record;
+    request({
+      url: '/api/v1/category/handel',
+      method: 'POST',
+      data: {
+        id
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        message.success('删除成功');
+        this.fetchList(1);
+      }
+    })
+  }
   render() {
-    let {addParams,dataSource,current,total} = store;
+    let { addParams,ModifyParams,dataSource,current,total,editItem} = store;
     return (
       <Fragment>
         <Card>
@@ -66,6 +96,7 @@ class GoodType extends Component {
           </div>
         </Card>
         <AddType props={addParams} />
+        <ModifyType props={ModifyParams} editItem={editItem} />
       </Fragment>
     )
   }
