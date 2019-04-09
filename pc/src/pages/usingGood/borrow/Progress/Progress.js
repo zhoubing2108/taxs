@@ -50,7 +50,7 @@ class EntranceProgress extends Component {
     {
       title: '状态',
       dataIndex: 'status',
-      render: (text,record,index) => (record.check == 1 ? <span><Badge dot>{_status[text]}</Badge></span>
+      render: (text,record,index) => (record.check == 1 ? <span><Badge offset={[7,-5]} dot>{_status[text]}</Badge></span>
         :<span>{_status[text]}</span>)
     },
   ]

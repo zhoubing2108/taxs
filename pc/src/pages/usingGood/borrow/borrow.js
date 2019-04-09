@@ -61,7 +61,7 @@ class Borrow extends Component {
     },
     {
       title: '操作',
-      render: (text, record, index) => (record.check == 1 ? <span><a onClick={() => { this.goDetail(record) }}><Badge dot>查看进度</Badge></a></span>
+      render: (text, record, index) => (record.check == 1 ? <span><a onClick={() => { this.goDetail(record) }}><Badge offset={[7,-5]} dot>查看进度</Badge></a></span>
       :<span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>)
     }
   ]
