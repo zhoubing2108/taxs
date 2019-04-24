@@ -1,29 +1,24 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom'
 import { TabBar } from 'antd-mobile';
-import MyEntrance from './myEntrance';
+import MyEntrance from './myMainEntrance';
 import { observer } from 'mobx-react';
+import st from './repair.css';
+import Repair from './repair';
 import store from './store';
-import st from './entrance.css';
-import ApplyCom from './apply';
-import Order from './order';
-
-const tabs = [
-  { title: '申请' },
-  { title: '我的' },
-];
-
-
-
+import request from '../../helpers/request';
 @observer
-class Entrance extends Component {
+class Meeting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab: 'redTab',
+      selectedTab: 'blueTab',
       hidden: false,
       fullScreen: true,
     };
+  }
+  componentDidMount() {
+    document.title = '故障报修'
   }
   renderContent(pageText) {
     return (
@@ -65,39 +60,21 @@ class Entrance extends Component {
           <TabBar.Item
             title="申请"
             key="apply"
-            icon={<div className={st.unSelectedIcon} />
-            }
-            selectedIcon={
-              <div className={st.selectedIcon}
-              />
-            }
-            selected={this.state.selectedTab === 'blueTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'blueTab',
-              });
-            }}
+            icon={<div className={st.unSelectedIcon} />}
+            selectedIcon={<div className={st.selectedIcon} />}
+            selected={store.tabSelect.selectedTab === 'blueTab'}
+            onPress={() => { store.tabSelect.selectedTab = 'blueTab'; }}
             data-seed="logId"
           >
-            <Order />
+            <Repair />
           </TabBar.Item>
           <TabBar.Item
-            icon={
-              <div className={st.mineSelectedIcon}
-              />
-            }
-            selectedIcon={
-              <div className={st.unMineSelectedIcon}
-              />
-            }
+            icon={<div className={st.mineSelectedIcon} />}
+            selectedIcon={<div className={st.unMineSelectedIcon} />}
             title="我的"
             key="mine"
-            selected={this.state.selectedTab === 'redTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'redTab',
-              });
-            }}
+            selected={store.tabSelect.selectedTab === 'redTab'}
+            onPress={() => { store.tabSelect.selectedTab = 'redTab';this.getNeedList(); this.fetchList(1) }}
             data-seed="logId1"
           >
             <MyEntrance />
@@ -106,6 +83,40 @@ class Entrance extends Component {
       </div>
     );
   }
+  getNeedList = () => {
+    request({
+      url: '/api/v1/flow/ready',
+      method: 'GET',
+      data: {
+        wf_type: 'repair_t',
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.needList = res;
+      }
+    })
+  }
+
+  fetchList = (page) => {
+    request({
+      url: '/api/v1/flow/complete',
+      method: 'GET',
+      data: {
+        wf_type: 'repair_t',
+        page: page,
+        size: 10
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.dataSource = res.data;
+        store.total = res.last_page
+      }
+    })
+  }
 }
 
-export default withRouter(Entrance);
+export default withRouter(Meeting);

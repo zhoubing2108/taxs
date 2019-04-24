@@ -1,12 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { ListView, Pagination, Tabs, Card, Button, Modal } from 'antd-mobile';
 import store from './store';
-// 数据要对应
 import request from '../../helpers/request';
 import { observer } from 'mobx-react';
-import getQueryVarible from '../../helpers/get-query-variable';
 
-
+const prompt = Modal.prompt;
 const alert = Modal.alert;
 const showAlert = (id) => {
   const alertInstance = alert('Delete', '是否取消申请', [
@@ -38,7 +36,6 @@ const cancel = (e) => {
       xml.setRequestHeader('token', sessionStorage.getItem('token'))
     },
     success: (res) => {
-      console.log(res);
     }
 
   })
@@ -50,7 +47,7 @@ const tabs = [
 ];
 const _status = {
   '-1': '不通过',
-  '0': '保存中',
+  '0': '流程中',
   '1': '审批中',
   '2': '通过'
 }
@@ -67,31 +64,12 @@ class MyEntrance extends Component {
       alertInstance.close();
     }, 500000);
   };
-  componentDidMount(){
+  componentDidMount() {
     this.getNeedList();
     this.fetchList();
   }
-  getUser = () => {
-    let code = getQueryVarible('code');
-    request({
-      url:'/api/v1/token/user',
-      data:{
-        code
-      },
-      method:'GET',
-      success:(res)=>{
-        sessionStorage.setItem('token',res.token);
-        sessionStorage.setItem('u_id',res.u_id);
-        sessionStorage.setItem('username',res.username);
-        sessionStorage.setItem('account',res.account);
-        sessionStorage.setItem('role',res.role);
-        }
-    })
-
-
-  };
   render() {
-    let { total, dataSource, needList,needTotal, current,needCurrent } = store;
+    let { total, dataSource, needList, needTotal, current, needCurrent } = store;
     const HistoryList = () => (
       dataSource.map(e => (<div key={e.flow.id} style={{ fontSize: 16, padding: '10px', background: '#eefaff', border: '1px solid #bbe1f1' }}>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.username}</span>
@@ -99,33 +77,26 @@ class MyEntrance extends Component {
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.department}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.unit}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.username}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.letter_size}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.letter_title}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.leader}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.post}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.grade}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.departmental}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.section}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.under_section}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.meeting_count}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.accompany}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.users}</span><br />
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.detail.replace('A','\n')}</span><br />
-
+        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.detail.replace('A', '\n')}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.time_begin}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.time_end}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.reason}</span>
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.process[0].admin.username}</span>
-    
         <span style={{ marginRight: '10px', padding: '5px 0 ', }}>{_status[e.status]}</span><br />
         {e.process.map((v, i) => (
           <span key={i} style={{ marginRight: '20px', padding: '5px 0 ', }}>
-            {v.admin.username}:{v.btn == 'ok' ? <span style={{ color: 'green' }}>通过</span> : <span style={{ color: 'red' }}>不通过</span>}
+           {v.admin.username}:{v.btn == 'Back' ? <span style={{ color: 'red' }}>不通过</span> : <span style={{ color: 'green' }}>通过</span>}
           </span>))}
       </div>
       )
@@ -138,23 +109,18 @@ class MyEntrance extends Component {
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.department}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.unit}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.username}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.letter_size}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.letter_title}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.leader}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.post}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.grade}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.departmental}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.section}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.under_section}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.meeting_count}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.accompany}</span><br />
-
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.users}</span><br />
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.detail.replace('A','\n')}</span><br />
-
+        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.detail.replace('A', '\n')}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.process[0].admin.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0 ', }}>{_status[e.status]}</span><br />
         {e.process.map((v, i) => (
@@ -167,14 +133,14 @@ class MyEntrance extends Component {
           : null}
         {e.btn == 'check' ?
           <span style={{ margin: '5px 10px 0 0' }}>
-            <Button onClick={() => prompt('通过', '请输入意见', [
+            <Button onClick={() => prompt('请输入意见', '通过', [
               { text: '取消' },
               { text: '提交', onPress: value => { store.check_con = value; this.getCheck(e, 'ok') } },
             ], 'default', '通过')} type='primary' size='small' style={{ display: 'inline-block', height: 24, lineHeight: '24px', marginRight: '5px' }} >通过</Button>
-            <Button onClick={() => prompt('不通过', '请输入意见', [
+            <Button onClick={() => prompt('请输入意见', '不通过', [
               { text: '取消' },
               { text: '提交', onPress: value => { store.check_con = value; this.getCheck(e, 'back') } },
-            ], 'default', '通过')} type='primary' size='small' style={{ display: 'inline-block', height: 24, lineHeight: '24px', margin: '5px 10px 0 0' }} >不通过</Button>
+            ], 'default', '不通过')} type='primary' size='small' style={{ display: 'inline-block', height: 24, lineHeight: '24px', margin: '5px 10px 0 0' }} >不通过</Button>
           </span>
           : null}
       </div>
@@ -183,63 +149,22 @@ class MyEntrance extends Component {
     )
     return (
       <Fragment>
-        <div style={{ marginTop: '5px', }}>
+        <div>
           <Tabs tabs={tabs} style={{ width: '100%' }} initialPage={0} animated={false} useOnPan={false}>
             <div style={{ height: '100%', backgroundColor: '#fff' }}>
               <NeedList />
-              {/* <button onClick={this.getNeedList}>test</button>
-              <button onClick={this.check}>同意</button> */}
             </div>
             <div style={{ height: '100%', backgroundColor: '#fff' }}>
               <HistoryList />
               <Pagination total={total} current={current} onChange={(e, i) => { let page = e; this.fetchList(page) }} />
-              {/* <button onClick={this.test}>test</button> <button style={{ marginLeft: 10 }} onClick={()=>{this.fetchList(1)}}>fetchlist</button> */}
             </div>
           </Tabs>
         </div>
       </Fragment>
     )
   }
-  test = () => {
-    let code = '2UXC8URNOzPdhLXT8C_4jobD8Y4m30JzVfQDpaoenfw';
-    request({
-      url: 'api/v1/token/user',
-      method: 'GET',
-      data: {
-        code
-      },
-      success: (e) => {
-        console.log(e);
-        sessionStorage.setItem('token', e.token)
-        sessionStorage.setItem('role', e.role);
-        console.log(sessionStorage)
-      }
-    })
-  }
-  check = () => {
-    request({
-      url: '/api/v1/flow/check/pass',
-      method: 'POST',
-      data: {
-        "check_con": "同意",
-        "flow_id": 3,
-        "flow_process": 10,
-        "npid": 11,
-        "run_id": 154,
-        "run_process": 354,
-        "wf_fid": 89,
-        "wf_type": "access_control_t",
-        "submit_to_save": "ok",
-      },
-      beforeSend: (xml) => {
-        xml.setRequestHeader('token', sessionStorage.getItem('token'))
-      },
-      success: (res) => {
-        console.log(res);
-      }
-    })
-  }
   getCheck = (e, type) => {
+    console.log(e);
     request({
       url: '/api/v1/flow/info',
       method: 'GET',
@@ -248,7 +173,8 @@ class MyEntrance extends Component {
         wf_type: 'meeting_recept_t'
       },
       beforeSend: (xml) => {
-        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+        xml.setRequestHeader('token', sessionStorage.getItem('token')
+        )
       },
       success: (res) => {
         store.info = res.info;
@@ -275,7 +201,8 @@ class MyEntrance extends Component {
         wf_type: 'meeting_recept_t'
       },
       beforeSend: (xml) => {
-        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+        xml.setRequestHeader('token', sessionStorage.getItem('token')
+        )
       },
       success: () => {
         alert('操作成功');
@@ -292,19 +219,16 @@ class MyEntrance extends Component {
         wf_type: 'meeting_recept_t',
       },
       beforeSend: (xml) => {
-        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+        xml.setRequestHeader('token', sessionStorage.getItem('token')
+        )
       },
       success: (res) => {
         store.needList = res;
-        console.log('代办的数据',res);
-        console.log(res.length);
-        console.log(res);
+
       }
     })
   }
-
   fetchList = (page) => {
-    let { time_begin, time_end, status, username, access, department } = store.listParams;
     request({
       url: '/api/v1/flow/complete',
       method: 'GET',
@@ -314,25 +238,14 @@ class MyEntrance extends Component {
         size: 10
       },
       beforeSend: (xml) => {
-        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+        xml.setRequestHeader('token', sessionStorage.getItem('token')
+        )
       },
       success: (res) => {
         store.dataSource = res.data;
         store.total = res.last_page
-        console.log('历史列表',res);
       }
     })
-
-  }
-  getQueryVariable = (variable) => {
-    let u_id = sessionStorage.getItem('u_id');
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      if (pair[0] == variable) { return pair[1]; }
-    }
-    return (false);
   }
 }
 

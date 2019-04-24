@@ -1,10 +1,13 @@
 const webpack = require("webpack");
 const path = require("path");
 const htmlWebpackPlugin = require("html-webpack-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isDEV = process.env.NODE_ENV === 'development';
 const config = {
-  mode: "development",
+  mode: "production",
+  // mode: "development",
   entry: {
     app: [path.join(__dirname, "src/index.js")]
   },
@@ -12,12 +15,12 @@ const config = {
     path: path.join(__dirname, "wx"),
     filename: '[name].[hash]js',
     chunkFilename: '[name].[hash].js',
-    publicPath: "/"
+    publicPath: "/wx/"
   },
   module: {
     rules: [
       {
-        test:/\.(png|jpg|jpeg|gif|svg)$/,
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
         use: ['url-loader']
       },
       {
@@ -60,7 +63,21 @@ const config = {
     }),
     new webpack.HotModuleReplacementPlugin()
   ],
-
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+    minimizer: [
+      new UglifyJsPlugin({
+        uglifyOptions: {
+          ecma: 6,
+          cache: true,
+          parallel: true
+        }
+      }),
+      new OptimizeCSSAssetsPlugin({})
+    ]
+  }
 };
 
 if (isDEV) {
@@ -77,7 +94,7 @@ if (isDEV) {
       historyApiFallback: true,
       proxy: {
         '/api': {
-          target: 'http://ysxt.e-irobot.com:9995',
+          target: 'http://jmswj.e-irobot.com:1035',
           changeOrigin: true
         }
       }

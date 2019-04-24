@@ -1,52 +1,66 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect, Link } from 'react-router-dom';
-import { Drawer, Icon, List, NavBar } from 'antd-mobile';
-import './index.css'
+import { ActivityIndicator, Toast } from 'antd-mobile';
+import './index.css';
+import request from '../helpers/request';
+import getQueryVarible from '../helpers/get-query-variable';
 
-const ListItem = List.Item;
 class App extends Component {
   state = {
-    open: true,
+    animating: true,
   }
-  onOpenChange = (...args) => {
-    console.log(args);
-    this.setState({ open: !this.state.open });
+  componentDidMount() {
+    if (!sessionStorage.getItem('token')) {
+      this.getUser();
+    }
   }
+  getUser = () => {
+    let code = getQueryVarible('code');
+    request({
+      url: '/api/v1/token/user',
+      data: {
+        code
+      },
+      method: 'GET',
+      success: (res) => {
+        this.setState({
+          animating: false
+        })
+        sessionStorage.setItem('token', res.token);
+        sessionStorage.setItem('u_id', res.u_id);
+        sessionStorage.setItem('username', res.username);
+        sessionStorage.setItem('account', res.account);
+        sessionStorage.setItem('role', res.role);
+        Toast.success('登陆成功', 1);
+      }
+    })
+  };
   render() {
-    const sider = (
-      <List>
-        <ListItem><Link to='/'>门禁权限</Link></ListItem>
-        <ListItem><Link to='/useplace'>文体活动场地</Link></ListItem>
-        <ListItem><Link to='/useplacemeeting'>多功能演播室</Link></ListItem>
-        <ListItem><Link to='/meetingbooking'>会场预定</Link></ListItem>
-        <ListItem><Link to='/reception'>围餐预定</Link></ListItem>
-        <ListItem><Link to='/buffet'>自助餐</Link></ListItem>
-        <ListItem><Link to='/hotelbooking'>酒店预订</Link></ListItem>
-      </List>
-    )
     return (
       <div>
-        {/* <Drawer
-          className="my-drawer"
-          style={{ minHeight: document.documentElement.clientHeight }}
-          enableDragHandle
-          contentStyle={{ color: '#A6A6A6', textAlign: 'center', paddingTop: 42 }}
-          sidebar={sider}
-          open={this.state.open}
-          onOpenChange={this.onOpenChange}
-          position='right'
-        > */}
-        <Switch>
-          <Route path='/meetingbooking' render={() => <WrapperComponent Comp={import('./MeetingBooking/bottomtab')} name='meetingbooking' />} />
-          <Route path='/default' render={() => <WrapperComponent Comp={import('./defaultPage/index')} name='index' />} />
-          <Route path='/hotelbooking' render={() => <WrapperComponent Comp={import('./HotelBooking/bottomtab')} name='hotelbooking' />} />
-          <Route path='/buffet' render={() => <WrapperComponent Comp={import('./Buffet/bottomtab')} name='buffet' />} />
-          <Route path='/useplacemeeting' render={() => <WrapperComponent Comp={import('./UsePlaceMeeting/bottomtab')} name='useplacemeeting' />} />
-          <Route path='/useplace' render={() => <WrapperComponent Comp={import('./UsePlace/bottomtab')} name='useplace' />} />
-          <Route path='/reception' render={() => <WrapperComponent Comp={import('./MeetingReception/bottomtab')} name='reception' />} />
-          <Route path='/' render={() => <WrapperComponent Comp={import('./defaultPage/index')} name='index' />} />
-        </Switch>
-        {/* </Drawer> */}
+        <div className="toast-example">
+          <ActivityIndicator
+            toast
+            text="登陆中..."
+            animating={this.state.animating}
+          />
+          <Switch>
+            <Route path='/attendance' render={() => <WrapperComponent Comp={import('./Attendance/attendance')} name='attendance' />} />
+            <Route path='/createMeeting' render={() => <WrapperComponent Comp={import('./NewMeetings/bottomtab')} name='createMeeting' />} />
+            <Route path='/repair' render={() => <WrapperComponent Comp={import('./Repair/bottomtab')} name='repair' />} />
+            <Route path='/borrowmaterial' render={() => <WrapperComponent Comp={import('./BorrowMaterial/bottomtab')} name='borrowmaterial' />} />
+            <Route path='/getmaterial' render={() => <WrapperComponent Comp={import('./GetMaterial/bottomtab')} name='getmaterial' />} />
+            <Route path='/usecars' render={() => <WrapperComponent Comp={import('./UseCars/bottomtab')} name='usecars' />} />
+            <Route path='/meetingbooking' render={() => <WrapperComponent Comp={import('./MeetingBooking/bottomtab')} name='meetingbooking' />} />
+            <Route path='/hotelbooking' render={() => <WrapperComponent Comp={import('./HotelBooking/bottomtab')} name='hotelbooking' />} />
+            <Route path='/buffet' render={() => <WrapperComponent Comp={import('./Buffet/bottomtab')} name='buffet' />} />
+            <Route path='/useplacemeeting' render={() => <WrapperComponent Comp={import('./UsePlaceMeeting/bottomtab')} name='useplacemeeting' />} />
+            <Route path='/useplace' render={() => <WrapperComponent Comp={import('./UsePlace/bottomtab')} name='useplace' />} />
+            <Route path='/reception' render={() => <WrapperComponent Comp={import('./MeetingReception/bottomtab')} name='reception' />} />
+            <Route path='/entrance' render={() => <WrapperComponent Comp={import('./Entrance/Entrance')} name='entrance' />} />
+            <Route path='/' render={() => <WrapperComponent Comp={import('./defaultPage/index')} name='default' />} />
+          </Switch>
+        </div>
       </div>
     )
   }
