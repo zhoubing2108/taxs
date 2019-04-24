@@ -16,11 +16,11 @@ class Approval extends Component {
     },
     {
       title: '品名',
-      dataIndex: 'sku'
+      dataIndex: 'sku_name'
     },
     {
       title: '类别',
-      dataIndex: 'category'
+      dataIndex: 'category_name'
     },
     {
       title: '规格型号',
@@ -28,7 +28,7 @@ class Approval extends Component {
     },
     {
       title: '借用数量',
-      dataIndex: 'count'
+      dataIndex: 'sku_count'
     },
     {
       title: '归还时间',
@@ -39,10 +39,15 @@ class Approval extends Component {
     let { params, form } = this.props;
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
     let { visible, loading } = params
-    let { info, dataSource } = store;
+    let { info, dataSource, revertSkuList } = store;
     let { proDataSource } = info;
-    let step = proDataSource.length;
+    let step = proDataSource.length
+    // let step = 3;;让他强行等于三，调起归还
     console.log(step);
+    revertSkuList.map((item,index) => {
+      item.time_end = dataSource[0].time_end,
+      item.create_time = dataSource[0].create_time
+    })
     return (
       <Fragment>
         <Modal title={step == 3 ? '归还' : '审批'} visible={visible} onCancel={this.handleCancel} onOk={this.handleOk} okText='确定' cancelText='取消'>
@@ -51,7 +56,7 @@ class Approval extends Component {
               <Form>
                 {getFieldDecorator('submit_to_save',{initialValue:'ok'})}
                 {getFieldDecorator('check_con',{initialValue:''})}
-                <Table columns={this.columns} dataSource={dataSource} ></Table>
+                <Table columns={this.columns} dataSource={revertSkuList} ></Table>
               </Form>
               :
               <Form>
