@@ -6,6 +6,7 @@ import request from '../../helpers/request';
 import { observer } from 'mobx-react';
 import getQueryVarible from '../../helpers/get-query-variable';
 
+const prompt = Modal.prompt;
 const alert = Modal.alert;
 const showAlert = (id) => {
   const alertInstance = alert('Delete', '是否取消申请', [
@@ -49,7 +50,7 @@ const tabs = [
 ];
 const _status = {
   '-1': '不通过',
-  '0': '保存中',
+  '0': '流程中',
   '1': '审批中',
   '2': '通过'
 }
@@ -115,7 +116,7 @@ class MyEntrance extends Component {
         <span style={{ marginRight: '10px', padding: '5px 0 ', }}>{_status[e.status]}</span><br />
         {e.process.map((v, i) => (
           <span key={i} style={{ marginRight: '20px', padding: '5px 0 ', }}>
-            {v.admin.username}:{v.btn == 'ok' ? <span style={{ color: 'green' }}>通过</span> : <span style={{ color: 'red' }}>不通过</span>}
+           {v.admin.username}:{v.btn == 'Back' ? <span style={{ color: 'red' }}>不通过</span> : <span style={{ color: 'green' }}>通过</span>}
           </span>))}
       </div>
       )
@@ -153,14 +154,14 @@ class MyEntrance extends Component {
           : null}
         {e.btn == 'check' ?
           <span style={{ margin: '5px 10px 0 0' }}>
-            <Button onClick={() => prompt('通过', '请输入意见', [
+            <Button onClick={() => prompt('请输入意见', '通过',[
               { text: '取消' },
               { text: '提交', onPress: value => { store.check_con = value; this.getCheck(e, 'ok') } },
             ], 'default', '通过')} type='primary' size='small' style={{ display: 'inline-block', height: 24, lineHeight: '24px', marginRight: '5px' }} >通过</Button>
-            <Button onClick={() => prompt('不通过', '请输入意见', [
+            <Button onClick={() => prompt('请输入意见', '不通过',[
               { text: '取消' },
               { text: '提交', onPress: value => { store.check_con = value; this.getCheck(e, 'back') } },
-            ], 'default', '通过')} type='primary' size='small' style={{ display: 'inline-block', height: 24, lineHeight: '24px', margin: '5px 10px 0 0' }} >不通过</Button>
+            ], 'default', '不通过')} type='primary' size='small' style={{ display: 'inline-block', height: 24, lineHeight: '24px', margin: '5px 10px 0 0' }} >不通过</Button>
           </span>
           : null}
       </div>
@@ -169,7 +170,7 @@ class MyEntrance extends Component {
     )
     return (
       <Fragment>
-        <div style={{ marginTop: '50px' }}>
+        <div>
           <Tabs tabs={tabs} style={{ width: '100%' }} initialPage={0} animated={false} useOnPan={false}>
             <div style={{ height: '100%', backgroundColor: '#fff' }}>
               <NeedList />
@@ -186,45 +187,6 @@ class MyEntrance extends Component {
       </Fragment>
     )
   }
-  test = () => {
-    let code = '2UXC8URNOzPdhLXT8C_4jobD8Y4m30JzVfQDpaoenfw';
-    request({
-      url: 'api/v1/token/user',
-      method: 'GET',
-      data: {
-        code
-      },
-      success: (e) => {
-        console.log(e);
-        sessionStorage.setItem('token', e.token)
-        sessionStorage.setItem('role', e.role);
-        console.log(sessionStorage)
-      }
-    })
-  }
-  check = () => {
-    request({
-      url: '/api/v1/flow/check/pass',
-      method: 'POST',
-      data: {
-        "check_con": "同意",
-        "flow_id": 3,
-        "flow_process": 10,
-        "npid": 11,
-        "run_id": 154,
-        "run_process": 354,
-        "wf_fid": 89,
-        "wf_type": "access_control_t",
-        "submit_to_save": "ok",
-      },
-      beforeSend: (xml) => {
-        xml.setRequestHeader('token', sessionStorage.getItem('token'))
-      },
-      success: (res) => {
-        console.log(res);
-      }
-    })
-  }
   getNeedList = () => {
     request({
       url: '/api/v1/flow/ready',
@@ -237,15 +199,11 @@ class MyEntrance extends Component {
       },
       success: (res) => {
         store.needList = res;
-        console.log('代办的数据',res);
-        console.log(res.length);
-        console.log(res);
       }
     })
   }
 
   fetchList = (page) => {
-    let { time_begin, time_end, status, username, access, department } = store.listParams;
     request({
       url: '/api/v1/flow/complete',
       method: 'GET',
@@ -260,7 +218,6 @@ class MyEntrance extends Component {
       success: (res) => {
         store.dataSource = res.data;
         store.total = res.last_page
-        console.log(res);
       }
     })
   }
@@ -307,16 +264,6 @@ class MyEntrance extends Component {
         this.fetchList(1);
       }
     })
-  }
-  getQueryVariable = (variable) => {
-    let u_id = sessionStorage.getItem('u_id');
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
-      if (pair[0] == variable) { return pair[1]; }
-    }
-    return (false);
   }
 }
 

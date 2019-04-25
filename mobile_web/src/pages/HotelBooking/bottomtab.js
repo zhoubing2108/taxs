@@ -19,10 +19,13 @@ class Meeting extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab: 'redTab',
+      selectedTab: 'blueTab',
       hidden: false,
       fullScreen: true,
     };
+  }
+  componentDidMount() {
+    document.title = '酒店预订'
   }
   getNeedList = () => {
     request({
@@ -36,9 +39,6 @@ class Meeting extends Component {
       },
       success: (res) => {
         store.needList = res;
-        console.log('代办的数据', res);
-        console.log(res.length);
-        console.log(res);
       }
     })
   }
@@ -58,7 +58,6 @@ class Meeting extends Component {
       success: (res) => {
         store.dataSource = res.data;
         store.total = res.last_page
-        console.log(res);
       }
     })
 
@@ -103,38 +102,22 @@ class Meeting extends Component {
           <TabBar.Item
             title="申请"
             key="apply"
-            icon={<div className={st.unSelectedIcon} />
-            }
-            selectedIcon={
-              <div className={st.selectedIcon}
-              />
-            }
-            selected={this.state.selectedTab === 'blueTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'blueTab',
-              });
-            }}
+            icon={<div className={st.unSelectedIcon} />}
+            selectedIcon={<div className={st.selectedIcon} />}
+            selected={store.tabSelect.selectedTab === 'blueTab'}
+            onPress={() => { store.tabSelect.selectedTab = 'blueTab'; }}
             data-seed="logId"
           >
             <HotelBookingCom />
           </TabBar.Item>
           <TabBar.Item
-            icon={
-              <div className={st.mineSelectedIcon}
-              />
-            }
-            selectedIcon={
-              <div className={st.unMineSelectedIcon}
-              />
-            }
+            icon={<div className={st.mineSelectedIcon} />}
+            selectedIcon={<div className={st.unMineSelectedIcon} />}
             title="我的"
             key="mine"
-            selected={this.state.selectedTab === 'redTab'}
+            selected={store.tabSelect.selectedTab === 'redTab'}
             onPress={() => {
-              this.setState({
-                selectedTab: 'redTab',
-              });
+             store.tabSelect.selectedTab = 'redTab';
               this.fetchList(1);
               this.getNeedList();
             }}

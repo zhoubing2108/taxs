@@ -8,25 +8,23 @@ import ApplyCom from './apply';
 import MyEntrance from './myMainEntrance';
 import request from '../../helpers/request'
 
-
-
-
 const tabs = [
   { title: '申请' },
   { title: '我的' },
 ];
-
-
 
 @observer
 class Entrance extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedTab: 'redTab',
+      // selectedTab: 'blueTab',
       hidden: false,
       fullScreen: true,
     };
+  }
+  componentDidMount() {
+    document.title = '门禁权限'
   }
   getNeedList = () => {
     request({
@@ -40,15 +38,11 @@ class Entrance extends Component {
       },
       success: (res) => {
         store.needList = res;
-        console.log('代办的数据', res);
-        console.log(res.length);
-        console.log(res);
       }
     })
   }
 
   fetchList = (page) => {
-    let { time_begin, time_end, status, username, access, department } = store.listParams;
     request({
       url: '/api/v1/flow/complete',
       method: 'GET',
@@ -63,10 +57,8 @@ class Entrance extends Component {
       success: (res) => {
         store.dataSource = res.data;
         store.total = res.last_page
-        console.log(res);
       }
     })
-
   }
   renderContent(pageText) {
     return (
@@ -108,41 +100,21 @@ class Entrance extends Component {
           <TabBar.Item
             title="申请"
             key="apply"
-            icon={<div className={st.unSelectedIcon} />
-            }
-            selectedIcon={
-              <div className={st.selectedIcon}
-              />
-            }
-            selected={this.state.selectedTab === 'blueTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'blueTab',
-              });
-            }}
+            icon={<div className={st.unSelectedIcon} />}
+            selectedIcon={<div className={st.selectedIcon} />}
+            selected={store.tabSelect.selectedTab === 'blueTab'}
+            onPress={() => { store.tabSelect.selectedTab = 'blueTab'; }}
             data-seed="logId"
           >
             <ApplyCom />
           </TabBar.Item>
           <TabBar.Item
-            icon={
-              <div className={st.mineSelectedIcon}
-              />
-            }
-            selectedIcon={
-              <div className={st.unMineSelectedIcon}
-              />
-            }
+            icon={<div className={st.mineSelectedIcon} />}
+            selectedIcon={<div className={st.unMineSelectedIcon} />}
             title="我的"
             key="mine"
-            selected={this.state.selectedTab === 'redTab'}
-            onPress={() => {
-              this.setState({
-                selectedTab: 'redTab',
-              });
-              this.getNeedList();
-              this.fetchList(1);
-            }}
+            selected={store.tabSelect.selectedTab === 'redTab'}
+            onPress={() => { store.tabSelect.selectedTab = 'redTab'; this.getNeedList(); this.fetchList(1); }}
             data-seed="logId1"
           >
             <MyEntrance />

@@ -6,29 +6,20 @@ import store from './store';
 import { createForm } from 'rc-form';
 import { observer } from 'mobx-react';
 import moment from 'moment';
-
-
 const user_type = ['干部职工', '借调人员', '其他人员'];
-const access = ['资料室', '会议室', '地下车库', '餐厅', '电梯及步梯', '档案室门牌(5、6楼)', '科室门牌号']
+const access = ['', '地下车库', '电梯及步梯', '资料室', '会议室', '餐厅', '档案资料室', '科室门牌号']
 const FlexItem = Flex.Item;
-const CheckboxItem = Checkbox.CheckboxItem;
 const AgreeItem = Checkbox.AgreeItem;
-
 @observer
 class Apply extends Component {
-
   onRadioChange = (i) => {
     store.RadioValue = i;
   }
   render() {
-    const { getFieldProps } = this.props.form;
-    let { deadline } = store
     return (
       <Fragment>
-        <WhiteSpace/>
-        <InputItem {...getFieldProps('role_name')} placeholder='请输入职务' style={{ width: '100%' }}>职务:</InputItem>
         <WhiteSpace />
-        <Flex style={{ padding: '15px', fontSize: 14, backgroundColor:'white' }}>
+        <Flex style={{ padding: '15px', fontSize: 14, backgroundColor: 'white' }}>
           <FlexItem>
             人员类型：
                 </FlexItem>
@@ -47,10 +38,10 @@ class Apply extends Component {
                 </FlexItem>
           {
             access.map((v, i) => {
-              if (i < 2) {
+              if (i > 0 && i < 3) {
                 return (
                   <FlexItem key={i}>
-                    <AgreeItem style={{ fontSize: '10px' }} name='test' value={v} onChange={e => console.log('checkbox', e)}>{v}</AgreeItem>
+                    <AgreeItem style={{ fontSize: '10px' }} name='test' value={v} >{v}</AgreeItem>
                   </FlexItem>)
               }
             }
@@ -58,23 +49,36 @@ class Apply extends Component {
           }
           {
             access.map((v, i) => {
-              if (i > 1 && i < 3) {
+              if (i > 2 && i < 3) {
                 return (
                   <FlexItem key={i}>
-                    <AgreeItem style={{ fontSize: '10px' }} name='test' onChange={e => console.log('checkbox', e)}>{v}</AgreeItem>
+                    <AgreeItem style={{ fontSize: '10px' }} name='test' >{v}</AgreeItem>
                   </FlexItem>)
               }
             }
             )
           }
         </Flex>
-        <Flex style={{ padding: '15px', fontSize: 14, backgroundColor: 'white'}}>
+        <Flex style={{ padding: '15px', fontSize: 14, backgroundColor: 'white' }}>
           {
             access.map((v, i) => {
-              if (i > 2 && i < 7) {
+              if (i > 2 && i < 6) {
                 return (
                   <FlexItem key={i}>
-                    <AgreeItem name='test' onChange={e => console.log('checkbox', e)}>{v}</AgreeItem>
+                    <AgreeItem name='test' >{v}</AgreeItem>
+                  </FlexItem>)
+              }
+            }
+            )
+          }
+        </Flex>
+        <Flex style={{ padding: '15px', fontSize: 14, backgroundColor: 'white' }}>
+          {
+            access.map((v, i) => {
+              if (i > 5) {
+                return (
+                  <FlexItem key={i}>
+                    <AgreeItem name='test' >{v}<input name={`text-${i}`} style={{ marginLeft: 10, width: 60, border: ' 1px solid  #c8cccf', borderRadius: '4px', }} /> </AgreeItem>
                   </FlexItem>)
               }
             }
@@ -82,51 +86,98 @@ class Apply extends Component {
           }
         </Flex>
         <WhiteSpace />
-
         <DatePicker
           mode="date"
           title="请选择日期"
-          value={deadline}
+          value={store.deadline}
           onChange={(e) => { store.deadline = e }}
-          onOk={(e) => { console.log(e) }}
         >
-          <List.Item arrow="horizontal">工作截止时间(外来人员):</List.Item>
+          <List.Item arrow="horizontal">工作截止时间(借调人员):</List.Item>
         </DatePicker>
-        <Button style={{ position: 'fixed', width: '100%', bottom: 50 }} type='primary' onClick={this.submit} >提交</Button>
+        <Button style={{ position: 'absolute', width: '100%', bottom: 0 }} type='primary' onClick={this.submit} >提交</Button>
       </Fragment>
     )
   }
 
   submit = () => {
     let { getFieldsValue } = this.props.form;
-    let {deadline, RadioValue} = store;
+    let { deadline, RadioValue } = store;
     deadline = moment(deadline).format('YYYY-MM-DD');
     let obj = document.getElementsByName("test");
+    let ele_keshi = document.getElementsByName("text-6");
+    let ele_ziliao = document.getElementsByName("text-7");
     let check_val = [];
     for (let k in obj) {
       if (obj[k].checked) {
-        check_val.push(obj[k].labels[0].innerText);
+        if (k == 6) {
+          let value_z = '科室资料室' + ele_ziliao[0].value;
+          check_val.push(value_z)
+        } else if (k == 5) {
+          let value_k = '科室' + ele_keshi[0].value;
+          check_val.push(value_k);
+        } else {
+          check_val.push(obj[k].labels[0].innerText);
+        }
       }
     }
     let access = check_val.toString();
+    if (RadioValue == '借调人员' && deadline == '') {
+      alert('请选择日期');
+      return false;
+    }
     request({
-      url:'/api/v1/access/save',
-      method:'POST',
-      data:{
+      url: '/api/v1/access/save',
+      method: 'POST',
+      data: {
         deadline,
-        user_type:RadioValue,
+        user_type: RadioValue,
         access
       },
       beforeSend: (xml) => {
-        xml.setRequestHeader('token',sessionStorage.getItem('token'))
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
       },
-      success: (res)=>{
+      success: (res) => {
         alert('提交成功')
-        console.log(res);
+        store.tabSelect.selectedTab = 'redTab';
+        this.getNeedList();
+        this.fetchList(1);
+      }
+    })
+  }
+  getNeedList = () => {
+    request({
+      url: '/api/v1/flow/ready',
+      method: 'GET',
+      data: {
+        wf_type: 'access_control_t',
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.needList = res;
+      }
+    })
+  }
+
+  fetchList = (page) => {
+    request({
+      url: '/api/v1/flow/complete',
+      method: 'GET',
+      data: {
+        wf_type: 'access_control_t',
+        page: page,
+        size: 10
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', sessionStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.dataSource = res.data;
+        store.total = res.last_page
       }
     })
   }
 }
 const ApplyCom = createForm()(Apply);
-
 export default ApplyCom
