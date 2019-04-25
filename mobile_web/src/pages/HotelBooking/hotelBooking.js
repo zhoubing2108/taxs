@@ -6,6 +6,10 @@ import { Switch, Calendar, DatePicker, List , Picker, WhiteSpace, InputItem, Car
 import moment from 'moment';
 
 const meeting_counts = [
+  {
+    label: '0',
+    value: '0',
+  },
     {
       label: '1',
       value: '1',
