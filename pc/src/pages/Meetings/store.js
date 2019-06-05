@@ -31,6 +31,25 @@ import moment from 'moment';
    @observable check_dataSource = [];
    @observable check_total = 10;
    @observable check_current = 1;
+
+   @observable currentEdit = {
+    outline:'',
+    remark:'',
+    host:'',
+    push:'',
+    address:'',
+    theme:'',
+    card:'',
+    meeting_begin: '',
+    meeting_end: '',
+    meeting_date: '',
+    time_begin: '',
+    time_end: ''
+   }
+  //  @observable currentDepartment = '全部';
+
+
+        
  }
 
  export default new Store()

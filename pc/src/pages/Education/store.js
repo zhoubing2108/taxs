@@ -13,6 +13,7 @@ class Store {
   @observable addParams = {
     AddVisible: false
   }
+  @observable alertDepartment = [];
   @observable total = 10;
   @observable current = 1;
 }

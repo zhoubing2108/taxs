@@ -127,6 +127,18 @@ class Append extends Component {
         store.addParams.AddVisible = false;
         this.props.form.resetFields();
         this.fetchList(1);
+        store.currentedit.outline = outline
+        store.currentedit.remark = remark
+        store.currentedit.host = host
+        store.currentedit.push = push
+        store.currentedit.address = address
+        store.currentedit.theme = theme
+        store.currentedit.card = card
+        store.currentedit.meeting_begin = meeting_begin
+        store.currentedit.meeting_end = meeting_end
+        store.currentedit.meeting_date = meeting_date
+        store.currentedit.time_begin = time_begin
+        store.currentedit.time_begin = time_begin
       }
     })
   }

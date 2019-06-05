@@ -75,6 +75,8 @@ class Meeting extends Component {
     dataSource = dataSource.slice();
     let { globalStore } = this.props;
     let { departmentList, placeList } = globalStore;
+    // console.log('alert',alertDepartment);
+
     return (
       <Fragment>
         <Card>
@@ -134,12 +136,13 @@ class Meeting extends Component {
   }
   fetchList = (page) => {
     let { address, theme, time_begin, time_end, host,department } = store;
+    host = department;
+    //部门用host来传，不用department
     request({
       url: '/api/v1/meeting/list',
       method: 'GET',
       data: {
         address,
-        department,
         theme,
         host,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
@@ -187,8 +190,10 @@ class Meeting extends Component {
         theme,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token')
       }
     })
+    
   }
 }
 

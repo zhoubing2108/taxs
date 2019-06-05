@@ -4,6 +4,7 @@ import { Layout, Card, Input, Button, Upload, Select, Form, Divider, Icon, Modal
 import BasicSider from './sider';
 import commonFormProps from '../../../config/common-form';
 import request from '../../../helpers/request';
+import exportFile from '../../../helpers/export-file';
 import store from './store';
 import Append from './modal/add';
 import { observer } from 'mobx-react'
@@ -72,8 +73,12 @@ class Warehousing extends Component {
         page:p,
         size:10
       },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
       success: (res) => {
         store.dataSource = res.data;
+        console.log('这里有执行吗？')
       }
     })
   }
@@ -81,6 +86,9 @@ class Warehousing extends Component {
     request({
       url: '/api/v1/sku/list/use',
       method: 'GET',
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
       success: (res) => {
        store.skuList = res;
       }
@@ -102,6 +110,19 @@ class Warehousing extends Component {
       }
     })
   }
+  export = () => {
+    let {category,order_number,category_id } = store;
+   
+    exportFile({
+      url: '/api/v1/stock/export',
+      data: {
+        category,
+        order_number,
+        category_id,
+        token:localStorage.getItem('token')
+      }
+    })
+  }
   render() {
     let { dataSource, current, total,addParams } = store
     return (
@@ -117,7 +138,7 @@ class Warehousing extends Component {
               <span>序号：</span><Input style={{ width: 100, marginRight: 5 }} onChange={(e)=>{store.order_number = e.target.value}} /> */}
               <Button type='primary' style={{marginRight:5}} onClick={()=>{this.fetchList(1);}}>查询</Button>
               <Button type='primary' style={{marginRight:5}} onClick={()=>{store.addParams.AddVisible = true}} >新增</Button>
-              <Button type='primary'>导出</Button>
+              <Button type='primary' onClick={() => { this.export() }}>导出</Button>
             </Card>
             <Table columns={this.columns} dataSource={store.dataSource} bordered rowKey='id' pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }}></Table>
           </Content>

@@ -134,7 +134,7 @@ class Diningaround extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        console.log('酒店预订页',res.data)
+        // console.log('酒店预订页',res.data)
         store.dataSource = res.data;
         let total = Number(res.total);
         store.total = total;
@@ -161,6 +161,7 @@ class Diningaround extends Component {
         meal_type,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token'),
       }
     })
   }

@@ -126,6 +126,7 @@ class CheckIn extends Component {
         department,
         time_begin,
         time_end,
+        token:localStorage.getItem('token')
       }
     })
   }

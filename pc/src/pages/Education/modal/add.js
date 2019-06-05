@@ -14,7 +14,7 @@ const TextArea = Input.TextArea;
 @observer
 class Add extends Component {
   render() {
-    let { props, form } = this.props;
+    let { props, form,departmentList } = this.props;
     let { AddVisible, user_type } = props;
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
     return (
@@ -26,9 +26,16 @@ class Add extends Component {
       >
         <Form>
           <FormItem {...commonFormProps} label='申请单位'>
-            {
+            {/* {
               getFieldDecorator('unit')(
                 <Input placeholder='请输入申请单位' />)
+            } */}
+            {
+              getFieldDecorator('unit')(
+                <Select placeholder='请选择申请单位'>
+                  {departmentList.map(e=><Option value={e.name} key={e.id}>{e.name}</Option>)}
+                </Select>
+              )
             }
           </FormItem>
           <FormItem {...commonFormProps} label='场地名称'>

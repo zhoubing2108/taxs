@@ -15,7 +15,12 @@ const _status = {
   '0': '保存中',
   '1': '流程中',
   '2': '通过'
-}
+};
+const selectItem = [
+  { name: '多功能演播室' },
+  { name: '荷塘月色露台' },
+  { name: '职工书屋' },
+]
 
 @observer
 class FunctionRoom extends Component {
@@ -81,7 +86,10 @@ class FunctionRoom extends Component {
               <Option value={2}>通过</Option>
               <Option value={-1}>不通过</Option>
             </Select>
-            <span>场地名称：</span><Select defaultValue={space} style={{ width: 100, marginRight: 10 }}><Option value={'全部'}>全部</Option></Select>
+            <span>场地名称：</span><Select defaultValue={space} style={{ width: 150, marginRight: 10 }} onChange={(v) => { store.space = v }}>
+              <Option value={'全部'}>全部</Option>
+              {selectItem.map(e => <Option value={e.name}>{e.name}</Option>)}
+              </Select>
             <Button type='primary' onClick={()=>{store.addParams.AddVisible = true}} >新增</Button>
           </div>
           <div style={{ marginTop: 10 }}>
@@ -139,6 +147,7 @@ class FunctionRoom extends Component {
         space,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token')
       }
     })
   }

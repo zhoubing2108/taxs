@@ -173,8 +173,9 @@ class Recipients extends Component {
     let { department, time_begin, time_end, status, username, category, sku } = store;
     let t_begin = moment(time_begin).format('YYYY-MM-DD')
     let t_end = moment(time_end).format('YYYY-MM-DD');
+    // console.log(localStorage.getItem('token'))
     exportFile({
-      url: '/api/v1/access/export',
+      url: '/api/v1/sku/apply/export',
       data: {
         department,
         sku,
@@ -184,6 +185,7 @@ class Recipients extends Component {
         status,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token')
       }
     })
   }

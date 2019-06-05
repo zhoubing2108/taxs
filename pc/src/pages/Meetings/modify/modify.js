@@ -13,6 +13,7 @@ class Modify extends Component {
   render() {
     let { props, form, editItem, departmentList } = this.props;
     let { ModifyVisible } = props;
+    // let ModifyVisible = store.addParams.AddVisible;
     let { meetingRooms } = store;
     meetingRooms.slice();
     let { getFieldDecorator, isFieldTouched, getFieldError, getFieldsError } = form;
@@ -47,7 +48,10 @@ class Modify extends Component {
           </FormItem>
           <FormItem {...commonFormProps} label='签到地点'>
             {
-              getFieldDecorator('address')(<Select placeholder='请选择签到地点' onChange={e => { this.findCard(e); }}>
+              getFieldDecorator('address',{
+                initialValue: address
+              })(<Select placeholder='请选择签到地点' onChange={e => { this.findCard(e); }}>
+                
                 {meetingRooms.map(e => <Option key={e.id} value={e.name}>{e.name + ' ' + e.count + ' 功能：' + e.function}</Option>)}
               </Select>)
             }
@@ -151,17 +155,19 @@ class Modify extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: () => {
-        store.addParams.ModifyVisible = false;
+        store.modifyParams.ModifyVisible = false;
         this.fetchList(1);
       }
     })
   }
   fetchList = (page) => {
-    let { address, theme, time_begin, time_end } = store;
+    let { address, theme, time_begin, time_end,host,department } = store;
+    host = department;
     request({
       url: '/api/v1/meeting/list',
       method: 'GET',
       data: {
+        host,
         address,
         theme,
         time_begin: time_begin.format('YYYY-MM-DD'),

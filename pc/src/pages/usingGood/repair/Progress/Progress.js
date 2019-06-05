@@ -138,7 +138,6 @@ class EntranceProgress extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        console.log(res);
         store.data = res;
         store.info.log = res.info.log;
         store.info.preprocess = res.info.preprocess;

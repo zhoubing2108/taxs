@@ -3,9 +3,9 @@ import {observable} from 'mobx';
 class Store {
   @observable NavList = [];
   @observable dataSource=[];
-  @observable category= '';
-  @observable order_number = '';
-  @observable category_id = '';
+  @observable category= 'null';
+  @observable order_number = 'null';
+  @observable category_id = 'null';
   @observable total = 10;
   @observable current = 1;
   @observable addParams = {

@@ -177,7 +177,8 @@ class EducationProgress extends Component {
   cancel = () => {
     let { id } = this.props.match.params;
     let { data } = store;
-    let run_id = data.info.run_id
+    let run_id = data.info.run_id;
+    let {history}  = this.props;
     request({
       url: '/api/v1/flow/check/pass',
       method: 'POST',

@@ -6,17 +6,17 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const isDEV = process.env.NODE_ENV === 'development';
 const config = {
-	mode: "development",
-	// mode: "production",
+	// mode: "development",
+	mode: "production",
 	entry: {
 		app: [path.join(__dirname, "src/index.js")]
 	},
 	output: {
-		path: path.join(__dirname, "dist"),
+		path: path.join(__dirname, "taxs"),
 		filename: '[name].[hash]js',
 		chunkFilename: '[name].[hash].js',
-		// publicPath: "/taxs/"
-		publicPath: "/"
+		publicPath: "/taxs/"
+		// publicPath: "/"
 	},
 	module: {
 		rules: [{
@@ -82,7 +82,7 @@ if (isDEV) {
 		},
 		config.devServer = {
 			hot: true,
-			port: 8019,
+			port: 8000,
 			contentBase: path.join(__dirname, "/"),
 			historyApiFallback: true,
 			proxy: {

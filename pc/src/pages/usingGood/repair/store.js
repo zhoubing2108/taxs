@@ -12,6 +12,10 @@ class Store {
   @observable addParams = {
     AddVisible: false,
   }
+  @observable details = {
+    visible: false,
+  };
+  @observable detailsArr = [];
   @observable total = 10;
   @observable current = 1;
   @observable previewVisible = false;

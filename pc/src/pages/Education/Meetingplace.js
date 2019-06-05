@@ -66,7 +66,7 @@ class MeetingPlace extends Component {
     }
   ]
   render() {
-    let { department, dataSource, time_begin, time_end, status, username, addParams, total, current } = store;
+    let { department, dataSource, time_begin, time_end, status, username, addParams, total, current,alertDepartment } = store;
     let { globalStore } = this.props;
     let { departmentList } = globalStore;
     return (
@@ -97,13 +97,14 @@ class MeetingPlace extends Component {
             <Table columns={this.columns} dataSource={dataSource} rowKey='id' bordered pagination={{ current: current, onChange: (e) => { this.fetchList(e) }, total: total, }} ></Table>
           </div>
         </Card>
-        <Add props={addParams} />
+        <Add props={addParams} departmentList={alertDepartment} />
       </Fragment>
     )
   }
   componentDidMount() {
     this.fetchList(1);
     document.title = '教育培训预定';
+    this.getDepartment();
   }
   fetchList = (page) => {
     let { time_begin, time_end, status, department, username } = store;
@@ -146,6 +147,7 @@ class MeetingPlace extends Component {
         status,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token')
       }
     })
   }
@@ -174,6 +176,15 @@ class MeetingPlace extends Component {
 
     })
 
+  }
+  getDepartment = () => {
+    request({
+      url: '/api/v1/department/list',
+      method: 'GET',
+      success: (res) => {
+        store.alertDepartment = res;
+      }
+    })
   }
 }
 

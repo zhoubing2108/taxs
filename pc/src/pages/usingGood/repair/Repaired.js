@@ -3,10 +3,12 @@ import { Table, Input, Select, DatePicker, Button, Card, Badge } from 'antd';
 import { observer } from 'mobx-react';
 import store from './store';
 import request from '../../../helpers/request';
+import exportFile from '../../../helpers/export-file';
 import Append from './modal/append';
 import { withRouter } from "react-router-dom";
 import nextStore from './Progress/store';
-import exportFile from '../../../helpers/request';
+import ImagesDetail from './detail';
+
 import moment from 'moment';
 
 
@@ -53,7 +55,8 @@ class Repaired extends Component {
     // },
     {
       title: '反馈说明',
-      dataIndex: 'feedback'
+      // dataIndex: 'feedback'
+      render: (text, record) => <span> <a onClick={() => { this.getDetails(record); return false; }} >查看</a></span>
     },
     {
       title: '状态',
@@ -67,7 +70,7 @@ class Repaired extends Component {
     }
   ]
   render() {
-    let { department,  status, dataSource, time_begin, time_end, addParams, total, current } = store;
+    let { department,  status, dataSource, time_begin, time_end, addParams, total, current,details } = store;
     let { globalStore } = this.props;
     let { departmentList } = globalStore;
     return (
@@ -82,7 +85,7 @@ class Repaired extends Component {
             </Select>
             <span>报修人：</span> <Input style={{ width: 120, marginRight: 10 }} onChange={(e) => { store.username = e.target.value }} placeholder='全部' />
             <Button type='primary' style={{ marginRight: 10 }} onClick={this.fetchList}>查询</Button>
-            <Button type='primary'onClick={()=>{this.export()}} >导出</Button>
+            <Button type='primary' onClick={() => { this.export() }}>导出</Button>
           </div>
           <div style={{ marginTop: 10 }}>
             <span>状态：</span>
@@ -99,6 +102,7 @@ class Repaired extends Component {
           </div>
         </Card>
         <Append props={addParams} />
+        <ImagesDetail props={details} />
       </Fragment>
     )
   }
@@ -140,19 +144,43 @@ class Repaired extends Component {
     let id = record.id;
     history.push(`/good/repairProgress/${id}`);
   }
+  getDetails = (record) => {
+    let id = record.id;
+    let wf_type = record.wf_type
+    request({
+      url: '/api/v1/repair/image',
+      method: 'GET',
+      data: {
+        id,
+        wf_type:wf_type == 'repair_other_t'?'2':'1',
+        image_type:1,
+      },
+      beforeSend: (xml) => {
+        xml.setRequestHeader('token', localStorage.getItem('token'))
+      },
+      success: (res) => {
+        store.detailsArr = res;
+        store.details.visible = true;
+      }
+    })
+  }
   export = () => {
-    let { department, time_begin, time_end, status, username, } = store;
+    let { department, time_begin, time_end, status, username } = store;
+    let t_begin = moment(time_begin).format('YYYY-MM-DD')
+    let t_end = moment(time_end).format('YYYY-MM-DD');
     exportFile({
-      url: '/api/v1/repair/list',
+      url: '/api/v1/repair/export',
       data: {
         department,
         username,
         status,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token')
       }
     })
   }
+
  
 }
 

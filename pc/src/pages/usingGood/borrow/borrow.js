@@ -178,7 +178,7 @@ class Borrow extends Component {
     let t_begin = moment(time_begin).format('YYYY-MM-DD')
     let t_end = moment(time_end).format('YYYY-MM-DD');
     exportFile({
-      url: '/api/v1/access/export',
+      url:'/api/v1/sku/apply/export',
       data: {
         department,
         sku,
@@ -188,6 +188,7 @@ class Borrow extends Component {
         status,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token'),
       }
     })
   }

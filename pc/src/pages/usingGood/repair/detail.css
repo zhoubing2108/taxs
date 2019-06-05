@@ -1,0 +1,19 @@
+
+  
+ :global(.ant-carousel .slick-slide h3) {
+    color:pink;
+  }
+  :global(.ant-carousel .slick-slide) {
+    text-align: center;
+    height: 1200px;
+    /* line-height: 1300px; */
+    background: #364d79;
+    /* overflow: hidden; */
+  }
+  /*:global(.logo) {
+  width: 120px;
+  height: 31px;
+  background: rgba(255,255,255,.2);  
+  margin: 16px 28px 16px 0;
+  float: left;
+}*/

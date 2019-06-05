@@ -144,6 +144,7 @@ class Buffet extends Component {
         meal_type,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token')
       }
     })
   }

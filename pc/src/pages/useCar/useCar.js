@@ -1,14 +1,31 @@
-import React, { Component, Fragment } from 'react';
-import { Table, Input, Select, DatePicker, Button, Card, Badge } from 'antd';
+import React, {
+  Component,
+  Fragment
+} from 'react';
+import {
+  Table,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  Card,
+  Badge
+} from 'antd';
 import request from '../../helpers/request';
 import store from './store';
-import { observer } from 'mobx-react';
-import { withRouter } from "react-router-dom";
+import {
+  observer
+} from 'mobx-react';
+import {
+  withRouter
+} from "react-router-dom";
 import exportFile from '../../helpers/export-file';
 import nextStore from './Progress/store';
 import Add from './modal/add';
 import moment from 'moment';
-const { RangePicker } = DatePicker;
+const {
+  RangePicker
+} = DatePicker;
 const Option = Select.Option;
 const _status = {
   '-1': '不通过',
@@ -19,55 +36,75 @@ const _status = {
 
 @observer
 class UseCar extends Component {
-  columns = [
-    {
-      title: '日期',
-      dataIndex: 'create_time'
-    },
-    {
-      title: '申请人',
-      dataIndex: 'username'
-    },
-    {
-      title: '部门',
-      dataIndex: 'department'
-    },
-    {
-      title: '用车时间',
-      dataIndex: 'apply_date'
-    },
-    {
-      title: '目的地',
-      dataIndex: 'address'
-    },
-    {
-      title: '人数',
-      dataIndex: 'count'
-    },
-    {
-      title: '用车原因',
-      dataIndex: 'reason'
-    },
-    {
-      title: '出行人员',
-      dataIndex: 'members'
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      render: (text) => (<span>{_status[text]}</span>)
-    },
-    {
-      title: '操作',
-      render: (text, record, index) => (record.check == 1 ? <span><a onClick={() => { this.goDetail(record) }}><Badge offset={[7,-5]} dot>查看进度</Badge></a></span>
-      :<span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>)
+  columns = [{
+    title: '日期',
+    dataIndex: 'create_time'
+  }, {
+    title: '申请人',
+    dataIndex: 'username'
+  }, {
+    title: '部门',
+    dataIndex: 'department'
+  }, {
+    title: '用车时间',
+    dataIndex: 'apply_date'
+  }, {
+    title: '目的地',
+    dataIndex: 'address'
+  }, {
+    title: '人数',
+    dataIndex: 'count'
+  }, {
+    title: '用车原因',
+    dataIndex: 'reason'
+  }, {
+    title: '出行人员',
+    dataIndex: 'members'
+  }, {
+    title: '状态',
+    dataIndex: 'status',
+    render: (text) => (<span>{_status[text]}</span>)
+  }, {
+    title: '操作',
+    render: (text, record, index) => (record.check == 1 ? <span><a onClick={() => { this.goDetail(record) }}><Badge offset={[7,-5]} dot>查看进度</Badge></a></span> :
+      <span><a onClick={() => { this.goDetail(record) }}>查看进度</a></span>)
 
-    }
-  ]
+  }]
   render() {
-    let { department, dataSource, time_begin, time_end, status, reason, total, current, addParams } = store;
-    let { globalStore } = this.props;
-    let { departmentList } = globalStore;
+    let {
+      department,
+      dataSource,
+      time_begin,
+      time_end,
+      status,
+      reason,
+      total,
+      current,
+      addParams
+    } = store;
+    let {
+      globalStore
+    } = this.props;
+    let {
+      departmentList
+    } = globalStore;
+    console.log(localStorage.getItem('token'));
+    console.log('原始状态',dataSource);
+    
+    let myNewData = [];
+    myNewData = dataSource.map((item,index) =>{
+      return({
+        address:item.address,
+        admin_id:item.admin_id,
+        count:item.count
+      })
+    });
+    console.log('要的效果',myNewData);
+    // let myNewData = [];
+    // for(let item in dataSource){
+    //   myNewData.address = dataSource[0].address
+    // }
+    // console.log('mynewdata',myNewData);
     return (
       <Fragment>
         <Card>
@@ -105,7 +142,14 @@ class UseCar extends Component {
     this.fetchList(1);
   }
   fetchList = (page) => {
-    let { time_begin, time_end, reason, status, department, username } = store;
+    let {
+      time_begin,
+      time_end,
+      reason,
+      status,
+      department,
+      username
+    } = store;
     request({
       url: '/api/v1/car/list',
       method: 'GET',
@@ -123,7 +167,6 @@ class UseCar extends Component {
         xml.setRequestHeader('token', localStorage.getItem('token'))
       },
       success: (res) => {
-        console.log('公务用车',res.data)
         store.dataSource = res.data;
         store.total = res.total;
         store.current = res.current_page;
@@ -133,12 +176,21 @@ class UseCar extends Component {
   goDetail = (record) => {
     nextStore.dataSource.clear();
     nextStore.dataSource.push(record);
-    let { history } = this.props;
+    let {
+      history
+    } = this.props;
     let id = record.id;
     history.push(`/carProgress/${id}`);
   }
   export = () => {
-    let { department, time_begin, time_end, status, username, reason } = store;
+    let {
+      department,
+      time_begin,
+      time_end,
+      status,
+      username,
+      reason
+    } = store;
     exportFile({
       url: '/api/v1/car/export',
       data: {
@@ -148,6 +200,7 @@ class UseCar extends Component {
         reason,
         time_begin: moment(time_begin).format('YYYY-MM-DD'),
         time_end: moment(time_end).format('YYYY-MM-DD'),
+        token:localStorage.getItem('token')
       }
     })
   }
