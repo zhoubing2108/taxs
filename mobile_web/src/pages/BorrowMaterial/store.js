@@ -42,5 +42,7 @@ class Store {
     @observable check_con = '';
     @observable info = {};
 
+    @observable mydetailsArr = [];
+
 }
 export default new Store();

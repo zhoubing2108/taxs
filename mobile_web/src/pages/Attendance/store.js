@@ -6,6 +6,7 @@ import moment from 'moment';
 const attendance_time = [
 ]
 class Store {
+    @observable roomList = [];
     @observable theme = '';
     @observable address = '';
     @observable time_begin = now;

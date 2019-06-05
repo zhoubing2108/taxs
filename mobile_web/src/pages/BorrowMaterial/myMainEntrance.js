@@ -3,6 +3,7 @@ import { ListView, Pagination, Tabs, Card, Button, Modal } from 'antd-mobile';
 import store from './store';
 import request from '../../helpers/request';
 import { observer } from 'mobx-react';
+import DetailModal from './detailModal';
 
 const prompt = Modal.prompt;
 const alert = Modal.alert;
@@ -34,9 +35,10 @@ class MyEntrance extends Component {
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.department}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.sku}</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.count}</span><br />
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.count}</span><br /> */}
         <span style={{ marginRight: '10px', padding: '5px 0', }}>借用</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.time_end}</span><br />
+        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.time_end}</span>
+        <span style={{ marginRight: '10px', padding: '5px 0', }}><DetailModal mydatasource_id={e.flow.id}/></span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.process[0].admin.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0 ', }}>{_status[e.status]}</span><br />
         {e.process.map((v, i) => (
@@ -53,10 +55,11 @@ class MyEntrance extends Component {
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.department}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.sku}</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.count}</span><br />
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.count}</span><br /> */}
         <span style={{ marginRight: '10px', padding: '5px 0', }}>借用</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.time_end}</span><br />
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>222</span>
+        <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.time_end}</span>
+        <span style={{ marginRight: '10px', padding: '5px 0', }}><DetailModal mydatasource_id={e.flow.id}/></span><br />
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}>222</span> */}
         <span style={{ marginRight: '10px', padding: '5px 0 ', }}>{_status[e.status]}</span><br />
         {e.process.map((v, i) => (
           <span key={i}>

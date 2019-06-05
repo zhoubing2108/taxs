@@ -3,6 +3,7 @@ import { Pagination, Tabs, Button, Modal } from 'antd-mobile';
 import store from './store';
 import request from '../../helpers/request';
 import { observer } from 'mobx-react';
+import moment from 'moment';
 
 const _status = {
   '-1': '不通过',
@@ -16,15 +17,13 @@ class MyEntrance extends Component {
   componentDidMount() {
     this.fetchList(1);
   }
-
-
   render() {
     let { total, dataSource, current, } = store;
     const MeetingList = () => (
-      dataSource.map(e => (<div key={e.flow.id} style={{ fontSize: 16, padding: '10px', background: '#eefaff', border: '1px solid #bbe1f1' }}>
+      dataSource.map(e => (<div key={e.id} style={{ fontSize: 16, padding: '10px', background: '#eefaff', border: '1px solid #bbe1f1' }}>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>会议时间：{e.meeting_date}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>签到时间：{e.time_begin}-{e.time_end}</span><br />
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>会议时间：{e.meeting_begin}-{e.time_end}</span><br />
+        <span style={{ marginRight: '10px', padding: '5px 0', }}>会议时间：{e.meeting_begin}-{e.meeting_end}</span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>签到地点：{e.address} </span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>会议主题：{e.theme} </span><br />
         <span style={{ marginRight: '10px', padding: '5px 0', }}>主办部门：{e.host} </span>
@@ -32,12 +31,12 @@ class MyEntrance extends Component {
       )
       )
     )
-    return (
+    return (  
       <Fragment>
         <div>
           <div style={{ height: '100%', backgroundColor: '#fff' }}>
             <MeetingList />
-            <Pagination total={total} current={current} onChange={(e, i) => { let page = e; this.fetchList(page) }} />
+            <Pagination total={total} current={current} onChange={(e, i) => {let page = e; this.fetchList(page) }}/>
           </div>
         </div>
       </Fragment>
@@ -50,11 +49,13 @@ class MyEntrance extends Component {
       method: 'GET',
       data: {
         address: '全部',
-        theme: '',
-        host: '',
+        theme: '全部',
         department: '全部',
         page: page,
-        size: 10
+        size: 10,
+        time_end: moment(new Date()).format('YYYY-MM-DD'),
+        time_begin:'2010-01-01',
+        
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', sessionStorage.getItem('token'))

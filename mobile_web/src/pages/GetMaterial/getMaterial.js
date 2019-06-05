@@ -18,14 +18,14 @@ class GetMaterial extends Component {
   handleData = (e) => {
     let { count, sku_id, time_begin, materialType } = store;
     time_begin = moment(time_begin).format('YYYY-MM-DD');
-    count = parseInt(count);
+    let sku_count = parseInt(count);
     sku_id = materialType.toString();
     request({
       url: '/api/v1/collar/use/save',
       method: 'POST',
       data: {
         time_begin,
-        count,
+        sku_count,
         sku_id,
         type: 2,
       },

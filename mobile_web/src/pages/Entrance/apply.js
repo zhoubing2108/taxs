@@ -14,6 +14,148 @@ const AgreeItem = Checkbox.AgreeItem;
 class Apply extends Component {
   onRadioChange = (i) => {
     store.RadioValue = i;
+
+
+    let check_radiovalue = store.RadioValue;
+    let check_deadline = store.deadline;
+    let obj = document.getElementsByName("test");
+    let ele_keshi = document.getElementsByName("text-6");
+    let ele_ziliao = document.getElementsByName("text-7");
+    let check_val = [];
+    for (let k in obj) {
+      if (obj[k].checked) {
+        if (k == 6) {
+          let value_z = '科室资料室' + ele_ziliao[0].value;
+          check_val.push(value_z)
+        } else if (k == 5) {
+          let value_k = '科室' + ele_keshi[0].value;
+          check_val.push(value_k);
+        } else {
+          check_val.push(obj[k].labels[0].innerText);
+        }
+      }
+    }
+    let access = check_val.toString();
+    console.log(check_deadline);
+    console.log(check_radiovalue);
+    console.log('youma',access);
+    if(check_radiovalue == ''){
+      store.isvisiable = true;
+    }else{
+      if(access == ''){
+        store.isvisiable = true;
+      }else{
+        if(check_radiovalue !== '借调人员'){
+          store.isvisiable = false;
+        }else{
+          if(check_deadline == ''){
+            store.isvisiable = true;
+          }else{
+            store.false
+          }
+        }
+      }
+    }
+  }
+  handleDeadline = (e) => {
+    store.deadline = e;
+
+    let check_radiovalue = store.RadioValue;
+    let check_deadline = store.deadline;
+    let obj = document.getElementsByName("test");
+    let ele_keshi = document.getElementsByName("text-6");
+    let ele_ziliao = document.getElementsByName("text-7");
+    let check_val = [];
+    for (let k in obj) {
+      if (obj[k].checked) {
+        if (k == 6) {
+          let value_z = '科室资料室' + ele_ziliao[0].value;
+          check_val.push(value_z)
+        } else if (k == 5) {
+          let value_k = '科室' + ele_keshi[0].value;
+          check_val.push(value_k);
+        } else {
+          check_val.push(obj[k].labels[0].innerText);
+        }
+      }
+    }
+    let access = check_val.toString();
+    console.log(check_deadline);
+    console.log(check_radiovalue);
+    console.log('youma',access);
+    if(check_deadline == ''){
+      if(access == ''){
+        store.isvisiable = true;
+      }else{
+        if(check_radiovalue == ''){
+          store.isvisiable = true;
+        }else{
+          if(check_radiovalue == '借调人员'){
+            store.isvisiable = true;
+          }else{
+            store.isvisiable = false;
+          }
+        }
+      }
+    }else{
+      if(access == ''){
+        store.isvisiable = true;
+      }else{
+        if(check_radiovalue == ''){
+          store.isvisiable = true;
+        }else{
+          if(access == '借调人员'){
+            store.isvisiable = false;
+          }else{
+            store.isvisiable = false;
+          }
+        }
+      }
+    }
+
+
+  }
+  zhou = (e) => {
+    let check_radiovalue = store.RadioValue;
+    let check_deadline = store.deadline;
+    let obj = document.getElementsByName("test");
+    let ele_keshi = document.getElementsByName("text-6");
+    let ele_ziliao = document.getElementsByName("text-7");
+    let check_val = [];
+    for (let k in obj) {
+      if (obj[k].checked) {
+        if (k == 6) {
+          let value_z = '科室资料室' + ele_ziliao[0].value;
+          check_val.push(value_z)
+        } else if (k == 5) {
+          let value_k = '科室' + ele_keshi[0].value;
+          check_val.push(value_k);
+        } else {
+          check_val.push(obj[k].labels[0].innerText);
+        }
+      }
+    }
+    let access = check_val.toString();
+    console.log(check_deadline);
+    console.log(check_radiovalue);
+    console.log('youma',access);
+    if(access == ''){
+      store.isvisiable = true;
+    }else{
+      if(check_radiovalue == ''){
+        store.isvisiable = true;
+      }else{
+        if(check_radiovalue == '借调人员'){
+          if(check_deadline == ''){
+            store.isvisiable = true;
+          }else{
+            store.isvisiable = false;
+          }
+        }else{
+          store.isvisiable = false
+        }
+      }
+    }
   }
   render() {
     return (
@@ -41,7 +183,7 @@ class Apply extends Component {
               if (i > 0 && i < 3) {
                 return (
                   <FlexItem key={i}>
-                    <AgreeItem style={{ fontSize: '10px' }} name='test' value={v} >{v}</AgreeItem>
+                    <AgreeItem style={{ fontSize: '10px' }} name='test' value={v} onChange={() => this.zhou()} >{v}</AgreeItem>
                   </FlexItem>)
               }
             }
@@ -52,7 +194,7 @@ class Apply extends Component {
               if (i > 2 && i < 3) {
                 return (
                   <FlexItem key={i}>
-                    <AgreeItem style={{ fontSize: '10px' }} name='test' >{v}</AgreeItem>
+                    <AgreeItem style={{ fontSize: '10px' }} name='test' onChange={() => this.zhou()}>{v}</AgreeItem>
                   </FlexItem>)
               }
             }
@@ -65,7 +207,7 @@ class Apply extends Component {
               if (i > 2 && i < 6) {
                 return (
                   <FlexItem key={i}>
-                    <AgreeItem name='test' >{v}</AgreeItem>
+                    <AgreeItem name='test' onChange={() => this.zhou()}>{v}</AgreeItem>
                   </FlexItem>)
               }
             }
@@ -90,11 +232,12 @@ class Apply extends Component {
           mode="date"
           title="请选择日期"
           value={store.deadline}
-          onChange={(e) => { store.deadline = e }}
+          // onChange={(e) => { store.deadline = e }}
+          onChange = {(e) =>{this.handleDeadline(e)}}
         >
           <List.Item arrow="horizontal">工作截止时间(借调人员):</List.Item>
         </DatePicker>
-        <Button style={{ position: 'absolute', width: '100%', bottom: 0 }} type='primary' onClick={this.submit} >提交</Button>
+        <Button style={{ position: 'absolute', width: '100%', bottom: 0 }} type='primary' onClick={this.submit} disabled={store.isvisiable}>提交</Button>
       </Fragment>
     )
   }
@@ -125,6 +268,9 @@ class Apply extends Component {
       alert('请选择日期');
       return false;
     }
+    console.log('user_type',RadioValue);
+    console.log('access',access);
+    console.log('deadline',deadline)
     request({
       url: '/api/v1/access/save',
       method: 'POST',

@@ -7,7 +7,10 @@ import getQueryVarible from '../helpers/get-query-variable';
 
 class App extends Component {
   state = {
+    //真实的
     animating: true,
+    // animating: false,
+    //开发的
   }
   componentDidMount() {
     if (!sessionStorage.getItem('token')) {
@@ -15,7 +18,12 @@ class App extends Component {
     }
   }
   getUser = () => {
-    let code = getQueryVarible('code');
+    let code = getQueryVarible('code'); 
+    this.setState({
+      animating: false
+    });
+    // sessionStorage.setItem('token', '5674eaee8c9f974c408239420d5773a5');
+    // 主动关闭全局登陆提示并存储token，需要关闭de
     request({
       url: '/api/v1/token/user',
       data: {

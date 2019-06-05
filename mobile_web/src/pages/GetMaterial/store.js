@@ -41,6 +41,8 @@ class Store {
     @observable needCurrent = 1;
     @observable check_con = '';
     @observable info = {};
+    
+    @observable detailsArr = [];
 
 
 

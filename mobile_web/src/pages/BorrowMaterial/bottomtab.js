@@ -61,7 +61,8 @@ class Meeting extends Component {
             title="我的"
             key="mine"
             selected={store.tabSelect.selectedTab === 'redTab'}
-            onPress={() => { store.tabSelect.selectedTab = 'redTab';this.getNeedList();this.fetchList(1) }}
+            // onPress={() => { store.tabSelect.selectedTab = 'redTab';this.getNeedList();this.fetchList(1) }}栋哥的
+            onPress={() => { store.tabSelect.selectedTab = 'redTab'}}
             data-seed="logId1"
           >
             <MyEntrance />

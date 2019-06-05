@@ -10,6 +10,22 @@ import { Switch, Calendar, DatePicker, List, Picker, WhiteSpace, InputItem, Card
 class Attendance extends Component {
   componentDidMount() {
     document.title = '会议签到';
+    this.getRoomList();
+  }
+  getRoomList = () => {
+    request({
+      url: '/api/v1/meeting/rooms',
+      method: 'GET',
+      success: (res) => {
+        store.roomList = res.map(e => {
+          return {
+            value: e.name,
+            label: e.name + ',' + e.function + ',' + e.count,
+            card: e.card
+          }
+        });
+      },
+    })
   }
   getList = () => {
     let { theme, address, time_begin, time_end } = store;
@@ -19,6 +35,8 @@ class Attendance extends Component {
       url: '/api/v1/meeting/sign/in/list/wx',
       method: 'GET',
       data: {
+        // theme:'全部',
+        // address,
         meeting_date: time_begin,
         size: 10,
         page: 1,
@@ -27,6 +45,7 @@ class Attendance extends Component {
         xml.setRequestHeader('token', sessionStorage.getItem('token'))
       },
       success: (res) => {
+        console.log(res);
         store.dataSource = res.data;
         store.total = res.last_page;
       }
@@ -34,18 +53,33 @@ class Attendance extends Component {
 
   }
   render() {
+    let { roomList } = store;
+    roomList = Array.from(roomList);
     return (
       <div>
         <List className="calendar-list" style={{ backgroundColor: 'white' }}>
 
-          <InputItem
+          {/* <InputItem
             placeholder="请输入"
             onChange={(e) => { store.theme = e }}
-          >主题</InputItem>
-          <InputItem
+          >主题</InputItem> */}
+          {/* <InputItem
             placeholder="请输入"
             onChange={(e) => { store.address = e }}
-          >地点</InputItem>
+          >地点</InputItem> */}
+          {/* <Picker
+            data={roomList}
+            cols={1}
+            className="forss"
+            value={store.address}
+            onChange={(e) => { store.address = e }}
+            onOk={(e) => { store.address = e; roomList.forEach((t) => { if (t.value == e[0]) console.log(t.card) }) }}
+          >
+            <List.Item arrow="horizontal">会议地点</List.Item>
+          </Picker> */}
+
+          <WhiteSpace size="lg" />
+          <WhiteSpace size="lg" />
           <DatePicker
             value={store.time_begin}
             mode='date'
@@ -53,16 +87,19 @@ class Attendance extends Component {
           >
             <List.Item arrow="horizontal">开始时间</List.Item>
           </DatePicker>
-          <DatePicker
+          {/* <DatePicker
             value={store.time_end}
             mode='date'
             onChange={date => store.time_end = date}
           >
             <List.Item arrow="horizontal">结束时间</List.Item>
-          </DatePicker>
+          </DatePicker> */}
           <WhiteSpace size="lg" />
           <Button style={{ width: '100%' }} type="primary" onClick={this.getList}>查询</Button>
           <WhiteSpace size="lg" />
+          <WhiteSpace size="lg" />
+          
+          {store.dataSource == ''?<div style={{textAlign:'center'}}>暂时没有你的个人历史签到信息！</div>:
           <div>
             <span>
               <table style={{ alignItems: 'center', padding: '10px', width: '100%' }}>
@@ -88,7 +125,7 @@ class Attendance extends Component {
                 </tbody>
               </table>
             </span>
-          </div>
+          </div>}
         </List>
       </div>
     )

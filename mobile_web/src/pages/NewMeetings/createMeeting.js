@@ -242,11 +242,12 @@ class CreateMeeting extends React.Component {
       method: 'GET',
       data: {
         address: '全部',
-        theme: '',
-        host: '',
+        theme: '全部',
         department: '全部',
         page: page,
-        size: 10
+        size: 10,
+        time_begin:'2010-01-02',
+        time_end:moment(new Date()).format('YYYY-MM-DD'),
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', sessionStorage.getItem('token'))
@@ -258,7 +259,7 @@ class CreateMeeting extends React.Component {
     })
   }
   handleData = () => {
-    let { time_begin, time_end, host, meeting_date, meeting_begin, meeting_end, remark, outline, theme } = store;
+    let { time_begin, time_end, host, meeting_date, meeting_begin, meeting_end, remark, outline, theme,address } = store;
     let checkObj = document.getElementsByName('test');
     let pushVal = [];
     host = host.toString();
@@ -271,6 +272,7 @@ class CreateMeeting extends React.Component {
     meeting_begin = moment(meeting_begin).format('YYYY-MM-DD HH:mm')
     meeting_end = moment(meeting_end).format('YYYY-MM-DD HH:mm')
     meeting_date = moment(meeting_date).format('YYYY-MM-DD')
+    address = address[0]
     console.log(pushVal, time_begin, time_end, host, meeting_date, meeting_begin, meeting_end, remark, outline, theme)
     request({
       url: '/api/v1/meeting/save',
@@ -288,7 +290,8 @@ class CreateMeeting extends React.Component {
         remark,
         outline,
         theme,
-        push: pushVal
+        push: pushVal,
+        address
       },
       success: (res) => {
         alert('提交成功');

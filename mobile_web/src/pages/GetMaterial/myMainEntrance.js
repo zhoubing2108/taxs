@@ -5,6 +5,7 @@ import store from './store';
 import request from '../../helpers/request';
 import { observer } from 'mobx-react';
 import getQueryVarible from '../../helpers/get-query-variable';
+import DetailModal from './detailModal';
 
 const prompt = Modal.prompt;
 const alert = Modal.alert;
@@ -72,9 +73,11 @@ class MyEntrance extends Component {
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.department}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.sku}</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>数量：{e.flow.count}</span><br />
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}>数量：{e.flow.count}</span><br /> */}
         <span style={{ marginRight: '10px', padding: '5px 0', }}>借用方式：使用</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>--</span><br />
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}> <button onClick={() => { this.getDetails(record); return false; }} >查看</button></span> */}
+        <span style={{ marginRight: '10px', padding: '5px 0', }}><DetailModal mydatasource_id={e.flow.id}/></span>
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}>--</span><br /> */}
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.process[0].admin.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0 ', }}>{_status[e.status]}</span><br />
         {e.process.map((v, i) => (
@@ -91,9 +94,11 @@ class MyEntrance extends Component {
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.department}</span>
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.flow.sku}</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>数量：{e.flow.count}</span><br />
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}>数量：{e.flow.count}</span><br /> */}
         <span style={{ marginRight: '10px', padding: '5px 0', }}>借用方式：使用</span>
-        <span style={{ marginRight: '10px', padding: '5px 0', }}>--</span><br />
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}><button onClick={() => { this.getDetails(record); return false; }} >查看</button></span> */}
+        <span style={{ marginRight: '10px', padding: '5px 0', }}><DetailModal mydatasource_id={e.flow.id}/></span>       
+        {/* <span style={{ marginRight: '10px', padding: '5px 0', }}>--</span><br /> */}
         <span style={{ marginRight: '10px', padding: '5px 0', }}>{e.process[0].admin.username}</span>
         <span style={{ marginRight: '10px', padding: '5px 0 ', }}>{_status[e.status]}</span><br />
         {e.process.map((v, i) => (

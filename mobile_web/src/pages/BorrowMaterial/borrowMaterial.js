@@ -92,7 +92,7 @@ class BorrowMaterial extends Component {
     let { count, sku_id, time_begin, time_end, materialType } = store;
     time_begin = moment(time_begin).format('YYYY-MM-DD');
     time_end = moment(time_end).format('YYYY-MM-DD');
-    count = parseInt(count);
+    let sku_count = parseInt(count);
     sku_id = materialType.toString();
     request({
       url: '/api/v1/collar/use/save',
@@ -100,7 +100,7 @@ class BorrowMaterial extends Component {
       data: {
         time_begin,
         time_end,
-        count,
+        sku_count,
         sku_id,
         type: 1,
       },

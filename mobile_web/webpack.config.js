@@ -15,7 +15,8 @@ const config = {
     path: path.join(__dirname, "wx"),
     filename: '[name].[hash]js',
     chunkFilename: '[name].[hash].js',
-    publicPath: "/wx/"
+    publicPath: "/wx/",
+    // publicPath: "/"
   },
   module: {
     rules: [

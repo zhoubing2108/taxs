@@ -6,7 +6,8 @@ import { observer } from 'mobx-react';
 import st from './meeting.css';
 import CreateMeeting from './createMeeting';
 import store from './store';
-import request from '../../helpers/request'
+import request from '../../helpers/request';
+import moment from 'moment';
 
 const tabs = [
   { title: '申请' },
@@ -38,7 +39,9 @@ class NewMeeting extends Component {
         department:'全部',
         theme:'全部',
         page: page,
-        size: 10
+        size: 10,
+        time_begin:'2010-01-01',
+        time_end: moment(new Date()).format('YYYY-MM-DD'),
       },
       beforeSend: (xml) => {
         xml.setRequestHeader('token', sessionStorage.getItem('token'))

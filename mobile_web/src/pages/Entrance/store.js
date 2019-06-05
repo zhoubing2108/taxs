@@ -21,6 +21,8 @@ class Store {
   @observable needCurrent = 1;
   @observable info = {};
   @observable check_con = '';
+
+  @observable isvisiable = true;
 }
 
 export default new Store();
